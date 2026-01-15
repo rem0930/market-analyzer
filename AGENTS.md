@@ -139,7 +139,8 @@ Stack Pack は必ず contract scripts を提供すること。
 ├── design/
 │   └── tokens/               # デザイントークン
 ├── prompts/
-│   └── agents/               # エージェント別プロンプト
+│   ├── agents/               # エージェント別プロンプト
+│   └── skills/               # 再利用可能スキル
 ├── stacks/                   # Stack Pack 定義
 │   └── <stack_id>/
 │       ├── manifest.yaml
@@ -149,6 +150,7 @@ Stack Pack は必ず contract scripts を提供すること。
 └── tools/
     ├── contract/             # Golden Commands エントリポイント
     ├── kickoff/              # 初期セットアップ
+    ├── orchestrate/          # Agent Orchestration
     ├── policy/               # ポリシーチェック
     └── worktree/             # Worktree 管理
 ```
@@ -184,6 +186,7 @@ Stack Pack は必ず contract scripts を提供すること。
 
 | ID | Purpose | Key Outputs | Gate |
 |----|---------|-------------|------|
+| `Orchestrator` | リクエストをルーティング、worktree管理 | routing decision, worktree context | 適切なエージェントに割り当て |
 | `RepoKickoff` | 新規リポジトリを初期化 | repo skeleton, CI, README | policy/docdd が成功, contract が通る |
 | `ProductIdentity_PdM` | プロダクト意図・Spec作成 | identity.md, prd.md, spec.md | AC/NFRが存在 |
 | `ProductDesigner` | UX/IA/UI要件整備 | ux_flows.md, ui_requirements.md | ACとUI要件の整合 |
@@ -192,6 +195,25 @@ Stack Pack は必ず contract scripts を提供すること。
 | `QA` | テスト設計と検証 | test-plan/*.md, evidence/* | ACカバレッジ |
 | `Implementer` | 最小差分で実装 | code + tests + docs | contract 成功, docs drift なし |
 | `Reviewer` | Staff視点でレビュー | review comments | DocDDリンク完備 |
+
+---
+
+## Agent Orchestration
+
+複数エージェントを worktree ベースで並列実行する仕組み。
+
+```bash
+# タスクを開始（自動ルーティング）
+./tools/orchestrate/orchestrate.sh start "認証機能を追加"
+
+# 状態確認
+./tools/orchestrate/orchestrate.sh status
+
+# モニタリング
+./tools/orchestrate/monitor.sh --watch
+```
+
+詳細: `tools/orchestrate/README.md`
 
 ---
 

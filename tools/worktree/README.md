@@ -4,6 +4,26 @@
 
 `git worktree` を使用すると、同一リポジトリで複数のブランチを同時にチェックアウトして作業できます。これにより、ブランチ切り替えのオーバーヘッドなく並列開発が可能になります。
 
+## Agent Orchestration との連携
+
+本リポジトリでは、AI エージェントの並列実行に worktree を活用しています。
+
+```bash
+# Orchestrator 経由で自動的に worktree を作成
+./tools/orchestrate/orchestrate.sh start "認証機能を追加"
+
+# 手動でエージェント用 worktree を作成
+./tools/worktree/spawn.sh implementer feat/GH-123-auth
+
+# 状態確認
+./tools/worktree/status.sh
+
+# クリーンアップ
+./tools/worktree/cleanup.sh --merged
+```
+
+詳細: [Agent Orchestration README](../orchestrate/README.md)
+
 ## 基本コマンド
 
 ### Worktree の作成
