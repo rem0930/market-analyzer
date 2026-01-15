@@ -38,9 +38,14 @@ if [[ -z "${stack_id}" || "${stack_id}" == "#"* ]]; then
   exit 2
 fi
 
-script="stacks/${stack_id}/contract/${cmd}"
-if [[ ! -f "${script}" ]]; then
-  echo "ERROR: Contract script not found: ${script}"
+# After kickoff, contract scripts are in tools/contract/stack/
+# Before kickoff, they remain in stacks/<stack_id>/contract/
+if [[ -f "tools/contract/stack/${cmd}" ]]; then
+  script="tools/contract/stack/${cmd}"
+elif [[ -f "stacks/${stack_id}/contract/${cmd}" ]]; then
+  script="stacks/${stack_id}/contract/${cmd}"
+else
+  echo "ERROR: Contract script not found for command '${cmd}'"
   echo "Stack '${stack_id}' may not support command '${cmd}'"
   exit 2
 fi
