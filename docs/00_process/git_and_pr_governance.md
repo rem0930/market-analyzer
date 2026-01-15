@@ -83,15 +83,40 @@ Refs: GH-123
 
 ### ローカル強制
 
-commitlint + husky で自動チェックします。
+commitlint + git hooks で自動チェックします。
 
 ```bash
-# セットアップ
-npm install
+# セットアップ（DevContainer では自動実行）
+./tools/git-hooks/install.sh
 
-# コミット時に自動チェック（.husky/commit-msg）
+# コミット時に自動チェック
 git commit -m "feat: add new feature"
 ```
+
+### Protected Branch Enforcement
+
+main/master ブランチへの直接コミット・プッシュはローカル git hooks でブロックされます。
+
+```bash
+# hooks のインストール（DevContainer では自動）
+./tools/git-hooks/install.sh
+
+# 作業開始時の確認
+./tools/worktree/ensure-worktree.sh
+```
+
+**DevContainer 起動時の自動チェック:**
+- `postCreateCommand`: git hooks を自動インストール
+- `postStartCommand`: worktree 環境チェックを実行
+
+**ブロックされる操作:**
+- main/master/develop への直接コミット（pre-commit hook）
+- main/master/develop への直接プッシュ（pre-push hook）
+
+**推奨ワークフロー:**
+1. worktree でブランチを作成: `./tools/worktree/spawn.sh implementer feat/GH-123-feature`
+2. 作業ブランチで開発・コミット
+3. PR を作成してマージ
 
 ### CI 強制
 
