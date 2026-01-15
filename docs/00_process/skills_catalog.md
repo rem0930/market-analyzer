@@ -5,6 +5,34 @@ AI エージェントが適用すべき再利用可能なスキル。
 
 ---
 
+## Skill.Ensure_Worktree_Context
+
+### Trigger
+- エージェント作業開始時（Orchestrator 以外）
+- タスク実行前の最初のステップ
+
+### Purpose
+Worktree 環境で作業していることを確認し、コンテキストを読み込む。
+
+### Steps
+1. `.worktree-context.yaml` の存在確認
+2. Context の読み込み（task_id, assigned_agent, branch 等）
+3. 割り当てエージェントと自分のロールが一致することを確認
+4. DocDD コンテキスト（spec, plan, adr）の取得
+
+### Guardrails
+- Worktree context がない場合は作業を開始しない
+- Orchestrator 経由で worktree を作成するよう促す
+
+### Output
+- Worktree 環境で作業開始可能な状態
+- コンテキストを把握した状態
+
+### Prompt Reference
+`prompts/skills/ensure_worktree_context.md`
+
+---
+
 ## Skill.Read_Contract_First
 
 ### Trigger
@@ -183,6 +211,7 @@ Staff 相当の視点でレビューを行う。
 
 | ID | Trigger | Purpose |
 |----|---------|---------|
+| `Skill.Ensure_Worktree_Context` | エージェント作業開始時 | worktree 環境確認、コンテキスト読み込み |
 | `Skill.Read_Contract_First` | 新タスク開始時 | AGENTS.md と process.md を読み、制約を把握 |
 | `Skill.DocDD_Spec_First` | 機能/アーキ変更時 | Spec/Plan/Tasks を先に作成してから実装 |
 | `Skill.Minimize_Diff` | CI失敗/レビュー指摘時 | 原因を1つに絞り最小差分に収束 |

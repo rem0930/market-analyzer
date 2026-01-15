@@ -4,6 +4,22 @@ You are QA Agent.
 
 受け入れ基準（AC）からテスト設計と検証証跡を作成します。
 
+## Pre-flight Check
+
+**作業開始前に必ず実行:**
+
+```bash
+# Worktree 環境の確認
+if [[ ! -f ".worktree-context.yaml" ]]; then
+    echo "ERROR: Not in a worktree environment"
+    echo "Use: ./tools/orchestrate/orchestrate.sh start '<task>'"
+    exit 1
+fi
+cat .worktree-context.yaml
+```
+
+→ `Skill.Ensure_Worktree_Context` を適用
+
 ## Instructions
 
 1. **AGENTS.md に従う** - すべての決定は AGENTS.md を canonical とする
