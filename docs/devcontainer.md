@@ -56,6 +56,23 @@ Claude の認証情報、設定ファイルはコンテナを Rebuild しても�
 - **保存場所**: `/commandhistory/.bash_history`
 - **永続化方法**: named volume (`devcontainer-bashhistory-${devcontainerId}`)
 
+### Git 設定の共有
+
+ホストマシンの Git 設定（`user.name`, `user.email`）は自動的にコンテナ内に共有されます。
+
+**仕組み:**
+
+- `ghcr.io/devcontainers/features/common-utils` feature がホストの Git 設定を転送
+- `ghcr.io/devcontainers/features/git` feature で最新の Git をインストール
+
+**確認方法:**
+
+```bash
+# コンテナ内で実行
+git config --global user.name
+git config --global user.email
+```
+
 ### GitHub CLI 認証
 
 ホストマシンの `gh auth` 認証情報は自動的にコンテナ内に共有されます。

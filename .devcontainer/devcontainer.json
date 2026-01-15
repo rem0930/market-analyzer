@@ -10,6 +10,17 @@
     }
   },
   "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": false,
+      "configureZshAsDefaultShell": false,
+      "username": "node",
+      "userUid": "1000",
+      "userGid": "1000"
+    },
+    "ghcr.io/devcontainers/features/git:1": {
+      "version": "latest",
+      "ppa": false
+    },
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
   "initializeCommand": ".devcontainer/init-gh-token.sh",
