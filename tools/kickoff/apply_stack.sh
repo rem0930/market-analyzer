@@ -67,10 +67,18 @@ if [[ -d "${stack_dir}/scaffold" ]]; then
   echo "  ✓ Applied scaffold (non-destructive)"
 fi
 
-# 4. Make contract scripts executable
+# 4. Copy contract scripts to tools/contract/stack/
 if [[ -d "${stack_dir}/contract" ]]; then
-  chmod +x "${stack_dir}/contract/"* 2>/dev/null || true
-  echo "  ✓ Made contract scripts executable"
+  mkdir -p "tools/contract/stack"
+  cp -r "${stack_dir}/contract/"* "tools/contract/stack/"
+  chmod +x "tools/contract/stack/"* 2>/dev/null || true
+  echo "  ✓ Copied contract scripts to tools/contract/stack/"
+fi
+
+# 5. Remove stacks directory (no longer needed after initial setup)
+if [[ -d "stacks" ]]; then
+  rm -rf "stacks"
+  echo "  ✓ Removed stacks directory (initial setup complete)"
 fi
 
 echo ""

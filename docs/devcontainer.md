@@ -56,6 +56,89 @@ Claude の認証情報、設定ファイルはコンテナを Rebuild しても�
 - **保存場所**: `/commandhistory/.bash_history`
 - **永続化方法**: named volume (`devcontainer-bashhistory-${devcontainerId}`)
 
+### Git 設定の共有
+
+ホストマシンの Git 設定（`user.name`, `user.email`）は自動的にコンテナ内に共有されます。
+
+**仕組み:**
+
+- `ghcr.io/devcontainers/features/common-utils` feature がホストの Git 設定を転送
+- `ghcr.io/devcontainers/features/git` feature で最新の Git をインストール
+
+**確認方法:**
+
+```bash
+# コンテナ内で実行
+git config --global user.name
+git config --global user.email
+```
+
+### GitHub CLI 認証
+
+ホストマシンの `gh auth` 認証情報は自動的にコンテナ内に共有されます。
+
+**前提条件:**
+
+ホストマシンで GitHub CLI にログイン済みであること:
+
+```bash
+# ホストマシンで実行
+gh auth login
+gh auth status  # 確認
+```
+
+**コンテナ内での確認:**
+
+```bash
+# コンテナ内で実行
+gh auth status
+```
+
+**仕組み:**
+
+1. DevContainer 起動時に `initializeCommand` でホスト側の `gh auth token` を取得
+2. 取得したトークンを `.devcontainer/.env.devcontainer` に書き出し
+3. `--env-file` オプションでコンテナに `GH_TOKEN` 環境変数として渡す
+4. `ghcr.io/devcontainers/features/github-cli` feature で `gh` コマンドをインストール
+
+**関連ファイル:**
+
+- `.devcontainer/init-gh-token.sh` - トークン取得スクリプト
+- `.devcontainer/.env.devcontainer` - 生成されるenv ファイル（gitignore済み）
+
+### SSH Agent Forwarding
+
+ホストマシンの SSH 鍵をコンテナ内で使用して `git push` できます。
+
+**前提条件（ホストで実行）:**
+
+```bash
+# SSH agent に鍵が登録されているか確認
+ssh-add -l
+
+# もし "The agent has no identities." と出たら鍵を追加
+# macOS の場合
+ssh-add --apple-use-keychain ~/.ssh/id_ed25519
+# または
+ssh-add ~/.ssh/id_rsa
+```
+
+**コンテナ内での確認:**
+
+```bash
+# SSH agent が転送されているか確認
+ssh-add -l
+
+# GitHub への接続テスト
+ssh -T git@github.com
+```
+
+**仕組み:**
+
+- ホストの `SSH_AUTH_SOCK` をコンテナにマウント
+- コンテナ内の `SSH_AUTH_SOCK` 環境変数でソケットを参照
+- SSH 鍵自体はホストにあり、コンテナには転送されない（セキュア）
+
 ## ファイアウォール
 
 ### モード
