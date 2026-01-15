@@ -1,0 +1,31 @@
+stack_id: "python_ruff_pytest"
+label: "Python (pyproject) + ruff + pytest"
+language: "python"
+package_manager: "pip/pyproject"
+
+devcontainer:
+  base_image: "mcr.microsoft.com/devcontainers/python:3.12"
+
+archetypes:
+  - library
+  - api
+  - worker
+
+contract_commands:
+  required:
+    - format
+    - lint
+    - test
+    - build
+  optional:
+    - typecheck
+    - e2e
+    - migrate
+    - deploy-dryrun
+
+scaffold_paths:
+  - pyproject.toml
+  - src/app/__init__.py
+  - src/app/main.py
+  - tests/__init__.py
+  - tests/test_main.py

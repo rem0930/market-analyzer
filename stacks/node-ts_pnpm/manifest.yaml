@@ -1,0 +1,35 @@
+stack_id: "node-ts_pnpm"
+label: "Node.js + TypeScript (pnpm workspace)"
+language: "typescript"
+package_manager: "pnpm"
+
+devcontainer:
+  base_image: "mcr.microsoft.com/devcontainers/typescript-node:1"
+
+archetypes:
+  - library
+  - api
+  - worker
+  - webui
+
+contract_commands:
+  required:
+    - format
+    - lint
+    - test
+    - build
+  optional:
+    - typecheck
+    - e2e
+    - migrate
+    - deploy-dryrun
+
+scaffold_paths:
+  - package.json
+  - pnpm-workspace.yaml
+  - tsconfig.json
+  - .prettierrc
+  - .eslintrc.cjs
+  - apps/api/package.json
+  - apps/api/src/index.ts
+  - apps/api/src/index.test.ts

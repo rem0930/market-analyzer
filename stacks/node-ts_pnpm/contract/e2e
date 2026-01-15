@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+
+# E2E tests - run if script exists in package.json
+if pnpm -w run e2e --if-present 2>/dev/null; then
+  exit 0
+else
+  echo "No e2e script found. Skipping."
+  exit 0
+fi

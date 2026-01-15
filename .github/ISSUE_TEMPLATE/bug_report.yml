@@ -1,0 +1,69 @@
+---
+name: Bug Report
+description: バグの報告
+title: "[Bug] "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Bug Report
+        バグ報告ありがとうございます！
+
+  - type: textarea
+    id: description
+    attributes:
+      label: バグの内容
+      description: 何が起きましたか？
+      placeholder: "〇〇をすると△△になる"
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期待する動作
+      description: 本来どうなるべきですか？
+      placeholder: "〇〇をすると□□になるはず"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 再現手順
+      description: バグを再現する手順を教えてください
+      placeholder: |
+        1. '...' に移動
+        2. '...' をクリック
+        3. エラーが発生
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 環境
+      description: 環境情報を教えてください
+      placeholder: |
+        - OS: macOS 14.0
+        - Node: 20.10.0
+        - Browser: Chrome 120
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: ログ / スクリーンショット
+      description: エラーログやスクリーンショットがあれば
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: 確認事項
+      options:
+        - label: 既存の Issue を検索し、重複がないことを確認しました
+          required: true

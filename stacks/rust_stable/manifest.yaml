@@ -1,0 +1,28 @@
+stack_id: "rust_stable"
+label: "Rust stable + cargo"
+language: "rust"
+package_manager: "cargo"
+
+devcontainer:
+  base_image: "mcr.microsoft.com/devcontainers/rust:1"
+
+archetypes:
+  - library
+  - api
+  - worker
+
+contract_commands:
+  required:
+    - format
+    - lint
+    - test
+    - build
+  optional:
+    - typecheck
+    - e2e
+    - migrate
+    - deploy-dryrun
+
+scaffold_paths:
+  - Cargo.toml
+  - src/lib.rs

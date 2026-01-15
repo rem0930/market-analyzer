@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+echo "No migration configured for this stack."
+echo "Override this script when database is added."
+exit 0

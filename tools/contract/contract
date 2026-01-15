@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cmd="${1:-}"
+if [[ -z "${cmd}" ]]; then
+  echo "usage: ./tools/contract <command> [args...]"
+  echo ""
+  echo "commands:"
+  echo "  format       - フォーマット（自動修正）"
+  echo "  lint         - 静的解析"
+  echo "  typecheck    - 型チェック"
+  echo "  test         - ユニットテスト"
+  echo "  build        - ビルド"
+  echo "  e2e          - E2Eテスト"
+  echo "  migrate      - DBマイグレーション"
+  echo "  deploy-dryrun - デプロイドライラン"
+  exit 2
+fi
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+cd "${REPO_ROOT}"
+
+if [[ ! -f ".repo/active-stack" ]]; then
+  echo "ERROR: .repo/active-stack not found."
+  echo "Run: ./tools/kickoff/apply_stack.sh <stack_id>"
+  exit 2
+fi
+
+stack_id="$(cat .repo/active-stack | tr -d '[:space:]')"
+
+# Check if stack is not configured (placeholder text)
+if [[ -z "${stack_id}" || "${stack_id}" == "#"* ]]; then
+  echo "ERROR: No active stack configured."
+  echo "Run: ./tools/kickoff/apply_stack.sh <stack_id>"
+  echo ""
+  echo "Available stacks:"
+  ls -1 stacks 2>/dev/null | grep -v ".gitkeep" || echo "  (none found)"
+  exit 2
+fi
+
+script="stacks/${stack_id}/contract/${cmd}"
+if [[ ! -f "${script}" ]]; then
+  echo "ERROR: Contract script not found: ${script}"
+  echo "Stack '${stack_id}' may not support command '${cmd}'"
+  exit 2
+fi
+
+if [[ ! -x "${script}" ]]; then
+  chmod +x "${script}"
+fi
+
+exec "${script}" "${@:2}"

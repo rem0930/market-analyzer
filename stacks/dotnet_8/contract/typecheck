@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+echo ".NET compilation includes type checking"
+cd "$(git rev-parse --show-toplevel)"
+dotnet build

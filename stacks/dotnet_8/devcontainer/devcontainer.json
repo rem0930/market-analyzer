@@ -1,0 +1,23 @@
+{
+  "name": ".NET 8",
+  "image": "mcr.microsoft.com/devcontainers/dotnet:8.0",
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-dotnettools.csharp",
+        "ms-dotnettools.csdevkit"
+      ],
+      "settings": {
+        "omnisharp.enableRoslynAnalyzers": true,
+        "[csharp]": {
+          "editor.formatOnSave": true
+        }
+      }
+    }
+  },
+  "postCreateCommand": "dotnet restore",
+  "remoteUser": "vscode"
+}

@@ -1,0 +1,39 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: ["main"]
+
+jobs:
+  policy:
+    name: Policy Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check required artifacts
+        run: |
+          chmod +x tools/policy/check_required_artifacts.sh
+          bash tools/policy/check_required_artifacts.sh
+
+  contract:
+    name: Contract Smoke Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run contract smoke tests
+        run: |
+          if [ -f .repo/active-stack ]; then
+            stack_id=$(cat .repo/active-stack | tr -d '[:space:]')
+            if [[ -n "${stack_id}" && "${stack_id}" != "# Stack"* ]]; then
+              chmod +x tools/contract/contract
+              ./tools/contract lint || exit 1
+              ./tools/contract test || exit 1
+              ./tools/contract build || exit 1
+            else
+              echo "No active stack configured; skipping contract smoke."
+            fi
+          else
+            echo "No active stack file; skipping contract smoke."
+          fi

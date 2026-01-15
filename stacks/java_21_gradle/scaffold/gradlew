@@ -1,0 +1,12 @@
+#!/bin/sh
+# Gradle wrapper script - minimal version
+# In production, use `gradle wrapper` to generate the full wrapper
+
+GRADLE_VERSION="8.5"
+
+if command -v gradle &> /dev/null; then
+    exec gradle "$@"
+else
+    echo "Gradle not found. Please install Gradle or use the DevContainer."
+    exit 1
+fi

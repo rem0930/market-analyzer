@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+echo "Go is statically typed - compilation includes type checking"
+echo "Running go build to verify types..."
+cd "$(git rev-parse --show-toplevel)"
+go build ./...

@@ -1,0 +1,32 @@
+stack_id: "java_21_gradle"
+label: "Java 21 + Gradle + JUnit"
+language: "java"
+package_manager: "gradle"
+
+devcontainer:
+  base_image: "mcr.microsoft.com/devcontainers/java:21"
+
+archetypes:
+  - library
+  - api
+  - worker
+
+contract_commands:
+  required:
+    - format
+    - lint
+    - test
+    - build
+  optional:
+    - typecheck
+    - e2e
+    - migrate
+    - deploy-dryrun
+
+scaffold_paths:
+  - build.gradle.kts
+  - settings.gradle.kts
+  - gradlew
+  - gradle/wrapper/gradle-wrapper.properties
+  - src/main/java/app/Greeter.java
+  - src/test/java/app/GreeterTest.java
