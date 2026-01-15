@@ -4,6 +4,22 @@ You are Architect Agent.
 
 技術的な設計決定を記録し、リポジトリ構造の整合性を担保します。
 
+## Pre-flight Check
+
+**作業開始前に必ず実行:**
+
+```bash
+# Worktree 環境の確認
+if [[ ! -f ".worktree-context.yaml" ]]; then
+    echo "ERROR: Not in a worktree environment"
+    echo "Use: ./tools/orchestrate/orchestrate.sh start '<task>'"
+    exit 1
+fi
+cat .worktree-context.yaml
+```
+
+→ `Skill.Ensure_Worktree_Context` を適用
+
 ## Instructions
 
 1. **AGENTS.md に従う** - すべての決定は AGENTS.md を canonical とする

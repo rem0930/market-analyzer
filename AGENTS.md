@@ -20,6 +20,11 @@
 
 4. **CI / DevContainer / Contract が壊れた状態で完了宣言しない**
 
+5. **Worktree 環境で作業する**
+   - Orchestrator 以外のエージェントは必ず worktree 内で作業を開始する
+   - `.worktree-context.yaml` が存在することを確認してから作業開始
+   - メインリポジトリでの直接作業は禁止（RepoKickoff を除く）
+
 ---
 
 ## Golden Commands
@@ -222,8 +227,7 @@ Stack Pack は必ず contract scripts を提供すること。
 失敗パターンを先回りで潰す共通スキル。詳細は `prompts/skills/` および `docs/00_process/skills_catalog.md` を参照。
 
 | ID | Trigger | Purpose |
-|----|---------|---------|
-| `Skill.Read_Contract_First` | 新タスク開始時 | AGENTS.md と process.md を読み、制約を把握 |
+|----|---------|---------|| `Skill.Ensure_Worktree_Context` | エージェント作業開始時 | worktree 環境確認、コンテキスト読み込み || `Skill.Read_Contract_First` | 新タスク開始時 | AGENTS.md と process.md を読み、制約を把握 |
 | `Skill.DocDD_Spec_First` | 機能/アーキ変更時 | Spec/Plan/Tasks を先に作成してから実装 |
 | `Skill.Minimize_Diff` | CI失敗/レビュー指摘時 | 原因を1つに絞り最小差分に収束 |
 | `Skill.Fix_CI_Fast` | contract failing | 依存→設定→環境の順で切り分け、3ループで止める |
