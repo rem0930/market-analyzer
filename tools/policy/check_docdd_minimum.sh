@@ -83,7 +83,7 @@ echo "Checking Spec/Plan template locations..."
 # Check for .specify directory or template
 if [ -d "${REPO_ROOT}/.specify" ]; then
     echo -e "${GREEN}✓${NC} .specify/ directory exists"
-    
+
     if [ -d "${REPO_ROOT}/.specify/specs" ]; then
         echo -e "${GREEN}✓${NC} .specify/specs/ directory exists"
     else

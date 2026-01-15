@@ -105,7 +105,7 @@ if [ -d "${INSTRUCTIONS_DIR}" ]; then
         echo -e "${YELLOW}⚠${NC} No path-specific instructions found"
         warnings=$((warnings + 1))
     fi
-    
+
     # Check applyTo in each instruction file
     for file in "${INSTRUCTIONS_DIR}"/*.instructions.md; do
         if [ -f "$file" ]; then
