@@ -20,11 +20,6 @@
 
 4. **CI / DevContainer / Contract が壊れた状態で完了宣言しない**
 
-5. **Worktree 環境で作業する**
-   - Orchestrator 以外のエージェントは必ず worktree 内で作業を開始する
-   - `.worktree-context.yaml` が存在することを確認してから作業開始
-   - メインリポジトリでの直接作業は禁止（RepoKickoff を除く）
-
 ---
 
 ## Golden Commands
@@ -64,8 +59,23 @@
 - **Active Stack**: `.repo/active-stack` に記載
 - **Stack Pack 定義**: `stacks/<stack_id>/manifest.yaml`
 - **Contract Scripts**: `stacks/<stack_id>/contract/{format,lint,typecheck,test,build,e2e,migrate,deploy-dryrun}`
+- **Projects Directory**: `projects/` にアプリケーションコードを配置
 
 Stack Pack は必ず contract scripts を提供すること。
+
+### Auto Scaffold
+
+DevContainer 起動時に `projects/` が空の場合、自動的に scaffold が適用される：
+- 人間が明示的にコマンドを実行する必要なし
+- `postStartCommand` で `./tools/kickoff/auto-scaffold.sh` が実行される
+- 依存関係も自動インストール
+
+### Stack Selection (技術スタック未設定時)
+
+`active-stack` が未設定の場合、エージェントが対話的に技術スタックを決定：
+1. ユーザーに「何を作りたいか」を質問
+2. 利用可能なスタックから最適なものを推薦
+3. `./tools/kickoff/select-stack.sh <stack_id>` でプロジェクトを初期化
 
 ---
 
@@ -132,6 +142,9 @@ Stack Pack は必ず contract scripts を提供すること。
 ├── .github/                  # GitHub 設定（CI, PR/Issue テンプレ）
 ├── .specify/                 # Spec 定義
 │   └── specs/                # 機能別 Spec
+├── projects/                 # アプリケーションコード（自動生成）
+│   ├── apps/                 # アプリケーション
+│   └── packages/             # 共有パッケージ
 ├── docs/
 │   ├── 00_process/           # プロセス定義
 │   ├── 01_product/           # プロダクト要件
@@ -146,7 +159,7 @@ Stack Pack は必ず contract scripts を提供すること。
 ├── prompts/
 │   ├── agents/               # エージェント別プロンプト
 │   └── skills/               # 再利用可能スキル
-├── stacks/                   # Stack Pack 定義
+├── stacks/                   # Stack Pack 定義（初回起動後に削除）
 │   └── <stack_id>/
 │       ├── manifest.yaml
 │       ├── devcontainer/
@@ -154,7 +167,7 @@ Stack Pack は必ず contract scripts を提供すること。
 │       └── scaffold/
 └── tools/
     ├── contract/             # Golden Commands エントリポイント
-    ├── kickoff/              # 初期セットアップ
+    ├── kickoff/              # 初期セットアップ（auto-scaffold含む）
     ├── orchestrate/          # Agent Orchestration
     ├── policy/               # ポリシーチェック
     └── worktree/             # Worktree 管理
@@ -227,7 +240,8 @@ Stack Pack は必ず contract scripts を提供すること。
 失敗パターンを先回りで潰す共通スキル。詳細は `prompts/skills/` および `docs/00_process/skills_catalog.md` を参照。
 
 | ID | Trigger | Purpose |
-|----|---------|---------|| `Skill.Ensure_Worktree_Context` | エージェント作業開始時 | worktree 環境確認、コンテキスト読み込み || `Skill.Read_Contract_First` | 新タスク開始時 | AGENTS.md と process.md を読み、制約を把握 |
+|----|---------|---------|
+| `Skill.Read_Contract_First` | 新タスク開始時 | AGENTS.md と process.md を読み、制約を把握 |
 | `Skill.DocDD_Spec_First` | 機能/アーキ変更時 | Spec/Plan/Tasks を先に作成してから実装 |
 | `Skill.Minimize_Diff` | CI失敗/レビュー指摘時 | 原因を1つに絞り最小差分に収束 |
 | `Skill.Fix_CI_Fast` | contract failing | 依存→設定→環境の順で切り分け、3ループで止める |

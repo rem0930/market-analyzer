@@ -35,6 +35,10 @@
 ## Workflow
 
 ```
+0. プロジェクト初期化チェック
+   - projects/ が空 かつ active-stack 未設定の場合
+   → Stack Selection Flow へ
+   ↓
 1. リクエスト受信
    ↓
 2. ルーティング判定
@@ -62,6 +66,62 @@
    - 次エージェントへ引き継ぎ
    - PR 作成
    - クリーンアップ
+```
+
+## Stack Selection Flow (プロジェクト初期化)
+
+`projects/` が空で技術スタックが未設定の場合、以下のフローで対話的に決定する:
+
+```
+1. 現状確認
+   - projects/ は空か？
+   - .repo/active-stack は有効な値か？
+   ↓
+2. ユーザーへのヒアリング
+   "何を作りたいですか？" を質問:
+   - Webアプリ / API / CLI / スクリプト / ライブラリ
+   - 使いたい言語・フレームワーク
+   - 想定規模
+   ↓
+3. スタック推薦
+   利用可能なスタックから最適なものを推薦:
+   - node-ts_pnpm: TypeScript + pnpm monorepo (Web/API)
+   - python_ruff_pytest: Python + Ruff + pytest
+   - gas_clasp: Google Apps Script + clasp
+   ↓
+4. ユーザー確認
+   "このスタックでよろしいですか？"
+   ↓
+5. スタック適用
+   - .repo/active-stack に書き込み
+   - ./tools/kickoff/auto-scaffold.sh 実行
+   ↓
+6. 次のステップへ
+   "プロジェクトの目的を教えてください" → PdM フローへ
+```
+
+### Stack Selection Questions
+
+```markdown
+プロジェクトを始める前に、いくつか質問させてください。
+
+1. **何を作りたいですか？**
+   - [ ] Webアプリケーション（フロントエンド + バックエンド）
+   - [ ] REST API / GraphQL サーバー
+   - [ ] CLIツール
+   - [ ] ライブラリ / パッケージ
+   - [ ] スクリプト / 自動化
+   - [ ] Google Apps Script 連携
+
+2. **好みの言語はありますか？**
+   - [ ] TypeScript / JavaScript
+   - [ ] Python
+   - [ ] 特にこだわりなし（おすすめで）
+
+3. **規模感は？**
+   - [ ] 小規模（個人プロジェクト）
+   - [ ] 中規模（複数モジュール）
+   - [ ] 大規模（モノレポ構成）
 ```
 
 ## Routing Decision Logic
