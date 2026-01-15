@@ -20,6 +20,11 @@
 
 4. **CI / DevContainer / Contract が壊れた状態で完了宣言しない**
 
+5. **HTTP API は OpenAPI 仕様を先に定義する**
+   - 手書きで HTTP クライアント/サーバーを実装しない
+   - `docs/02_architecture/api/*.yaml` に仕様を配置
+   - コード生成ツールでクライアント/スタブを生成
+
 ---
 
 ## Golden Commands
@@ -248,6 +253,7 @@ DevContainer 起動時に `projects/` が空の場合、自動的に scaffold �
 | `Skill.Policy_Docs_Drift` | コード変更時 | 必要なdocs更新を同PRで実施 |
 | `Skill.Review_As_Staff` | Reviewer起動時 | DocDDリンク確認、NFR観点、rollback妥当性 |
 | `Skill.DevContainer_Safe_Mode` | firewall/permission問題時 | allowlist確認、safeプロファイル維持 |
+| `Skill.OpenAPI_Contract_First` | HTTP API設計/実装時 | OpenAPI仕様を先に定義、コード生成活用 |
 
 ---
 

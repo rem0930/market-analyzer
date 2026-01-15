@@ -53,6 +53,7 @@ Refs: #123
 - `Skill.Minimize_Diff`: CI失敗時は原因を1つに絞る
 - `Skill.Fix_CI_Fast`: 3ループで直らなければ原因を記録して止める
 - `Skill.Policy_Docs_Drift`: コード変更時は Docs 更新漏れをチェック
+- `Skill.OpenAPI_Contract_First`: HTTP API利用時は必ずOpenAPI仕様から開始
 
 ## Gate
 

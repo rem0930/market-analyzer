@@ -14,8 +14,7 @@ applyTo: "docs/02_architecture/**"
 |------|---------|
 | `adr/*.md` | Architecture Decision Records |
 | `repo_structure.md` | リポジトリ構造 |
-| `impact_analysis_template.md` | 影響分析テンプレート |
-
+| `impact_analysis_template.md` | 影響分析テンプレート || `api/*.yaml` | OpenAPI 仕様（HTTP API がある場合は必須） |
 ## ADR Template
 
 ```markdown

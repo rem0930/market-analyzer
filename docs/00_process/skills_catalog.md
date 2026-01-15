@@ -179,6 +179,46 @@ Staff 相当の視点でレビューを行う。
 
 ---
 
+## Skill.OpenAPI_Contract_First
+
+### Trigger
+- HTTP API を設計するとき
+- HTTP API を利用/実装するとき
+- 外部 API と連携するとき
+
+### Purpose
+OpenAPI 仕様を先に定義し、ドキュメント・クライアント・サーバースタブを自動生成する。
+
+### Steps
+1. `docs/02_architecture/api/` に OpenAPI 仕様（YAML/JSON）を作成
+2. 仕様をレビュー（エンドポイント/スキーマ/エラー形式）
+3. コード生成ツールでクライアント/サーバースタブを生成
+4. 生成されたコードをベースに実装
+5. 仕様と実装の乖離をCIでチェック（lint/validation）
+
+### Guardrails
+- 手書きでHTTPクライアント/サーバーを実装しない（生成コードをベースにする）
+- API変更時は必ず OpenAPI 仕様を先に更新
+- 仕様と実装の乖離を許容しない
+
+### Recommended Tools
+| Language | Client Generator | Server Generator |
+|----------|------------------|------------------|
+| TypeScript | openapi-typescript, orval | express-openapi-validator |
+| Python | openapi-python-client | FastAPI (native) |
+| Go | oapi-codegen | oapi-codegen |
+| Rust | openapi-generator | poem-openapi |
+
+### Output
+- `docs/02_architecture/api/*.yaml` - OpenAPI 仕様
+- 生成されたクライアント/サーバーコード
+- CI での仕様バリデーション設定
+
+### Prompt Reference
+`prompts/skills/openapi_contract_first.md`
+
+---
+
 ## Quick Reference Table
 
 | ID | Trigger | Purpose |
@@ -190,3 +230,4 @@ Staff 相当の視点でレビューを行う。
 | `Skill.Policy_Docs_Drift` | コード変更時 | 必要なdocs更新を同PRで実施 |
 | `Skill.Review_As_Staff` | Reviewer起動時 | DocDDリンク確認、NFR観点、rollback妥当性 |
 | `Skill.DevContainer_Safe_Mode` | firewall/permission問題時 | allowlist確認、safeプロファイル維持 |
+| `Skill.OpenAPI_Contract_First` | HTTP API設計/実装時 | OpenAPI仕様を先に定義、コード生成活用 |
