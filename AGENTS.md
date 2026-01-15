@@ -175,3 +175,65 @@ Stack Pack は必ず contract scripts を提供すること。
 | FP03 | DevContainer では動くが CI で落ちる | Contract smoke を CI 必須に |
 | FP04 | Kickoff が既存ファイルを破壊 | `rsync --ignore-existing` |
 | FP05 | AGENTS.md と他の instructions が矛盾 | AGENTS.md を canonical に |
+
+---
+
+## Agents (役割定義)
+
+各エージェントは責務・入力・出力・ゲートを持つ。詳細は `prompts/agents/` を参照。
+
+| ID | Purpose | Key Outputs | Gate |
+|----|---------|-------------|------|
+| `RepoKickoff` | 新規リポジトリを初期化 | repo skeleton, CI, README | policy/docdd が成功, contract が通る |
+| `ProductIdentity_PdM` | プロダクト意図・Spec作成 | identity.md, prd.md, spec.md | AC/NFRが存在 |
+| `ProductDesigner` | UX/IA/UI要件整備 | ux_flows.md, ui_requirements.md | ACとUI要件の整合 |
+| `DesignSystem` | デザイン契約を固定 | tokens.json, overview.md | 命名規則が文書化 |
+| `Architect` | ADR/Planを作成 | adr/*.md, plan.md | 代替案/トレードオフ記載 |
+| `QA` | テスト設計と検証 | test-plan/*.md, evidence/* | ACカバレッジ |
+| `Implementer` | 最小差分で実装 | code + tests + docs | contract 成功, docs drift なし |
+| `Reviewer` | Staff視点でレビュー | review comments | DocDDリンク完備 |
+
+---
+
+## Skills (再利用可能な技能)
+
+失敗パターンを先回りで潰す共通スキル。詳細は `prompts/skills/` および `docs/00_process/skills_catalog.md` を参照。
+
+| ID | Trigger | Purpose |
+|----|---------|---------|
+| `Skill.Read_Contract_First` | 新タスク開始時 | AGENTS.md と process.md を読み、制約を把握 |
+| `Skill.DocDD_Spec_First` | 機能/アーキ変更時 | Spec/Plan/Tasks を先に作成してから実装 |
+| `Skill.Minimize_Diff` | CI失敗/レビュー指摘時 | 原因を1つに絞り最小差分に収束 |
+| `Skill.Fix_CI_Fast` | contract failing | 依存→設定→環境の順で切り分け、3ループで止める |
+| `Skill.Policy_Docs_Drift` | コード変更時 | 必要なdocs更新を同PRで実施 |
+| `Skill.Review_As_Staff` | Reviewer起動時 | DocDDリンク確認、NFR観点、rollback妥当性 |
+| `Skill.DevContainer_Safe_Mode` | firewall/permission問題時 | allowlist確認、safeプロファイル維持 |
+
+---
+
+## Autonomy Configuration
+
+エージェントの自律動作に関する設定。
+
+| Setting | Value | Description |
+|---------|-------|-------------|
+| `risk_profile` | `safe` | 危険操作は必ず確認を求める |
+| `allow_auto_commit` | `true` | 自動コミット許可 |
+| `allow_auto_pr` | `true` | 自動PR作成許可 |
+| `dangerously_skip_permissions` | `false` | 危険なpermission skip禁止 |
+
+**safe モード**: 自動実行はするが、以下は明示承認が必要
+- force push
+- main/master への直接 push
+- 既存ファイルの削除
+- セキュリティ設定の変更
+
+---
+
+## Related Documents
+
+- Agent Operating Model: `docs/00_process/agent_operating_model.md`
+- Skills Catalog: `docs/00_process/skills_catalog.md`
+- Agent Prompts: `prompts/agents/`
+- Skill Prompts: `prompts/skills/`
+
