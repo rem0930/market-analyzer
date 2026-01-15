@@ -1,0 +1,25 @@
+{
+  "name": "Google Apps Script (clasp + TypeScript)",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:1",
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "pucelle.vscode-css-navigation"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
+        }
+      }
+    }
+  },
+  "postCreateCommand": "npm install && npm install -g @google/clasp",
+  "remoteUser": "node"
+}
