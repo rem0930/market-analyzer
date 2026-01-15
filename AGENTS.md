@@ -64,22 +64,56 @@ Stack Pack は必ず contract scripts を提供すること。
 
 ---
 
+## Git / Branch / Commit Rules
+
+### ブランチ命名
+
+| Pattern | 例 |
+|---------|-----|
+| `feat/<issue>-<slug>` | `feat/GH-123-auth-token` |
+| `fix/<issue>-<slug>` | `fix/login-null-pointer` |
+| `docs/<slug>` | `docs/api-reference` |
+| `chore/<slug>` | `chore/update-deps` |
+
+### Conventional Commits（必須）
+
+```
+<type>(<scope>): <subject>
+```
+
+| Type | 用途 |
+|------|------|
+| `feat` | 新機能 |
+| `fix` | バグ修正 |
+| `docs` | ドキュメントのみ |
+| `refactor` | リファクタリング |
+| `test` | テスト追加・修正 |
+| `chore` | その他 |
+| `build` | ビルド・依存関係 |
+| `ci` | CI 設定 |
+
+**ルール:**
+- `subject` は命令形（add, fix, update）
+- 末尾にピリオド不要
+- 50-72 文字目安
+
+---
+
 ## PR Rules
 
 1. **PR テンプレの該当項目を埋める**
    - Spec / Plan / Impact / AC / Test / Release
 
-2. **Conventional Commits を推奨**
-   ```
-   feat: 新機能
-   fix: バグ修正
-   docs: ドキュメントのみ
-   refactor: リファクタリング
-   test: テスト追加・修正
-   chore: その他
-   ```
+2. **PR タイトルは Conventional Commits 形式**
+   - squash merge で最終コミットになる
+   - 例: `feat(auth): add token rotation`
 
-3. **CI が落ちている状態で完了扱いにしない**
+3. **DocDD リンクを含める**
+   - Spec: `.specify/specs/<id>/spec.md`
+   - Plan: `.specify/specs/<id>/plan.md`
+   - ADR: `docs/02_architecture/adr/<id>.md`
+
+4. **CI が落ちている状態で完了扱いにしない**
 
 ---
 

@@ -1,0 +1,37 @@
+name: Policy
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  docdd:
+    name: DocDD Policy Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check PR contract (DocDD)
+        run: |
+          chmod +x tools/policy/check_pr_contract.sh
+          bash tools/policy/check_pr_contract.sh
+
+  codeowners:
+    name: CODEOWNERS Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check CODEOWNERS syntax
+        run: |
+          if [ -f .github/CODEOWNERS ]; then
+            echo "CODEOWNERS file exists"
+            # Basic syntax check: no empty owners
+            if grep -E "^[^#].*[[:space:]]+$" .github/CODEOWNERS; then
+              echo "ERROR: CODEOWNERS has lines with missing owners"
+              exit 1
+            fi
+            echo "CODEOWNERS syntax OK"
+          else
+            echo "No CODEOWNERS file found"
+          fi
