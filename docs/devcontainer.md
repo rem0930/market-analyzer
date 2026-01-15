@@ -106,6 +106,39 @@ gh auth status
 - `.devcontainer/init-gh-token.sh` - トークン取得スクリプト
 - `.devcontainer/.env.devcontainer` - 生成されるenv ファイル（gitignore済み）
 
+### SSH Agent Forwarding
+
+ホストマシンの SSH 鍵をコンテナ内で使用して `git push` できます。
+
+**前提条件（ホストで実行）:**
+
+```bash
+# SSH agent に鍵が登録されているか確認
+ssh-add -l
+
+# もし "The agent has no identities." と出たら鍵を追加
+# macOS の場合
+ssh-add --apple-use-keychain ~/.ssh/id_ed25519
+# または
+ssh-add ~/.ssh/id_rsa
+```
+
+**コンテナ内での確認:**
+
+```bash
+# SSH agent が転送されているか確認
+ssh-add -l
+
+# GitHub への接続テスト
+ssh -T git@github.com
+```
+
+**仕組み:**
+
+- ホストの `SSH_AUTH_SOCK` をコンテナにマウント
+- コンテナ内の `SSH_AUTH_SOCK` 環境変数でソケットを参照
+- SSH 鍵自体はホストにあり、コンテナには転送されない（セキュア）
+
 ## ファイアウォール
 
 ### モード
