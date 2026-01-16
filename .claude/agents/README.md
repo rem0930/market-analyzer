@@ -49,8 +49,15 @@ model: "claude-3-5-sonnet-20241022"
 tools: ["read", "write", "edit", "bash"]
 ---
 
-# エージェントのプロンプト内容
+<!-- 
+  This file is a Claude Code sub-agent configuration.
+  The canonical agent prompt is in: prompts/agents/<agent>.md
+-->
+
+{{file:prompts/agents/<agent>.md}}
 ```
+
+**重要**: `.claude/agents/` のファイルは YAML フロントマターのみを含む軽量ラッパーです。実際のエージェントプロンプトは `prompts/agents/` に配置されており、`{{file:...}}` 構文で参照されます。これにより二重管理を避けています。
 
 ### フィールド説明
 
@@ -101,14 +108,14 @@ tools: ["read", "write", "edit", "bash"]
 
 ### 新しいサブエージェントの追加
 
-1. このディレクトリに新しい `.md` ファイルを作成
-2. YAML フロントマターで設定を定義
-3. プロンプト内容を記述
+1. まず `prompts/agents/` に完全なエージェントプロンプトを作成
+2. `.claude/agents/` に YAML フロントマター付きのラッパーファイルを作成
+3. `{{file:prompts/agents/<agent>.md}}` で参照
 4. Claude を再起動して反映
 
 ### 既存エージェントの編集
 
-各 `.md` ファイルを直接編集して、プロンプトやツールセットを調整できます。
+`prompts/agents/` のファイルを編集してください。`.claude/agents/` のファイルは YAML フロントマター（name, description, model, tools）のみを編集します。
 
 ## 関連ドキュメント
 

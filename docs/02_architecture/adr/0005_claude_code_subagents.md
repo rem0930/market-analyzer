@@ -30,7 +30,7 @@
 
 ### ファイル構造
 
-各サブエージェントは以下の構造を持つ：
+各サブエージェントは軽量ラッパーファイルとして構成される：
 
 ```yaml
 ---
@@ -40,9 +40,18 @@ model: "claude-3-5-sonnet-20241022"
 tools: ["read", "write", "edit"]
 ---
 
-# エージェントのプロンプト内容
-（既存の prompts/agents/ の内容をベースに作成）
+<!-- 
+  This file is a Claude Code sub-agent configuration.
+  The canonical agent prompt is in: prompts/agents/<agent>.md
+-->
+
+{{file:prompts/agents/<agent>.md}}
 ```
+
+**重要**: `.claude/agents/` は YAML フロントマターのみを含む軽量ラッパー。実際のプロンプトは `prompts/agents/` が canonical source として管理される。これにより：
+- 二重管理を回避
+- `prompts/agents/` を他の AI ツール（GitHub Copilot 等）と共有
+- Claude Code 固有の設定（YAML frontmatter）のみを `.claude/agents/` で管理
 
 ### .gitignore の更新
 
@@ -70,19 +79,20 @@ tools: ["read", "write", "edit"]
 - ✅ **自動化の強化**: description に基づく自動ルーティングにより、手動でエージェントを選択する必要がなくなる
 - ✅ **セキュリティ向上**: 各エージェントに必要最小限のツールのみを許可
 - ✅ **並列実行**: 複数のサブエージェントを同時に起動して効率化
-- ✅ **既存資産の活用**: `prompts/agents/` の内容を再利用できる
+- ✅ **既存資産の活用**: `prompts/agents/` の内容を `{{file:...}}` 構文で参照し、二重管理を回避
+- ✅ **軽量な設定**: `.claude/agents/` は YAML フロントマターのみの薄いラッパー
 
 ### Negative
 
-- ⚠️ **学習コスト**: 開発者が Claude Code のサブエージェント機能を理解する必要がある
-- ⚠️ **設定の二重管理**: `prompts/agents/` と `.claude/agents/` の両方を維持
+- ⚠️ **学習コスト**: 開発者が Claude Code のサブエージェント機能と `{{file:...}}` 構文を理解する必要がある
+- ⚠️ **設定の分散**: YAML 設定は `.claude/agents/`、プロンプトは `prompts/agents/` と分散
 - ⚠️ **Claude Code 依存**: この機能は Claude Code 固有のため、他の AI エージェントでは利用できない
 
 ### Mitigations
 
-- 📚 `.claude/agents/README.md` に詳細な使用方法を記載
-- 🔄 `prompts/agents/` を canonical とし、`.claude/agents/` はその変換として位置付ける
-- 🌐 GitHub Copilot 等の他のエージェントは引き続き `prompts/agents/` を参照
+- 📚 `.claude/agents/README.md` に詳細な使用方法とファイル参照の仕組みを記載
+- 🔄 `prompts/agents/` を canonical とし、`.claude/agents/` は YAML 設定のみを管理
+- 🌐 GitHub Copilot 等の他のエージェントは引き続き `prompts/agents/` を直接参照
 
 ## Alternatives Considered
 
