@@ -23,13 +23,5 @@
     "orval": "^7.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.3.0"
-  },
-  "peerDependencies": {
-    "react": ">=18.0.0"
-  },
-  "peerDependenciesMeta": {
-    "react": {
-      "optional": true
-    }
   }
 }

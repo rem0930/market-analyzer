@@ -1,0 +1,34 @@
+/**
+ * @what 認証ドメインのエクスポート
+ */
+
+export {
+  AuthUserId,
+  PasswordHash,
+  AuthUser,
+  AuthUserRegisteredEvent,
+  PasswordChangedEvent,
+  type CreateAuthUserParams,
+} from './auth-user.js';
+
+export type {
+  AuthUserRepository,
+  AuthUserRepositoryError,
+} from './auth-user-repository.js';
+
+export {
+  RefreshTokenId,
+  TokenHash,
+  RefreshToken,
+  type CreateRefreshTokenParams,
+} from './refresh-token.js';
+
+export type { RefreshTokenRepository } from './refresh-token-repository.js';
+
+export {
+  PasswordResetTokenId,
+  PasswordResetToken,
+  type CreatePasswordResetTokenParams,
+} from './password-reset-token.js';
+
+export type { PasswordResetTokenRepository } from './password-reset-token-repository.js';
