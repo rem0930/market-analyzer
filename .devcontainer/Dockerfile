@@ -4,11 +4,11 @@ ARG TZ
 ENV TZ="$TZ"
 
 ARG CLAUDE_CODE_VERSION=latest
+ARG PNPM_VERSION=9.15.0
 
 # ==============================================================================
-# Base devcontainer: Development tools + Firewall capabilities
-# NOTE: Language/Framework runtimes should be added via stack-specific addons,
-#       not in this base Dockerfile.
+# Node.js Monorepo Development Container
+# Optimized for pnpm workspace with TypeScript/React projects
 # ==============================================================================
 
 # Install base development tools and firewall dependencies
@@ -36,6 +36,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   nano \
   vim \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Enable corepack and install pnpm
+RUN corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
 
 # Ensure default node user has access to /usr/local/share
 RUN mkdir -p /usr/local/share/npm-global && \
@@ -71,6 +74,11 @@ USER node
 # Install global npm packages
 ENV NPM_CONFIG_PREFIX=/usr/local/share/npm-global
 ENV PATH=$PATH:/usr/local/share/npm-global/bin
+
+# pnpm store directory for monorepo optimization
+ENV PNPM_HOME=/home/node/.local/share/pnpm
+ENV PATH=$PNPM_HOME:$PATH
+RUN mkdir -p $PNPM_HOME
 
 # Set zsh as default shell
 ENV SHELL=/bin/zsh

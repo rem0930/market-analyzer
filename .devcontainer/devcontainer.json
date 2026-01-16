@@ -1,12 +1,14 @@
 {
-  "name": "Secure Claude Code Sandbox",
+  "name": "Node.js Monorepo Development",
   "build": {
     "dockerfile": "Dockerfile",
     "args": {
       "TZ": "${localEnv:TZ:Asia/Tokyo}",
       "CLAUDE_CODE_VERSION": "latest",
       "GIT_DELTA_VERSION": "0.18.2",
-      "ZSH_IN_DOCKER_VERSION": "1.2.0"
+      "ZSH_IN_DOCKER_VERSION": "1.2.0",
+      "PNPM_VERSION": "9.15.0",
+      "NODE_VERSION": "20"
     }
   },
   "features": {
@@ -33,10 +35,32 @@
   "customizations": {
     "vscode": {
       "extensions": [
+        // AI & Collaboration
         "anthropic.claude-code",
         "eamodio.gitlens",
+        // Code Quality
         "EditorConfig.EditorConfig",
-        "streetsidesoftware.code-spell-checker"
+        "streetsidesoftware.code-spell-checker",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        // TypeScript & JavaScript
+        "ms-vscode.vscode-typescript-next",
+        // React & Frontend
+        "dsznajder.es7-react-js-snippets",
+        "styled-components.vscode-styled-components",
+        // API Development
+        "42Crunch.vscode-openapi",
+        "Arjun.swagger-viewer",
+        // Testing
+        "vitest.explorer",
+        // Utilities
+        "christian-kohler.path-intellisense",
+        "christian-kohler.npm-intellisense",
+        "mikestead.dotenv",
+        "usernamehw.errorlens",
+        "wayou.vscode-todo-highlight",
+        // Docker
+        "ms-azuretools.vscode-docker"
       ],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "zsh",
@@ -48,6 +72,48 @@
           "zsh": {
             "path": "zsh"
           }
+        },
+        // Editor settings
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit",
+          "source.organizeImports": "explicit"
+        },
+        // TypeScript settings
+        "typescript.preferences.importModuleSpecifier": "relative",
+        "typescript.updateImportsOnFileMove.enabled": "always",
+        "typescript.tsdk": "projects/node_modules/typescript/lib",
+        // ESLint settings
+        "eslint.workingDirectories": [
+          {
+            "mode": "auto"
+          }
+        ],
+        "eslint.validate": [
+          "javascript",
+          "javascriptreact",
+          "typescript",
+          "typescriptreact"
+        ],
+        // File associations
+        "files.associations": {
+          "*.css": "css",
+          "*.scss": "scss"
+        },
+        // Search exclusions for monorepo
+        "search.exclude": {
+          "**/node_modules": true,
+          "**/dist": true,
+          "**/build": true,
+          "**/.next": true,
+          "**/coverage": true,
+          "pnpm-lock.yaml": true
+        },
+        "files.watcherExclude": {
+          "**/node_modules/**": true,
+          "**/dist/**": true,
+          "**/.next/**": true
         }
       }
     }
@@ -56,17 +122,20 @@
   "mounts": [
     "source=devcontainer-bashhistory-${devcontainerId},target=/commandhistory,type=volume",
     "source=devcontainer-claude-config-${devcontainerId},target=/home/node/.claude,type=volume",
+    "source=devcontainer-pnpm-store-${devcontainerId},target=/home/node/.local/share/pnpm,type=volume",
     "source=${localEnv:SSH_AUTH_SOCK},target=/ssh-agent,type=bind"
   ],
   "containerEnv": {
     "CLAUDE_CONFIG_DIR": "/home/node/.claude",
     "DEVCONTAINER_FIREWALL_MODE": "strict",
     "POWERLEVEL9K_DISABLE_GITSTATUS": "true",
-    "SSH_AUTH_SOCK": "/ssh-agent"
+    "SSH_AUTH_SOCK": "/ssh-agent",
+    "PNPM_HOME": "/home/node/.local/share/pnpm",
+    "npm_config_store-dir": "/home/node/.local/share/pnpm/store"
   },
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
   "workspaceFolder": "/workspace",
-  "postCreateCommand": "./tools/git-hooks/install.sh",
+  "postCreateCommand": "cd /workspace/projects && pnpm install --frozen-lockfile && cd /workspace && ./tools/git-hooks/install.sh",
   "postStartCommand": "sudo /usr/local/bin/init-firewall.sh && gh auth setup-git && git config --global core.editor vim && ./tools/worktree/ensure-worktree.sh || true",
   "waitFor": "postStartCommand"
 }
