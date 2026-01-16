@@ -1,0 +1,35 @@
+{
+  "name": "@monorepo/api-contract",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "OpenAPI definitions and generated TypeScript clients",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts",
+    "typecheck": "tsc --noEmit",
+    "openapi:generate": "orval",
+    "openapi:check": "orval && git diff --exit-code src/generated || (echo 'Error: Generated files are out of date. Run pnpm openapi:generate' && exit 1)"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "orval": "^7.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  }
+}
