@@ -6,11 +6,8 @@ const nextConfig = {
   // Enable transpile packages from workspace
   transpilePackages: ['@monorepo/api-contract'],
 
-  // Experimental features
-  experimental: {
-    // Enable typed routes
-    typedRoutes: true,
-  },
+  // Output mode for Docker deployment
+  output: 'standalone',
 };
 
 module.exports = nextConfig;

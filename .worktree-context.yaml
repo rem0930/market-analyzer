@@ -1,0 +1,24 @@
+# Worktree Context
+# Generated: 2026-01-16T22:03:36+09:00
+
+task_id: "unknown"
+parent_agent: "orchestrator"
+assigned_agent: "implementer"
+branch: "feat/login"
+worktree_path: "/Users/matsuoka/ghq/github.com/matsuokah/vibecoding-repository-template/worktrees/feat-login"
+
+# Context references (to be filled by agent)
+context:
+  spec: ""
+  plan: ""
+  adr: ""
+
+# Success criteria
+success_criteria:
+  - "contract test passes"
+  - "docs updated if needed"
+
+# Completion callback
+on_complete:
+  notify: "orchestrator"
+  action: "report-status"

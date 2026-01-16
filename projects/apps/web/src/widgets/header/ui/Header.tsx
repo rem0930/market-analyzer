@@ -3,11 +3,13 @@
  * @segment header
  * @what ヘッダー UI コンポーネント
  */
+import Link from 'next/link';
+
 export function Header() {
   return (
     <header>
       <nav>
-        <a href="/">Home</a>
+        <Link href="/">Home</Link>
       </nav>
     </header>
   );
