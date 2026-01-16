@@ -63,11 +63,9 @@ validate_agent() {
 # Generate worktree path
 get_worktree_path() {
     local branch="$1"
-    local repo_name
-    repo_name=$(basename "${REPO_ROOT}")
     local safe_branch
     safe_branch=$(echo "$branch" | sed 's/\//-/g')
-    echo "$(dirname "${REPO_ROOT}")/${repo_name}-${safe_branch}"
+    echo "${REPO_ROOT}/worktrees/${safe_branch}"
 }
 
 # Allocate port range for worktree
@@ -84,8 +82,8 @@ get_next_worktree_id() {
     mkdir -p "${STATE_DIR}"
     local max_id=0
     if [[ -d "${STATE_DIR}" ]]; then
-        for f in "${STATE_DIR}"/*.yaml 2>/dev/null; do
-            if [[ -f "$f" ]]; then
+        for f in "${STATE_DIR}"/*.yaml; do
+            if [[ -f "$f" ]] 2>/dev/null; then
                 local id
                 id=$(grep -E "^worktree_id:" "$f" 2>/dev/null | awk '{print $2}' || echo "0")
                 if [[ "$id" -gt "$max_id" ]]; then
