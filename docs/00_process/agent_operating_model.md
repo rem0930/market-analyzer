@@ -55,6 +55,20 @@ Spec → Plan → Tasks → Implement → QA → Release
 
 詳細なプロンプトは `prompts/agents/` を参照。
 
+### Claude Code Sub-Agents
+
+Claude Code 使用時は、上記エージェントがサブエージェントとして自動的に利用可能になります。
+
+**設定場所**: `.claude/agents/*.md`
+
+各サブエージェントは：
+- 独立したコンテキストウィンドウを持つ
+- 専用のシステムプロンプトで動作
+- 制限されたツールセットで安全に実行
+- タスクの種類に応じて自動的に起動
+
+**詳細**: `.claude/agents/README.md` を参照
+
 ---
 
 ## Skills (再利用可能な技能)

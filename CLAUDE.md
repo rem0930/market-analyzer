@@ -6,6 +6,48 @@ If anything conflicts, follow `AGENTS.md`.
 
 ---
 
+## Sub-Agents 🤖
+
+Claude Code には、タスクに応じて自動起動する専用サブエージェントが設定されています。
+
+### 利用可能なサブエージェント
+
+| エージェント | 用途 | 起動例 |
+|-------------|------|-------|
+| 🛠️ Implementer | 機能実装、バグ修正 | "ユーザー認証を実装して" |
+| 🏗️ Architect | ADR作成、設計 | "キャッシュ戦略のADRを作成" |
+| 🧪 QA Tester | テスト計画、品質保証 | "AC-001のテスト計画を作成" |
+| 👀 Code Reviewer | PRレビュー | "このPRをレビューして" |
+| 🎨 Product Designer | UX/UI設計 | "ログイン画面のUXフローを設計" |
+| 📋 Product Manager | 要件定義、Spec作成 | "ユーザー登録機能のSpecを作成" |
+
+### 自動ルーティング
+
+Claude は自動的に適切なサブエージェントを選択します：
+
+```
+👤 User: "PRをレビューしてください"
+🤖 Claude: Code Reviewer サブエージェントを起動...
+```
+
+### 手動起動
+
+特定のサブエージェントを明示的に呼び出すこともできます：
+
+```
+/agent Implementer ログイン機能を実装
+```
+
+### サブエージェントの利点
+
+1. **コンテキスト分離**: 各タスクが独立したコンテキストで実行
+2. **専門性**: 役割に特化したプロンプトとツールセット
+3. **効率化**: 並列実行により複数タスクを同時進行可能
+
+詳細は `.claude/agents/README.md` を参照してください。
+
+---
+
 ## Autonomy Configuration
 
 | Setting | Value |
