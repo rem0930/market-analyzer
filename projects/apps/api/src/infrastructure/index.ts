@@ -38,3 +38,6 @@ export {
   CryptoTokenHashService,
   type TokenHashService,
 } from './services/token-hash-service.js';
+
+// Health checkers
+export { PrismaDatabaseHealthChecker } from './health/index.js';

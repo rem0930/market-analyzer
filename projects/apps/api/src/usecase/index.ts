@@ -49,3 +49,11 @@ export {
   type GetCurrentUserOutput,
   type GetCurrentUserError,
 } from './auth/index.js';
+
+// Health usecases
+export {
+  DeepPingUseCase,
+  type DeepPingOutput,
+  type HealthCheck,
+  type DatabaseHealthChecker,
+} from './health/index.js';

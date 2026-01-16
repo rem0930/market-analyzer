@@ -25,6 +25,8 @@ import {
   BcryptPasswordService,
   JwtServiceImpl,
   CryptoTokenHashService,
+  // Health checkers
+  PrismaDatabaseHealthChecker,
 } from '../infrastructure/index.js';
 
 import {
@@ -38,11 +40,13 @@ import {
   ResetPasswordUseCase,
   GetCurrentUserUseCase,
   ConsoleEmailService,
+  DeepPingUseCase,
 } from '../usecase/index.js';
 
 import {
   UserController,
   AuthController,
+  DeepPingController,
   AuthMiddleware,
   SecurityMiddleware,
   CorsMiddleware,
@@ -144,6 +148,14 @@ export function createAppContext(): RouteContext {
   const getCurrentUserUseCase = new GetCurrentUserUseCase(authUserRepository);
 
   // ============================================
+  // UseCases - Health
+  // ============================================
+  const databaseHealthChecker = config.usePrisma
+    ? new PrismaDatabaseHealthChecker(prisma)
+    : null;
+  const deepPingUseCase = new DeepPingUseCase(databaseHealthChecker);
+
+  // ============================================
   // Middleware (validation needs to be before controllers)
   // ============================================
   const validationMiddleware = new ValidationMiddleware();
@@ -152,6 +164,7 @@ export function createAppContext(): RouteContext {
   // Controllers
   // ============================================
   const userController = new UserController(createUserUseCase, getUserUseCase);
+  const deepPingController = new DeepPingController(deepPingUseCase);
   const authController = new AuthController(
     registerUseCase,
     loginUseCase,
@@ -177,6 +190,7 @@ export function createAppContext(): RouteContext {
   return {
     userController,
     authController,
+    deepPingController,
     authMiddleware,
     securityMiddleware,
     corsMiddleware,
