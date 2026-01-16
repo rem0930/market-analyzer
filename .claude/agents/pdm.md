@@ -1,7 +1,7 @@
 ---
 name: "Product Manager 📋"
 description: "Use for product planning, requirements definition, or spec creation. Specializes in defining product identity, PRD, and acceptance criteria."
-model: "claude-3-5-sonnet-20241022"
+model: "opus"
 tools: ["read", "write", "edit", "grep", "glob"]
 ---
 

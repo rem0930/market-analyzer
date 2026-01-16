@@ -1,7 +1,7 @@
 ---
 name: "Architect 🏗️"
 description: "Use for architectural decisions, ADR creation, or system design. Specializes in documenting technical decisions and maintaining architectural integrity."
-model: "claude-3-5-sonnet-20241022"
+model: "opus"
 tools: ["read", "write", "edit", "grep", "glob"]
 ---
 

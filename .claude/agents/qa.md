@@ -1,7 +1,7 @@
 ---
 name: "QA Tester 🧪"
 description: "Use for test planning, test case design, or quality assurance. Specializes in creating comprehensive test plans from acceptance criteria."
-model: "claude-3-5-sonnet-20241022"
+model: "sonnet"
 tools: ["read", "write", "edit", "bash", "grep", "glob"]
 ---
 

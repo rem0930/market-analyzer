@@ -8,14 +8,14 @@
 
 ## サブエージェント一覧
 
-| エージェント | 用途 | モデル |
-|-------------|------|-------|
-| 🛠️ **Implementer** | 機能実装、バグ修正、コード変更 | Sonnet |
-| 🏗️ **Architect** | アーキテクチャ決定、ADR作成、システム設計 | Sonnet |
-| 🧪 **QA Tester** | テスト計画、テストケース設計、品質保証 | Sonnet |
-| 👀 **Code Reviewer** | PRレビュー、コードレビュー、品質チェック | Sonnet |
-| 🎨 **Product Designer** | UX/UI設計、ユーザーフロー、デザイン要件 | Sonnet |
-| 📋 **Product Manager** | プロダクト企画、要件定義、Spec作成 | Sonnet |
+| エージェント | 用途 | モデル | 選定理由 |
+| ----------- | ---- | ----- | -------- |
+| 🏗️ **Architect** | アーキテクチャ決定、ADR作成、システム設計 | **Opus** | 複雑な設計判断とトレードオフ分析に高度な推論が必要 |
+| 📋 **Product Manager** | プロダクト企画、要件定義、Spec作成 | **Opus** | 要件定義やビジネス判断には深い理解力が必要 |
+| 🛠️ **Implementer** | 機能実装、バグ修正、コード変更 | Sonnet | 実装タスクにはバランスの取れた能力で十分 |
+| 👀 **Code Reviewer** | PRレビュー、コードレビュー、品質チェック | Sonnet | コード分析にはSonnetの能力で十分 |
+| 🧪 **QA Tester** | テスト計画、テストケース設計、品質保証 | Sonnet | テスト設計にはSonnetで十分 |
+| 🎨 **Product Designer** | UX/UI設計、ユーザーフロー、デザイン要件 | **Haiku** | ドキュメント作成中心の軽量タスク向け |
 
 ## 使い方
 
@@ -45,7 +45,7 @@ PRをレビューしてください
 ---
 name: "エージェント名 🔧"
 description: "いつこのエージェントを使うか"
-model: "claude-3-5-sonnet-20241022"
+model: "sonnet"  # または "opus", "haiku"
 tools: ["read", "write", "edit", "bash"]
 ---
 

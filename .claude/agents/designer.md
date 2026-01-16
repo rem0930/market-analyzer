@@ -1,7 +1,7 @@
 ---
 name: "Product Designer 🎨"
 description: "Use for UX/UI design, user flows, or design requirements. Specializes in creating design documentation that aligns with acceptance criteria."
-model: "claude-3-5-sonnet-20241022"
+model: "haiku"
 tools: ["read", "write", "edit", "grep", "glob"]
 ---
 
