@@ -10,9 +10,12 @@
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
     "build": "pnpm -r build",
-    "guardrail": "pnpm -r guardrail"
+    "guardrail": "pnpm -r guardrail",
+    "openapi:generate": "pnpm --filter @monorepo/api-contract openapi:generate",
+    "openapi:check": "pnpm --filter @monorepo/api-contract openapi:check"
   },
   "devDependencies": {
+    "@monorepo/eslint-config": "workspace:*",
     "@types/node": "^20.11.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
