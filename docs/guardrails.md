@@ -203,26 +203,70 @@ OpenAPI 定義から生成された型のみを使用してください。
 
 ---
 
-## 6. CI チェック項目
+## 6. カスタムガードレール（@monorepo/guardrails）
+
+ESLint では検出できないアーキテクチャ違反をカスタムガードレールで検査します。
+
+### インストール・実行
+
+```bash
+cd projects/packages/guardrails
+pnpm guardrail           # 全ガードレールを実行
+pnpm guardrail --list    # 利用可能なガードレール一覧
+pnpm guardrail --guard=fsd-public-api  # 特定のガードレールのみ実行
+```
+
+### Clean Architecture (API) 用ガードレール
+
+| Guard ID | 検査内容 |
+|----------|----------|
+| `repository-result` | リポジトリが `Result<T>` を返しているか |
+| `domain-event-causation` | ドメインイベントに因果メタ（causationId/correlationId/emittedAt）があるか |
+| `openapi-route-coverage` | OpenAPI 仕様のルートが実装されているか |
+| `value-object-immutability` | Value Object の不変性が保たれているか |
+| `usecase-dependency` | UseCase が禁止されたレイヤーを import していないか |
+
+### Feature-Sliced Design (Web) 用ガードレール
+
+| Guard ID | 検査内容 |
+|----------|----------|
+| `fsd-public-api` | スライスが index.ts で公開 API を持っているか |
+| `fsd-layer-dependency` | FSD レイヤー間の依存方向が正しいか |
+| `fsd-openapi-coverage` | OpenAPI 仕様と shared/api/generated の整合性 |
+
+### CI 統合
+
+```yaml
+- name: Run guardrails
+  run: |
+    cd projects/packages/guardrails
+    pnpm guardrail
+```
+
+---
+
+## 8. CI チェック項目
 
 | ジョブ | 検出する違反 |
 |--------|-------------|
 | `lint` | レイヤー境界違反、深い import、禁止 import |
 | `typecheck` | 型エラー |
+| `guardrail` | アーキテクチャ違反（Result、因果メタ、依存方向） |
 | `openapi:check` | 生成物未更新 |
 
 ### ローカルでの確認
 
 ```bash
 cd projects
-pnpm lint        # ESLint でガードレール違反を検出
-pnpm typecheck   # 型チェック
+pnpm lint           # ESLint でガードレール違反を検出
+pnpm typecheck      # 型チェック
+pnpm guardrail      # カスタムガードレール検査
 pnpm openapi:check  # 生成物が最新か確認
 ```
 
 ---
 
-## 7. 違反例と正しい例のまとめ
+## 9. 違反例と正しい例のまとめ
 
 ### レイヤー依存違反
 
@@ -267,19 +311,20 @@ Error: Generated files are out of date. Run pnpm openapi:generate
 
 ---
 
-## 8. 設定ファイル一覧
+## 10. 設定ファイル一覧
 
 | ファイル | 用途 |
 |---------|------|
 | `projects/.eslintrc.cjs` | モノレポ共通 ESLint 設定 |
 | `projects/apps/web/.eslintrc.cjs` | FSD 用 ESLint 設定 |
 | `projects/packages/eslint-config/` | 共通 ESLint 設定パッケージ |
+| `projects/packages/guardrails/` | カスタムガードレール（Clean Architecture + FSD） |
 | `projects/packages/api-contract/openapi.yaml` | OpenAPI 定義 |
 | `projects/packages/api-contract/orval.config.ts` | 生成ツール設定 |
 
 ---
 
-## 9. トラブルシューティング
+## 11. トラブルシューティング
 
 ### 「境界違反」エラーが出る
 

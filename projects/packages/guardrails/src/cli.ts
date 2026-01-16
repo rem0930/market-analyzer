@@ -18,6 +18,9 @@ import {
   checkOpenapiRouteCoverage,
   checkValueObjectImmutability,
   checkUsecaseDependency,
+  checkFsdPublicApi,
+  checkFsdLayerDependency,
+  checkFsdOpenapiCoverage,
 } from './guards/index.js';
 
 interface GuardDefinition {
@@ -31,6 +34,7 @@ interface GuardDefinition {
  * 新しいガードレールはここに追加
  */
 const GUARDS: GuardDefinition[] = [
+  // === Clean Architecture (API) 用 ===
   {
     id: 'repository-result',
     description: 'リポジトリがResult<T>を返しているか検査',
@@ -55,6 +59,22 @@ const GUARDS: GuardDefinition[] = [
     id: 'usecase-dependency',
     description: 'UseCaseが禁止されたレイヤーをimportしていないか検査',
     exec: checkUsecaseDependency,
+  },
+  // === Feature-Sliced Design (Web) 用 ===
+  {
+    id: 'fsd-public-api',
+    description: 'FSDスライスがindex.tsで公開APIを持っているか検査',
+    exec: checkFsdPublicApi,
+  },
+  {
+    id: 'fsd-layer-dependency',
+    description: 'FSDレイヤー間の依存方向を検査',
+    exec: checkFsdLayerDependency,
+  },
+  {
+    id: 'fsd-openapi-coverage',
+    description: 'OpenAPI仕様とshared/api/generatedの整合性を検査',
+    exec: checkFsdOpenapiCoverage,
   },
 ];
 
