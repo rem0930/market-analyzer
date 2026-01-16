@@ -244,6 +244,7 @@
 
 | ID | Trigger | Purpose |
 |----|---------|---------|
+| `Skill.Kickoff` | 開発開始時 | Worktree/DevContainer確認、Contract読み込み、DocDD成果物特定 |
 | `Skill.Read_Contract_First` | 新タスク開始時 | AGENTS.md と process.md を読み、制約を把握 |
 | `Skill.DocDD_Spec_First` | 機能/アーキ変更時 | Spec/Plan/Tasks を先に作成してから実装 |
 | `Skill.Minimize_Diff` | CI失敗/レビュー指摘時 | 原因を1つに絞り最小差分に収束 |
