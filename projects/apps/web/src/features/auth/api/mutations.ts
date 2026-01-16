@@ -81,3 +81,36 @@ export function useLogout() {
     },
   });
 }
+
+interface RegisterRequest {
+  email: string;
+  password: string;
+}
+
+interface RegisterResponse {
+  id: string;
+  email: string;
+  createdAt: string;
+}
+
+async function registerApi(data: RegisterRequest): Promise<RegisterResponse> {
+  const config = getConfig();
+  const response = await fetch(`${config.apiBaseUrl}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error: ApiError = await response.json();
+    throw new Error(error.message || 'Registration failed');
+  }
+
+  return response.json();
+}
+
+export function useRegister() {
+  return useMutation({
+    mutationFn: registerApi,
+  });
+}

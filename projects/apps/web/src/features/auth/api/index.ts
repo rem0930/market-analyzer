@@ -4,5 +4,5 @@
  * @what Auth API hooks のエクスポート
  */
 
-export { useLogin, useLogout } from './mutations';
+export { useLogin, useLogout, useRegister } from './mutations';
 export { useCurrentUser } from './queries';
