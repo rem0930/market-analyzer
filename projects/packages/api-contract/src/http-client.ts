@@ -70,12 +70,18 @@ export async function customFetch<T>(
   });
 
   if (!response.ok) {
-    const errorBody = await response.json().catch(() => ({}));
+    const errorBody: unknown = await response.json().catch(() => ({}));
+    const errorData =
+      typeof errorBody === 'object' && errorBody !== null
+        ? (errorBody as Record<string, unknown>)
+        : {};
     throw new NormalizedApiError(
       response.status,
-      errorBody.message || `HTTP Error: ${response.status}`,
-      errorBody.code,
-      errorBody.details
+      typeof errorData.message === 'string'
+        ? errorData.message
+        : `HTTP Error: ${response.status}`,
+      typeof errorData.code === 'string' ? errorData.code : undefined,
+      errorData.details
     );
   }
 

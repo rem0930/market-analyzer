@@ -29,7 +29,6 @@ export async function checkRepositoryResult(rootDir: string): Promise<GuardResul
 
   for (const file of files) {
     const content = fs.readFileSync(file, 'utf-8');
-    const lines = content.split('\n');
 
     // リポジトリインターフェースを含むファイルのみ検査
     if (!REPOSITORY_INTERFACE_PATTERN.test(content)) {

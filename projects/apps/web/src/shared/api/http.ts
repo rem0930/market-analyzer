@@ -41,7 +41,7 @@ export class NormalizedApiError extends Error {
  */
 export async function apiClient<T>(
   path: string,
-  options: RequestInit & ApiClientConfig = {}
+  options: Omit<RequestInit, 'headers'> & ApiClientConfig = {}
 ): Promise<T> {
   const config = getConfig();
   const { baseUrl = config.apiBaseUrl, headers: customHeaders, ...fetchOptions } = options;

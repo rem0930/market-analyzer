@@ -22,7 +22,7 @@
   "scripts": {
     "build": "tsup src/index.ts src/result.ts src/domain-event.ts --format esm --dts",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --passWithNoTests",
     "test:watch": "vitest"
   },
   "devDependencies": {

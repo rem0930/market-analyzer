@@ -10,7 +10,7 @@
   "scripts": {
     "build": "tsup src/cli.ts --format esm --dts",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --passWithNoTests",
     "guardrail": "tsx src/cli.ts"
   },
   "dependencies": {

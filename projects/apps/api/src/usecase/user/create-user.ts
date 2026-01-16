@@ -9,7 +9,7 @@
  * - Result<T>でエラーを明示
  */
 
-import { Result, Email, UUIDIdentifier, type AsyncResult } from '@monorepo/shared';
+import { Result, Email, type AsyncResult } from '@monorepo/shared';
 import { User, UserId, type UserRepository } from '../../domain/index.js';
 
 /**

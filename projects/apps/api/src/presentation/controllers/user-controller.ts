@@ -28,7 +28,10 @@ export class UserController {
       // リクエストボディをパース
       const body = await this.parseJsonBody(req);
 
-      if (!body.email || !body.name) {
+      const email = body.email;
+      const name = body.name;
+
+      if (typeof email !== 'string' || typeof name !== 'string') {
         this.sendError(res, 400, 'Missing required fields: email, name');
         return;
       }
@@ -38,8 +41,8 @@ export class UserController {
 
       // ユースケースを実行
       const result = await this.createUserUseCase.execute({
-        email: body.email,
-        name: body.name,
+        email,
+        name,
         requestId,
       });
 
