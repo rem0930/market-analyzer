@@ -56,6 +56,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+.pnpm-store/
 .npm
 .yarn/*
 !.yarn/patches
@@ -77,6 +78,27 @@ obj/
 *.dll
 *.so
 *.dylib
+
+# TypeScript
+*.tsbuildinfo
+.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# Next.js
+.next/
+.vercel/
+
+# Vite
+.vite/
+
+# ==============================================================================
+# Cache
+# ==============================================================================
+.turbo/
+.eslintcache
+.prettiercache
+.cache/
+*.cache
 
 # ==============================================================================
 # Environment
