@@ -104,12 +104,14 @@ code --folder-uri "vscode-remote://dev-container+$(echo -n "$WORKTREE_PATH" | xx
 2. **タスク種別を判定**
 3. **必要な DocDD 成果物を特定**
 
-| タスク種別   | 必要な成果物                             |
-| ------------ | ---------------------------------------- |
-| 新機能       | Spec + Plan + Tasks + Tests              |
-| アーキ変更   | ADR + Impact Analysis + Migration Plan   |
-| UI 変更      | UI Requirements + AC update              |
-| バグ修正     | Issue link + Tests                       |
+| タスク種別   | 必要な成果物                                           |
+| ------------ | ------------------------------------------------------ |
+| 新機能       | Spec + Plan + **OpenAPI/Tests (先)** + Tasks + Impl    |
+| アーキ変更   | ADR + Impact Analysis + Migration Plan                 |
+| UI 変更      | UI Requirements + AC update                            |
+| バグ修正     | Issue link + **Tests (先)** + Fix                      |
+
+**テストファースト原則**: ユニットテストなき実装は正解がわからない
 
 ---
 
@@ -186,10 +188,13 @@ START
 ### このタスクで必要な DocDD 成果物
 - [ ] Spec (`.specify/specs/<id>/spec.md`)
 - [ ] Plan (`.specify/specs/<id>/plan.md`)
-- [ ] Tests
+- [ ] OpenAPI 仕様 (`docs/02_architecture/api/`) ← API がある場合
+- [ ] Tests (実装前に作成)
 
 ### 次のステップ
 1. Spec を作成: `Skill.DocDD_Spec_First` を実行
+2. API 設計: `Skill.OpenAPI_Contract_First` を実行（API がある場合）
+3. テスト作成: ユニットテストを先に書く
 ```
 
 ### IDE モード（DevContainer 起動案内）
@@ -224,10 +229,13 @@ DevContainer が起動したら、そのウィンドウで再度実行:
 ### このタスクで必要な DocDD 成果物
 - [ ] Spec (`.specify/specs/<id>/spec.md`)
 - [ ] Plan (`.specify/specs/<id>/plan.md`)
-- [ ] Tests
+- [ ] OpenAPI 仕様 (`docs/02_architecture/api/`) ← API がある場合
+- [ ] Tests (実装前に作成)
 
 ### 次のステップ
 1. Spec を作成: `Skill.DocDD_Spec_First` を実行
+2. API 設計: `Skill.OpenAPI_Contract_First` を実行（API がある場合）
+3. テスト作成: ユニットテストを先に書く
 ```
 
 ---
