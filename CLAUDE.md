@@ -31,6 +31,41 @@ If anything conflicts, follow `AGENTS.md`.
 
 ---
 
+## 並列開発環境 (Git Worktree + Traefik)
+
+### 自動起動
+このプロジェクトを開くと `scripts/init-environment.sh` が実行され、環境が自動起動します。
+
+### 手動起動
+```bash
+./scripts/init-environment.sh
+```
+
+### Worktree 作成
+```bash
+git worktree add ../feature-x feature-x
+cd ../feature-x
+# VS Code または Claude Code で開くと自動的に環境が起動
+```
+
+### アクセスURL
+- Frontend: `http://fe.<worktree名>.localhost`
+- Backend: `http://be.<worktree名>.localhost`
+- Traefik Dashboard: `http://localhost:8080`
+
+### 停止
+```bash
+./scripts/down.sh
+```
+
+### 仕組み
+- **ルートリポジトリ**: Traefik のみ起動
+- **Worktree**: Traefik確認 + 開発サービス（frontend/backend）起動
+- 各 worktree は独立した Docker Compose プロジェクトとして管理
+- Traefik により動的なルーティングを実現
+
+---
+
 ## Quick Reference
 
 ```bash
