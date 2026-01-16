@@ -5,81 +5,80 @@
  */
 'use client';
 
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../model/useAuth';
+import { loginSchema, type LoginFormData } from '@/shared/lib/validation';
+import { Button, FormField } from '@/shared/ui';
 
 export function LoginForm() {
   const { isAuthenticated, login, logout, isLoading, error } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const onSubmit = (data: LoginFormData) => {
+    login(data.email, data.password);
+  };
 
   if (isAuthenticated) {
     return (
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
-        <p className="text-lg text-center text-green-600 mb-4">Logged in successfully!</p>
-        <button
-          onClick={logout}
-          className="w-full px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors"
-        >
-          Logout
-        </button>
+        <p className="text-lg text-center text-green-600 mb-4">
+          ログインしました
+        </p>
+        <Button onClick={logout} variant="danger" className="w-full">
+          ログアウト
+        </Button>
       </div>
     );
   }
 
   return (
     <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        login(email, password);
-      }}
+      onSubmit={handleSubmit(onSubmit)}
       className="w-full max-w-md p-6 bg-white rounded-lg shadow-md space-y-4"
     >
-      <h2 className="text-2xl font-semibold text-center text-gray-800">Login</h2>
+      <h2 className="text-2xl font-semibold text-center text-gray-800">
+        ログイン
+      </h2>
 
       {error && (
-        <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md">
+        <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md" role="alert">
           {error}
         </div>
       )}
 
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-          Email
-        </label>
-        <input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@example.com"
-          required
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        />
-      </div>
+      <FormField
+        label="メールアドレス"
+        type="email"
+        placeholder="you@example.com"
+        autoComplete="email"
+        error={errors.email}
+        {...register('email')}
+      />
 
-      <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-          Password
-        </label>
-        <input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Enter your password"
-          required
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        />
-      </div>
+      <FormField
+        label="パスワード"
+        type="password"
+        placeholder="パスワードを入力"
+        autoComplete="current-password"
+        error={errors.password}
+        {...register('password')}
+      />
 
-      <button
+      <Button
         type="submit"
         disabled={isLoading}
-        className="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isLoading ? 'Signing in...' : 'Sign In'}
-      </button>
+        {isLoading ? 'ログイン中...' : 'ログイン'}
+      </Button>
     </form>
   );
 }

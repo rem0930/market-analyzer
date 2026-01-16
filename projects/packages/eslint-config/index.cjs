@@ -32,5 +32,5 @@ module.exports = {
       },
     },
   ],
-  ignorePatterns: ['dist/', 'node_modules/', '.next/', 'generated/'],
+  ignorePatterns: ['dist/', 'node_modules/', '.next/', 'generated/', 'next-env.d.ts'],
 };

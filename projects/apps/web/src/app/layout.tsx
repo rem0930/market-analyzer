@@ -6,6 +6,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import '@/shared/ui/globals.css';
+import { Providers } from './providers';
 
 export const metadata: Metadata = {
   title: 'Web App',
@@ -19,7 +20,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja">
-      <body className="bg-gray-100">{children}</body>
+      <body className="bg-gray-100">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

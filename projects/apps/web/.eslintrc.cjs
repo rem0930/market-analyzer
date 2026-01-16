@@ -52,5 +52,6 @@ module.exports = {
     '.next/',
     'out/',
     'src/shared/api/generated/**/*',
+    'next-env.d.ts',
   ],
 };

@@ -11,11 +11,17 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { UserController } from './controllers/user-controller.js';
 import type { AuthController } from './controllers/auth-controller.js';
 import type { AuthMiddleware } from './middleware/auth-middleware.js';
+import type { SecurityMiddleware } from './middleware/security-middleware.js';
+import type { CorsMiddleware } from './middleware/cors-middleware.js';
+import type { RateLimitMiddleware } from './middleware/rate-limit-middleware.js';
 
 export interface RouteContext {
   userController: UserController;
   authController: AuthController;
   authMiddleware: AuthMiddleware;
+  securityMiddleware: SecurityMiddleware;
+  corsMiddleware: CorsMiddleware;
+  rateLimitMiddleware: RateLimitMiddleware;
 }
 
 /**
@@ -26,7 +32,23 @@ export async function handleRoutes(
   res: ServerResponse,
   context: RouteContext
 ): Promise<void> {
-  const { userController, authController, authMiddleware } = context;
+  const {
+    userController,
+    authController,
+    authMiddleware,
+    securityMiddleware,
+    corsMiddleware,
+    rateLimitMiddleware,
+  } = context;
+
+  // セキュリティヘッダーを全レスポンスに付与
+  securityMiddleware.applyHeaders(res);
+
+  // CORS 処理（プリフライトの場合はここで終了）
+  if (corsMiddleware.handle(req, res)) {
+    return;
+  }
+
   const url = new URL(req.url ?? '/', `http://localhost`);
   const method = req.method ?? 'GET';
   const pathname = url.pathname;
@@ -46,17 +68,19 @@ export async function handleRoutes(
   }
 
   // ============================================
-  // Auth Routes (Public)
+  // Auth Routes (Public) - Rate Limited
   // ============================================
 
   // POST /auth/register
   if (pathname === '/auth/register' && method === 'POST') {
+    if (rateLimitMiddleware.check(req, res)) return;
     await authController.register(req, res);
     return;
   }
 
   // POST /auth/login
   if (pathname === '/auth/login' && method === 'POST') {
+    if (rateLimitMiddleware.check(req, res)) return;
     await authController.login(req, res);
     return;
   }
@@ -69,12 +93,14 @@ export async function handleRoutes(
 
   // POST /auth/forgot-password
   if (pathname === '/auth/forgot-password' && method === 'POST') {
+    if (rateLimitMiddleware.check(req, res)) return;
     await authController.forgotPassword(req, res);
     return;
   }
 
   // POST /auth/reset-password
   if (pathname === '/auth/reset-password' && method === 'POST') {
+    if (rateLimitMiddleware.check(req, res)) return;
     await authController.resetPassword(req, res);
     return;
   }
