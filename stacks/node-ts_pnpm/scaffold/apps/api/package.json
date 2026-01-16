@@ -4,13 +4,16 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "dev:debug": "tsx watch --inspect=0.0.0.0:9229 src/index.ts",
-    "start": "node dist/index.js",
-    "build": "tsup src/index.ts --format esm --dts",
+    "dev": "tsx watch src/presentation/server.ts",
+    "dev:debug": "tsx watch --inspect=0.0.0.0:9229 src/presentation/server.ts",
+    "start": "node dist/presentation/server.js",
+    "build": "tsup src/presentation/server.ts --format esm --dts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@monorepo/shared": "workspace:*"
   },
   "devDependencies": {
     "tsup": "^8.0.0",

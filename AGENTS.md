@@ -257,6 +257,7 @@ DevContainer 起動時に `projects/` が空の場合、自動的に scaffold �
 | `Skill.Review_As_Staff` | Reviewer起動時 | DocDDリンク確認、NFR観点、rollback妥当性 |
 | `Skill.DevContainer_Safe_Mode` | firewall/permission問題時 | allowlist確認、safeプロファイル維持 |
 | `Skill.OpenAPI_Contract_First` | HTTP API設計/実装時 | OpenAPI仕様を先に定義、コード生成活用 |
+| `Skill.Horizontal_Guardrails` | 実装/レビュー時 | 横のガードレールでアーキテクチャ維持 |
 
 ---
 
