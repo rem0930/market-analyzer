@@ -6,21 +6,27 @@
 
 ## Non-negotiables (絶対ルール)
 
-1. **DocDD（ドキュメント駆動）を守る**
+1. **Worktree + ブランチで作業する（main 直接編集禁止）**
+   - すべての変更は専用ブランチで行う（main/master への直接 push 禁止）
+   - `./tools/worktree/spawn.sh <branch-name>` で worktree を作成して作業
+   - 作業完了後は `./tools/worktree/cleanup.sh` でクリーンアップ
+   - 並列作業時は必ず別 worktree を使用（コンフリクト防止）
+
+2. **DocDD（ドキュメント駆動）を守る**
    - Spec / Plan / AC 無しで実装を開始しない
    - 変更時は関連 Docs（Spec / ADR / Impact / AC / TestPlan）も必ず更新する
 
-2. **Golden Commands は Contract 経由で実行**
+3. **Golden Commands は Contract 経由で実行**
    - 直接 `pnpm lint` や `cargo test` を叩かない
    - 必ず `./tools/contract <cmd>` を使う
 
-3. **破壊的変更の禁止**
+4. **破壊的変更の禁止**
    - 既存ファイルを無断で上書きしない（差分・追記・移動で対応）
    - Kickoff の scaffold は `rsync --ignore-existing` で非破壊
 
-4. **CI / DevContainer / Contract が壊れた状態で完了宣言しない**
+5. **CI / DevContainer / Contract が壊れた状態で完了宣言しない**
 
-5. **HTTP API は OpenAPI 仕様を先に定義する**
+6. **HTTP API は OpenAPI 仕様を先に定義する**
    - 手書きで HTTP クライアント/サーバーを実装しない
    - `docs/02_architecture/api/*.yaml` に仕様を配置
    - コード生成ツールでクライアント/スタブを生成

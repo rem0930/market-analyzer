@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-set -euo pipefail
-echo "E2E tests are not applicable for GAS projects (requires manual testing in Google environment)"
-exit 0
