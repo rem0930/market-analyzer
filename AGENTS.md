@@ -6,11 +6,15 @@
 
 ## Non-negotiables (絶対ルール)
 
-1. **Worktree + ブランチで作業する（main 直接編集禁止）**
-   - すべての変更は専用ブランチで行う（main/master への直接 push 禁止）
-   - `./tools/worktree/spawn.sh <branch-name>` で worktree を作成して作業
+1. **Worktree + DevContainer で作業する（main 直接編集禁止）**
+   - すべての変更は専用ブランチ + worktree で行う（main/master への直接 push 禁止）
+   - **作業開始時の必須手順:**
+     1. `./tools/worktree/spawn.sh <branch-name>` で worktree を作成
+     2. 作成された worktree ディレクトリで **DevContainer を起動**してから作業開始
+     3. DevContainer 内で `./tools/contract` コマンドを実行
    - 作業完了後は `./tools/worktree/cleanup.sh` でクリーンアップ
    - 並列作業時は必ず別 worktree を使用（コンフリクト防止）
+   - **DevContainer 外での実装作業は禁止**（環境差異によるCI失敗を防止）
 
 2. **DocDD（ドキュメント駆動）を守る**
    - Spec / Plan / AC 無しで実装を開始しない
@@ -193,6 +197,8 @@
 | FP02 | 実行コマンドの呼び方がバラバラ | `tools/contract` 経由に統一 |
 | FP03 | DevContainer では動くが CI で落ちる | Contract smoke を CI 必須に |
 | FP04 | AGENTS.md と他の instructions が矛盾 | AGENTS.md を canonical に |
+| FP05 | main で直接作業して worktree 未使用 | 作業開始時に必ず worktree 作成 |
+| FP06 | DevContainer 外で作業して環境差異発生 | DevContainer 起動を必須化 |
 
 ---
 
