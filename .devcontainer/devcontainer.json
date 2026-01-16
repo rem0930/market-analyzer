@@ -135,7 +135,7 @@
   },
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
   "workspaceFolder": "/workspace",
-  "postCreateCommand": "cd /workspace/projects && pnpm install --frozen-lockfile && cd /workspace && ./tools/git-hooks/install.sh",
+  "postCreateCommand": "export COREPACK_ENABLE_DOWNLOAD_PROMPT=0 && corepack enable && corepack prepare pnpm --activate && cd /workspace/projects && pnpm install --frozen-lockfile && cd /workspace && ./tools/git-hooks/install.sh",
   "postStartCommand": "sudo /usr/local/bin/init-firewall.sh && gh auth setup-git && git config --global core.editor vim && ./tools/worktree/ensure-worktree.sh || true",
   "waitFor": "postStartCommand"
 }
