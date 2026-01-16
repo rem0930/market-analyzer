@@ -14,6 +14,9 @@ if [[ -z "${cmd}" ]]; then
   echo "  e2e          - E2Eテスト"
   echo "  migrate      - DBマイグレーション"
   echo "  deploy-dryrun - デプロイドライラン"
+  echo "  dev          - 開発サーバー起動（docker-compose）"
+  echo "  dev:stop     - 開発サーバー停止"
+  echo "  dev:logs     - 開発サーバーログ表示"
   exit 2
 fi
 

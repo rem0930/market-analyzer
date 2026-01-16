@@ -41,6 +41,9 @@
 | `./tools/contract e2e` | E2E（WebUI がある場合） |
 | `./tools/contract migrate` | DB マイグレーション |
 | `./tools/contract deploy-dryrun` | デプロイのドライラン |
+| `./tools/contract dev` | 開発サーバー起動（docker-compose） |
+| `./tools/contract dev:stop` | 開発サーバー停止 |
+| `./tools/contract dev:logs` | 開発サーバーログ表示 |
 
 ---
 

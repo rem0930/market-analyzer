@@ -1,0 +1,31 @@
+# Development Dockerfile for API service
+# Optimized for hot-reload and debugging
+
+FROM node:20-slim
+
+WORKDIR /app
+
+# Install pnpm
+RUN npm install -g pnpm@9
+
+# Install development dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy package files for dependency caching
+COPY package.json pnpm-lock.yaml* ./
+
+# Install dependencies
+RUN pnpm install --frozen-lockfile 2>/dev/null || pnpm install
+
+# Copy source code (will be overwritten by volume mount)
+COPY . .
+
+# Expose application and debug ports
+EXPOSE 3000
+EXPOSE 9229
+
+# Start with debug enabled
+# --inspect-brk waits for debugger, --inspect starts immediately
+CMD ["pnpm", "run", "dev", "--", "--inspect=0.0.0.0:9229"]
