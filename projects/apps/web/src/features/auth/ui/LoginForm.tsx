@@ -7,6 +7,7 @@
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
 import { useAuth } from '../model/useAuth';
 import { loginSchema, type LoginFormData } from '@/shared/lib/validation';
 import { Button, FormField } from '@/shared/ui';
@@ -79,6 +80,13 @@ export function LoginForm() {
       >
         {isLoading ? 'ログイン中...' : 'ログイン'}
       </Button>
+
+      <p className="text-center text-sm text-gray-600">
+        アカウントをお持ちでない方は{' '}
+        <Link href="/register" className="text-blue-600 hover:underline">
+          新規登録
+        </Link>
+      </p>
     </form>
   );
 }
