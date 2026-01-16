@@ -10,6 +10,8 @@ HTTP API を設計・実装する際は、必ず OpenAPI 仕様を先に定義�
 - HTTP API を利用/実装するとき
 - 外部 API と連携するとき
 
+**重要**: このスキルは実装開始前に実行する（Stage 4: Contract Definition）
+
 ---
 
 ## Why (なぜ重要か)
@@ -111,6 +113,10 @@ npx openapi-typescript docs/02_architecture/api/*.yaml -o projects/packages/api-
 
 3. **仕様と実装の乖離禁止**
    - CI で仕様と実装の整合性を検証
+
+4. **実装前に OpenAPI 定義必須**
+   - ❌ エンドポイント実装後に OpenAPI を書く
+   - ✅ OpenAPI → 型生成 → テスト作成 → 実装 の順序を守る
 
 ---
 

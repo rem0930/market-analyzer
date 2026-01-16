@@ -84,24 +84,41 @@ Spec/Plan/Tasks を先に作成してから実装に移る。
 
 場所: `.specify/specs/<id>/tasks.md`
 
+#### テストファースト原則
+
+- ユニットテストなき実装は正解がわからない
+- API 開発の場合は OpenAPI 仕様を先に定義する
+- テスト/仕様 → 実装 の順序を厳守
+
 ```markdown
 # Tasks: [Feature Name]
 
 ## Prerequisites
 - [ ] Task 0: [前提タスク]
 
-## Implementation Tasks
+## Phase 1: Contract Definition (実装前に必須)
 
-### Phase 1: [フェーズ名]
-- [ ] Task 1: [タスク詳細] (estimate: Xh)
-- [ ] Task 2: [タスク詳細] (estimate: Xh)
+### API 仕様（API がある場合）
+- [ ] Task 1: OpenAPI 仕様を定義 (`docs/02_architecture/api/`)
+- [ ] Task 2: 型を生成 (`./tools/contract generate-api`)
 
-### Phase 2: [フェーズ名]
-- [ ] Task 3: [タスク詳細] (estimate: Xh)
+### テスト設計
+- [ ] Task 3: ユニットテストを作成（テストケース定義）
+- [ ] Task 4: 統合テストを作成（E2E シナリオ定義）
 
-## Testing Tasks
-- [ ] Task N: Write unit tests
-- [ ] Task N+1: Write integration tests
+## Phase 2: Implementation (テストを通すための実装)
+
+### [機能領域 1]
+- [ ] Task 5: [実装タスク] - 対応テスト: Task 3-X
+- [ ] Task 6: [実装タスク] - 対応テスト: Task 3-Y
+
+### [機能領域 2]
+- [ ] Task 7: [実装タスク] - 対応テスト: Task 4-X
+
+## Phase 3: Verification
+
+- [ ] Task N: 全テスト通過を確認 (`./tools/contract test`)
+- [ ] Task N+1: OpenAPI 仕様との整合性を確認
 
 ## Documentation Tasks
 - [ ] Task M: Update API docs
