@@ -7,8 +7,20 @@
 ## Overview
 
 ```
-[Template Clone] → [Stack選択] → [Project設定] → [DevContainer起動] → [開発開始]
+[Template Clone] → [Project設定] → [DevContainer起動] → [開発開始]
 ```
+
+---
+
+## Technology Stack
+
+このリポジトリは **Node.js + TypeScript + React** に特化しています。
+
+- **Runtime**: Node.js
+- **Language**: TypeScript
+- **Package Manager**: pnpm (workspace)
+- **Backend**: Express / Fastify
+- **Frontend**: React
 
 ---
 
@@ -37,39 +49,7 @@ git remote add origin <your-repo-url>
 
 ---
 
-## Phase 2: Stack Pack の選択と適用
-
-### 利用可能な Stack Pack
-
-| Stack ID | Language | Description |
-|----------|----------|-------------|
-| `node-ts_pnpm` | TypeScript | Node.js + pnpm workspace + ESLint + Prettier |
-| `python_ruff_pytest` | Python | pyproject + ruff + pytest |
-| `go_std` | Go | go mod + go test |
-| `dotnet_8` | C# | .NET 8 + xUnit |
-| `java_21_gradle` | Java | Java 21 + Gradle + JUnit |
-| `rust_stable` | Rust | cargo + clippy |
-
-### Stack の適用
-
-```bash
-# スクリプトに実行権限を付与
-chmod +x tools/kickoff/apply_stack.sh tools/contract/contract
-
-# Stack を適用（例: node-ts_pnpm）
-./tools/kickoff/apply_stack.sh node-ts_pnpm
-
-# 適用結果を確認
-cat .repo/active-stack  # "node-ts_pnpm" と表示される
-```
-
-**適用されるもの:**
-- `.devcontainer/devcontainer.json` - DevContainer 設定
-- scaffold ファイル（package.json, pyproject.toml 等）
-
----
-
-## Phase 3: プロジェクト情報の設定
+## Phase 2: プロジェクト情報の設定
 
 ### 1. README.md の更新
 
@@ -94,21 +74,15 @@ cat .repo/active-stack  # "node-ts_pnpm" と表示される
 # Background, Goals, User Stories 等を記入
 ```
 
-### 4. (Stack固有) 設定ファイルの更新
+### 4. package.json の更新
 
-Node.js の場合:
 ```bash
-# package.json の name, description を更新
-```
-
-Python の場合:
-```bash
-# pyproject.toml の name, description を更新
+# projects/package.json の name, description を更新
 ```
 
 ---
 
-## Phase 4: DevContainer の起動
+## Phase 3: DevContainer の起動
 
 ### VSCode / Cursor の場合
 
@@ -123,6 +97,17 @@ Python の場合:
 # devcontainer CLI がインストールされている場合
 devcontainer up --workspace-folder .
 devcontainer exec --workspace-folder . bash
+```
+
+---
+
+## Phase 4: 依存関係のインストール
+
+DevContainer 内で以下を実行:
+
+```bash
+cd projects
+pnpm install
 ```
 
 ---
@@ -150,7 +135,7 @@ DevContainer 内で以下を実行:
 ```bash
 # 初期コミット
 git add .
-git commit -m "chore: initial project setup with node-ts_pnpm stack"
+git commit -m "chore: initial project setup"
 
 # リモートにプッシュ
 git push -u origin main
@@ -188,16 +173,11 @@ docker system prune -a
 ### Contract コマンドが失敗する
 
 ```bash
-# active-stack が設定されているか確認
-cat .repo/active-stack
-
 # スクリプトの実行権限を確認
 ls -la tools/contract/contract
 
-# 依存のインストールを確認（Stack による）
-# Node.js: pnpm install
-# Python: pip install -e '.[dev]'
-# Go: go mod download
+# 依存のインストールを確認
+cd projects && pnpm install
 ```
 
 ### Policy Check が失敗する
@@ -214,10 +194,10 @@ ls -la tools/contract/contract
 ## Checklist
 
 - [ ] リポジトリを作成した
-- [ ] Stack を適用した
 - [ ] README.md を更新した
 - [ ] Product Identity を記入した
 - [ ] DevContainer が起動した
+- [ ] 依存関係をインストールした
 - [ ] Contract コマンドが動作した
 - [ ] 初期コミットをプッシュした
 

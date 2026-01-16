@@ -4,6 +4,12 @@
 
 ---
 
+## Technology Stack
+
+このリポジトリは **Node.js + TypeScript + React** に特化しています。
+
+---
+
 ## Must (必須)
 
 ### Infrastructure
@@ -28,12 +34,13 @@
 - [ ] `./tools/contract lint` が実行できる
 - [ ] `./tools/contract test` が実行できる
 - [ ] `./tools/contract build` が実行できる
+- [ ] `./tools/contract guardrail` が実行できる
 
-### Stack Packs
+### Project Structure
 
-- [ ] 最低1つの Stack Pack が存在する
-- [ ] `./tools/kickoff/apply_stack.sh <stack_id>` でスタックを適用できる
-- [ ] 適用後、Contract コマンドが動作する
+- [ ] `projects/` ディレクトリにアプリケーションコードがある
+- [ ] pnpm workspace として設定されている
+- [ ] TypeScript が設定されている
 
 ### GitHub
 
@@ -45,10 +52,9 @@
 
 ## Should (推奨)
 
-- [ ] すべての6スタック（node-ts_pnpm, python_ruff_pytest, go_std, dotnet_8, java_21_gradle, rust_stable）が揃っている
-- [ ] 各 Stack Pack の scaffold でテストが通る
 - [ ] `./tools/contract e2e` が（no-op でも）提供されている
 - [ ] デザインシステムのトークン定義がある
+- [ ] Clean Architecture のレイヤー構造が整っている
 
 ---
 
@@ -68,10 +74,10 @@
    # エラーなく起動することを確認
    ```
 
-2. **Stack 適用確認**
+2. **依存関係インストール**
    ```bash
-   ./tools/kickoff/apply_stack.sh node-ts_pnpm
-   cat .repo/active-stack  # "node-ts_pnpm" と表示される
+   cd projects
+   pnpm install
    ```
 
 3. **Contract コマンド確認**

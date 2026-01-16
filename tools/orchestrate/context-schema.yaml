@@ -203,12 +203,6 @@ properties:
         description: "Base port for this worktree"
         minimum: 1024
         maximum: 65535
-      stack:
-        type: string
-        description: "Active stack pack ID"
-        examples:
-          - "node-ts_pnpm"
-          - "python_ruff_pytest"
       extra_env:
         type: object
         description: "Additional environment variables"

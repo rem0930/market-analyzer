@@ -24,7 +24,7 @@ cat .worktree-context.yaml
 
 1. **AGENTS.md に従う** - すべての決定は AGENTS.md を canonical とする
 2. **トレードオフを明示する** - 決定の理由と却下した代替案を記録
-3. **スタック差分を隔離する** - Stack Pack に技術スタックの違いを閉じ込める
+3. **Clean Architecture を維持する** - レイヤー間の依存方向を守る
 
 ## Responsibilities
 

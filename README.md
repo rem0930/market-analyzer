@@ -6,6 +6,18 @@
 
 ---
 
+## 🛠 Technology Stack
+
+このリポジトリは **Node.js + TypeScript + React** に特化しています。
+
+- **Runtime**: Node.js
+- **Language**: TypeScript
+- **Package Manager**: pnpm (workspace)
+- **Backend**: Express / Fastify
+- **Frontend**: React
+
+---
+
 ## 🚀 Quickstart
 
 ### 1. テンプレートから新規リポジトリを作成
@@ -16,17 +28,21 @@
 gh repo create my-project --template matsuokah/vibecoding-repository-template
 ```
 
-### 2. 初期セットアップ (Kickoff)
+### 2. DevContainer を起動
 
 ```bash
-# Stack を選択して適用
-./tools/kickoff/apply_stack.sh node-ts_pnpm  # または他の stack_id
-
-# DevContainer を起動（VSCode / Cursor）
+# VSCode / Cursor で開く
 # Command Palette > "Dev Containers: Reopen in Container"
 ```
 
-### 3. 開発開始
+### 3. 依存関係をインストール
+
+```bash
+cd projects
+pnpm install
+```
+
+### 4. 開発開始
 
 ```bash
 # Golden Commands で開発
@@ -49,23 +65,9 @@ gh repo create my-project --template matsuokah/vibecoding-repository-template
 
 ---
 
-## 🛠 Available Stack Packs
-
-| Stack ID | Language | Description |
-|----------|----------|-------------|
-| `node-ts_pnpm` | TypeScript | Node.js + pnpm workspace |
-| `python_ruff_pytest` | Python | pyproject + ruff + pytest |
-| `go_std` | Go | go mod + go test |
-| `dotnet_8` | C# | .NET 8 + xUnit |
-| `java_21_gradle` | Java | Java 21 + Gradle + JUnit |
-| `rust_stable` | Rust | cargo + clippy |
-
----
-
 ## 📋 Repository Contract
 
 - **Canonical Instructions**: [AGENTS.md](AGENTS.md)
-- **Active Stack**: `.repo/active-stack`
 - **Golden Commands**: `./tools/contract <cmd>`
 
 ### Golden Commands
@@ -76,24 +78,32 @@ gh repo create my-project --template matsuokah/vibecoding-repository-template
 ./tools/contract typecheck   # 型チェック
 ./tools/contract test        # ユニットテスト
 ./tools/contract build       # ビルド
+./tools/contract guardrail   # アーキテクチャガードレール
 ./tools/contract e2e         # E2E テスト
-./tools/contract migrate     # DB マイグレーション
-./tools/contract deploy-dryrun  # デプロイドライラン
+./tools/contract dev         # 開発サーバー起動
+./tools/contract dev:stop    # 開発サーバー停止
+./tools/contract dev:logs    # 開発サーバーログ
 ```
 
 ---
 
-## 🔧 For Template Maintainers
+## 📁 Project Structure
 
-### Adding a New Stack Pack
-
-1. `stacks/<new_stack_id>/` ディレクトリを作成
-2. `manifest.yaml` を定義
-3. `devcontainer/devcontainer.json` を作成
-4. `contract/` に必要なスクリプトを配置
-5. `scaffold/` に初期ファイルを配置
-
-詳細は [docs/02_architecture/repo_structure.md](docs/02_architecture/repo_structure.md) を参照。
+```
+.
+├── projects/                 # アプリケーションコード
+│   ├── apps/                 # アプリケーション
+│   │   └── api/              # Backend API
+│   └── packages/             # 共有パッケージ
+│       ├── shared/           # 共通ドメイン・ユーティリティ
+│       └── guardrails/       # アーキテクチャガードレール
+├── docs/                     # ドキュメント
+├── tools/                    # 開発ツール
+│   ├── contract/             # Golden Commands
+│   ├── policy/               # ポリシーチェック
+│   └── worktree/             # Worktree 管理
+└── prompts/                  # AI エージェント用プロンプト
+```
 
 ---
 

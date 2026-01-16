@@ -40,15 +40,15 @@ If anything conflicts, follow `AGENTS.md`.
 ./tools/contract typecheck
 ./tools/contract test
 ./tools/contract build
+./tools/contract guardrail
 ./tools/contract e2e
 ./tools/contract migrate
 ./tools/contract deploy-dryrun
 
-# Check active stack
-cat .repo/active-stack
-
-# Apply a stack
-./tools/kickoff/apply_stack.sh <stack_id>
+# Development server
+./tools/contract dev
+./tools/contract dev:stop
+./tools/contract dev:logs
 
 # Policy check
 ./tools/policy/check_required_artifacts.sh
@@ -63,7 +63,7 @@ cat .repo/active-stack
 - Architecture: `docs/02_architecture/`
 - Quality: `docs/03_quality/`
 - Delivery: `docs/04_delivery/`
-- Stack Packs: `stacks/<stack_id>/`
+- Application code: `projects/`
 - Agent Prompts: `prompts/agents/`
 - Skill Prompts: `prompts/skills/`
 

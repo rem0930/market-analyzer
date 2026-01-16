@@ -16,7 +16,6 @@
 
 | 用語 | 定義 | 備考 |
 |------|------|------|
-| Stack Pack | 技術スタック（言語、フレームワーク、ツール）のパッケージ | stacks/ ディレクトリに格納 |
 | Contract | リポジトリ内で統一されたコマンドインターフェース | tools/contract 経由で実行 |
 | Golden Commands | 必ず Contract 経由で実行するコマンド群 | format, lint, test, build 等 |
 | DocDD | Document-Driven Development の略。ドキュメント先行の開発スタイル | Spec → Plan → Implement |

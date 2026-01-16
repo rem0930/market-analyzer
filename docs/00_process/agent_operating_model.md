@@ -23,9 +23,6 @@ cat AGENTS.md
 
 # プロセス定義を確認
 cat docs/00_process/process.md
-
-# Active Stack を確認
-cat .repo/active-stack
 ```
 
 ### 2. Understand the Task
@@ -47,7 +44,7 @@ Spec → Plan → Tasks → Implement → QA → Release
 
 | ID | Purpose | Key Outputs | Gate |
 |----|---------|-------------|------|
-| `RepoKickoff` | 新規リポジトリを初期化 | repo skeleton, CI, README | policy/docdd が成功, contract が通る |
+| `Orchestrator` | リクエストをルーティング、worktree管理 | routing decision, worktree context | 適切なエージェントに割り当て |
 | `ProductIdentity_PdM` | プロダクト意図・Spec作成 | identity.md, prd.md, spec.md | AC/NFRが存在 |
 | `ProductDesigner` | UX/IA/UI要件整備 | ux_flows.md, ui_requirements.md | ACとUI要件の整合 |
 | `DesignSystem` | デザイン契約を固定 | tokens.json, overview.md | 命名規則が文書化 |

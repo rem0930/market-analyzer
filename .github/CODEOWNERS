@@ -33,7 +33,7 @@
 # ==============================================================================
 /.devcontainer/             @your-org/platform-team
 /tools/                     @your-org/platform-team
-/stacks/                    @your-org/platform-team
+/projects/                  @your-org/core-maintainers
 
 # ==============================================================================
 # GitHub Configuration
