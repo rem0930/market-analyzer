@@ -217,6 +217,14 @@
 | `Implementer` | 最小差分で実装 | code + tests + docs | contract 成功, docs drift なし |
 | `Reviewer` | Staff視点でレビュー | review comments | DocDDリンク完備 |
 
+### Claude Code Sub-Agents
+
+Claude Code を使用している場合、上記エージェントはサブエージェントとして自動的に利用可能です。
+
+- **設定ファイル**: `.claude/agents/*.md`
+- **使い方**: Claude が自動的にタスクに応じて適切なサブエージェントを起動
+- **詳細**: `.claude/agents/README.md` を参照
+
 ---
 
 ## Agent Orchestration
@@ -282,4 +290,5 @@
 - Skills Catalog: `docs/00_process/skills_catalog.md`
 - Agent Prompts: `prompts/agents/`
 - Skill Prompts: `prompts/skills/`
+- **Claude Code Sub-Agents**: `.claude/agents/`
 
