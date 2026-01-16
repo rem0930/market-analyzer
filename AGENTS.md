@@ -22,7 +22,6 @@
 
 4. **破壊的変更の禁止**
    - 既存ファイルを無断で上書きしない（差分・追記・移動で対応）
-   - Kickoff の scaffold は `rsync --ignore-existing` で非破壊
 
 5. **CI / DevContainer / Contract が壊れた状態で完了宣言しない**
 
@@ -35,7 +34,7 @@
 
 ## Golden Commands
 
-すべて `./tools/contract` 経由で実行可能。Active Stack によって内部実装が切り替わる。
+すべて `./tools/contract` 経由で実行可能。
 
 | Command | Purpose |
 |---------|---------|
@@ -68,28 +67,19 @@
 
 ---
 
-## Stack Pack Rules
+## Technology Stack
 
-- **Active Stack**: `.repo/active-stack` に記載
-- **Stack Pack 定義**: `stacks/<stack_id>/manifest.yaml`
-- **Contract Scripts**: `stacks/<stack_id>/contract/{format,lint,typecheck,test,build,e2e,migrate,deploy-dryrun}`
-- **Projects Directory**: `projects/` にアプリケーションコードを配置
+このリポジトリは **Node.js + TypeScript + React** に特化しています。
 
-Stack Pack は必ず contract scripts を提供すること。
-
-### Auto Scaffold
-
-DevContainer 起動時に `projects/` が空の場合、自動的に scaffold が適用される：
-- 人間が明示的にコマンドを実行する必要なし
-- `postStartCommand` で `./tools/kickoff/auto-scaffold.sh` が実行される
-- 依存関係も自動インストール
-
-### Stack Selection (技術スタック未設定時)
-
-`active-stack` が未設定の場合、エージェントが対話的に技術スタックを決定：
-1. ユーザーに「何を作りたいか」を質問
-2. 利用可能なスタックから最適なものを推薦
-3. `./tools/kickoff/select-stack.sh <stack_id>` でプロジェクトを初期化
+- **Runtime**: Node.js
+- **Language**: TypeScript
+- **Package Manager**: pnpm (workspace)
+- **Backend**: Express / Fastify
+- **Frontend**: React
+- **Contract Scripts**: `tools/contract/stack/` に配置
+- **Application Code**: `projects/` に配置
+  - `projects/apps/` - アプリケーション（api, web 等）
+  - `projects/packages/` - 共有パッケージ
 
 ---
 
@@ -150,15 +140,16 @@ DevContainer 起動時に `projects/` が空の場合、自動的に scaffold �
 
 ```
 .
-├── .repo/                    # リポジトリメタデータ
-│   └── active-stack          # 現在選択中の Stack ID
 ├── .devcontainer/            # DevContainer 設定
 ├── .github/                  # GitHub 設定（CI, PR/Issue テンプレ）
 ├── .specify/                 # Spec 定義
 │   └── specs/                # 機能別 Spec
-├── projects/                 # アプリケーションコード（自動生成）
+├── projects/                 # アプリケーションコード
 │   ├── apps/                 # アプリケーション
+│   │   └── api/              # Backend API
 │   └── packages/             # 共有パッケージ
+│       ├── shared/           # 共通ドメイン・ユーティリティ
+│       └── guardrails/       # アーキテクチャガードレール
 ├── docs/
 │   ├── 00_process/           # プロセス定義
 │   ├── 01_product/           # プロダクト要件
@@ -173,15 +164,9 @@ DevContainer 起動時に `projects/` が空の場合、自動的に scaffold �
 ├── prompts/
 │   ├── agents/               # エージェント別プロンプト
 │   └── skills/               # 再利用可能スキル
-├── stacks/                   # Stack Pack 定義（初回起動後に削除）
-│   └── <stack_id>/
-│       ├── manifest.yaml
-│       ├── devcontainer/
-│       ├── contract/
-│       └── scaffold/
 └── tools/
     ├── contract/             # Golden Commands エントリポイント
-    ├── kickoff/              # 初期セットアップ（auto-scaffold含む）
+    │   └── stack/            # 各コマンドの実装
     ├── orchestrate/          # Agent Orchestration
     ├── policy/               # ポリシーチェック
     └── worktree/             # Worktree 管理
@@ -205,10 +190,9 @@ DevContainer 起動時に `projects/` が空の場合、自動的に scaffold �
 | ID | Symptom | Prevention |
 |----|---------|------------|
 | FP01 | Docs が更新されず PR レビュー不能 | PR テンプレに Docs 更新チェック必須 |
-| FP02 | スタックごとに lint/test の呼び方が違う | `tools/contract` 経由に統一 |
+| FP02 | 実行コマンドの呼び方がバラバラ | `tools/contract` 経由に統一 |
 | FP03 | DevContainer では動くが CI で落ちる | Contract smoke を CI 必須に |
-| FP04 | Kickoff が既存ファイルを破壊 | `rsync --ignore-existing` |
-| FP05 | AGENTS.md と他の instructions が矛盾 | AGENTS.md を canonical に |
+| FP04 | AGENTS.md と他の instructions が矛盾 | AGENTS.md を canonical に |
 
 ---
 
@@ -219,7 +203,6 @@ DevContainer 起動時に `projects/` が空の場合、自動的に scaffold �
 | ID | Purpose | Key Outputs | Gate |
 |----|---------|-------------|------|
 | `Orchestrator` | リクエストをルーティング、worktree管理 | routing decision, worktree context | 適切なエージェントに割り当て |
-| `RepoKickoff` | 新規リポジトリを初期化 | repo skeleton, CI, README | policy/docdd が成功, contract が通る |
 | `ProductIdentity_PdM` | プロダクト意図・Spec作成 | identity.md, prd.md, spec.md | AC/NFRが存在 |
 | `ProductDesigner` | UX/IA/UI要件整備 | ux_flows.md, ui_requirements.md | ACとUI要件の整合 |
 | `DesignSystem` | デザイン契約を固定 | tokens.json, overview.md | 命名規則が文書化 |

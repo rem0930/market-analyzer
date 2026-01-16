@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+#
+# Golden Commands - Node.js + TypeScript (pnpm workspace)
+#
 set -euo pipefail
 
 cmd="${1:-}"
@@ -11,6 +14,7 @@ if [[ -z "${cmd}" ]]; then
   echo "  typecheck    - 型チェック"
   echo "  test         - ユニットテスト"
   echo "  build        - ビルド"
+  echo "  guardrail    - ガードレールチェック"
   echo "  e2e          - E2Eテスト"
   echo "  migrate      - DBマイグレーション"
   echo "  deploy-dryrun - デプロイドライラン"
@@ -23,33 +27,12 @@ fi
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "${REPO_ROOT}"
 
-if [[ ! -f ".repo/active-stack" ]]; then
-  echo "ERROR: .repo/active-stack not found."
-  echo "Run: ./tools/kickoff/apply_stack.sh <stack_id>"
-  exit 2
-fi
+script="tools/contract/stack/${cmd}"
 
-stack_id="$(cat .repo/active-stack | tr -d '[:space:]')"
-
-# Check if stack is not configured (placeholder text)
-if [[ -z "${stack_id}" || "${stack_id}" == "#"* ]]; then
-  echo "ERROR: No active stack configured."
-  echo "Run: ./tools/kickoff/apply_stack.sh <stack_id>"
-  echo ""
-  echo "Available stacks:"
-  ls -1 stacks 2>/dev/null | grep -v ".gitkeep" || echo "  (none found)"
-  exit 2
-fi
-
-# After kickoff, contract scripts are in tools/contract/stack/
-# Before kickoff, they remain in stacks/<stack_id>/contract/
-if [[ -f "tools/contract/stack/${cmd}" ]]; then
-  script="tools/contract/stack/${cmd}"
-elif [[ -f "stacks/${stack_id}/contract/${cmd}" ]]; then
-  script="stacks/${stack_id}/contract/${cmd}"
-else
+if [[ ! -f "${script}" ]]; then
   echo "ERROR: Contract script not found for command '${cmd}'"
-  echo "Stack '${stack_id}' may not support command '${cmd}'"
+  echo "Available commands:"
+  ls -1 tools/contract/stack 2>/dev/null || echo "  (none found)"
   exit 2
 fi
 

@@ -72,8 +72,7 @@ fi
 以下の場合のみ、worktree 外での作業を許可:
 
 1. **Orchestrator Agent**: ルーティングと worktree 管理のためメインで動作
-2. **RepoKickoff Agent**: 初期リポジトリセットアップのみ
-3. **緊急 Hotfix**: 明示的な承認がある場合のみ
+2. **緊急 Hotfix**: 明示的な承認がある場合のみ
 
 それ以外の場合は、必ず Orchestrator 経由で worktree を作成してから作業を開始すること。
 

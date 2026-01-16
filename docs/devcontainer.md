@@ -299,14 +299,6 @@ sudo /usr/local/bin/init-firewall.sh
    - allowlist の変更を PR でレビュー
    - 定期的に不要なドメインを削除
 
-## Stack-specific 拡張
-
-このベース devcontainer は言語/フレームワーク依存を含みません。各 Stack 用の拡張は以下で管理されています：
-
-- `stacks/<stack_id>/devcontainer/` - Stack 固有の devcontainer 設定
-
-ベース devcontainer と Stack devcontainer を組み合わせる場合は、Docker Compose または Feature を使用してください。
-
 ## 関連ファイル
 
 | ファイル | 説明 |

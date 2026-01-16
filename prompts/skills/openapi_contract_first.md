@@ -72,14 +72,12 @@ components:
 
 ### 3. コード生成ツールを設定
 
-Stack に応じた生成ツールを選択:
+TypeScript 用の生成ツール:
 
-| Stack | Client | Server |
-|-------|--------|--------|
-| TypeScript | `openapi-typescript`, `orval` | `express-openapi-validator` |
-| Python | `openapi-python-client` | FastAPI (native support) |
-| Go | `oapi-codegen` | `oapi-codegen` |
-| Rust | `openapi-generator` | `poem-openapi` |
+| 用途 | ツール |
+|------|--------|
+| Client | `openapi-typescript`, `orval` |
+| Server | `express-openapi-validator` |
 
 ### 4. 生成コマンドを Contract に追加
 

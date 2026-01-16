@@ -4,18 +4,29 @@
 
 ---
 
+## Technology Stack
+
+このリポジトリは **Node.js + TypeScript + React** に特化しています。
+
+- **Runtime**: Node.js
+- **Language**: TypeScript
+- **Package Manager**: pnpm (workspace)
+- **Backend**: Express / Fastify
+- **Frontend**: React
+
+---
+
 ## Directory Overview
 
 ```
 .
-├── .repo/                    # リポジトリメタデータ
-├── .devcontainer/            # DevContainer 設定（Stack Packから適用）
+├── .devcontainer/            # DevContainer 設定
 ├── .github/                  # GitHub 設定
 ├── .specify/                 # Spec 定義
 ├── design/                   # デザインアセット
 ├── docs/                     # ドキュメント
+├── projects/                 # アプリケーションコード
 ├── prompts/                  # エージェントプロンプト
-├── stacks/                   # Stack Pack 定義
 └── tools/                    # ツール・スクリプト
 ```
 
@@ -23,17 +34,14 @@
 
 ## Detailed Structure
 
-### `.repo/`
+### `.devcontainer/`
 
-リポジトリのメタデータを格納。
+DevContainer 設定。
 
 | File | Description |
 |------|-------------|
-| `active-stack` | 現在選択中の Stack ID |
-
-### `.devcontainer/`
-
-DevContainer 設定。Stack Pack 適用時に上書きされる。
+| `devcontainer.json` | DevContainer 設定 |
+| `Dockerfile` | コンテナビルド設定 |
 
 ### `.github/`
 
@@ -102,40 +110,49 @@ docs/
     └── release_process.md
 ```
 
+### `projects/`
+
+アプリケーションコードを格納（pnpm workspace）。
+
+```
+projects/
+├── package.json          # Workspace ルート
+├── pnpm-workspace.yaml   # Workspace 設定
+├── tsconfig.json         # TypeScript 設定
+├── apps/                 # アプリケーション
+│   └── api/              # Backend API
+│       ├── src/
+│       │   ├── composition/    # DI 設定
+│       │   ├── domain/         # ドメインモデル
+│       │   ├── infrastructure/ # 外部依存
+│       │   ├── presentation/   # HTTP ハンドラ
+│       │   └── usecase/        # ユースケース
+│       └── package.json
+└── packages/             # 共有パッケージ
+    ├── shared/           # 共通ドメイン・ユーティリティ
+    └── guardrails/       # アーキテクチャガードレール
+```
+
 ### `prompts/`
 
 エージェント用プロンプトを格納。
 
 ```
 prompts/
-└── agents/
-    ├── repo_kickoff.md
-    ├── pdm.md
-    ├── designer.md
-    ├── design_system.md
-    └── architect.md
-```
-
-### `stacks/`
-
-Stack Pack 定義を格納。
-
-```
-stacks/
-└── <stack_id>/
-    ├── manifest.yaml     # メタデータ
-    ├── devcontainer/     # DevContainer 設定
-    │   └── devcontainer.json
-    ├── contract/         # Contract スクリプト
-    │   ├── format
-    │   ├── lint
-    │   ├── typecheck
-    │   ├── test
-    │   ├── build
-    │   ├── e2e
-    │   ├── migrate
-    │   └── deploy-dryrun
-    └── scaffold/         # 初期ファイル
+├── agents/
+│   ├── orchestrator.md
+│   ├── pdm.md
+│   ├── designer.md
+│   ├── design_system.md
+│   ├── architect.md
+│   ├── implementer.md
+│   ├── qa.md
+│   └── reviewer.md
+└── skills/
+    ├── read_contract_first.md
+    ├── docdd_spec_first.md
+    ├── minimize_diff.md
+    └── ...
 ```
 
 ### `tools/`
@@ -145,13 +162,20 @@ stacks/
 ```
 tools/
 ├── contract/             # Golden Commands エントリポイント
-│   └── contract
-├── kickoff/              # 初期セットアップ
-│   └── apply_stack.sh
+│   ├── contract          # メインスクリプト
+│   └── stack/            # 各コマンドの実装
+│       ├── format
+│       ├── lint
+│       ├── typecheck
+│       ├── test
+│       ├── build
+│       ├── guardrail
+│       └── ...
+├── orchestrate/          # Agent Orchestration
 ├── policy/               # ポリシーチェック
 │   ├── check_required_artifacts.sh
-│   └── check_contract_docs.sh
-└── worktree/             # Worktree 管理（将来拡張）
+│   └── check_docdd_minimum.sh
+└── worktree/             # Worktree 管理
 ```
 
 ---
@@ -159,13 +183,13 @@ tools/
 ## Key Design Decisions
 
 1. **Docs は `docs/` に集約**: 散らばらない
-2. **スタック差分は `stacks/` に隔離**: コア構造に影響しない
+2. **アプリケーションコードは `projects/` に集約**: pnpm workspace で管理
 3. **ツールは `tools/` に集約**: 実行可能スクリプトの場所が明確
-4. **DevContainer は適用時に上書き**: Stack Pack が決定するまで空でもOK
+4. **Clean Architecture**: domain → usecase → presentation の依存方向
 
 ---
 
 ## Links
 
 - [AGENTS.md](../../AGENTS.md) - Canonical Instructions
-- [docs/02_architecture/adr/0001_contract_and_stack_pack.md](adr/0001_contract_and_stack_pack.md) - ADR
+- [docs/02_architecture/adr/0001_contract_architecture.md](adr/0001_contract_architecture.md) - ADR

@@ -31,14 +31,13 @@ cat docs/00_process/process.md
 - 各ステージの成果物
 - Required Artifacts per Change Type
 
-### Step 3: Check Active Stack
-```bash
-cat .repo/active-stack
-```
+### Step 3: Understand Technology Stack
 
-確認すべき内容:
-- 使用中の技術スタック
-- Stack Pack の場所: `stacks/<stack_id>/`
+このリポジトリは Node.js + TypeScript + React に特化:
+- Runtime: Node.js
+- Language: TypeScript
+- Package Manager: pnpm (workspace)
+- Application Code: `projects/`
 
 ### Step 4: Understand Constraints
 
@@ -57,10 +56,10 @@ cat .repo/active-stack
 - Spec/Plan/AC なしで実装しない
 
 ### Golden Commands
-- `./tools/contract format|lint|typecheck|test|build`
+- `./tools/contract format|lint|typecheck|test|build|guardrail`
 
-### Active Stack
-- [stack_id]
+### Technology Stack
+- Node.js + TypeScript + React (pnpm workspace)
 
 ### これからの作業順序
 1. [ステップ1]
