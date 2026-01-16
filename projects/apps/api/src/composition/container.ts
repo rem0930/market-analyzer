@@ -9,10 +9,19 @@
  */
 
 import {
+  // In-memory repositories
   InMemoryUserRepository,
   InMemoryAuthUserRepository,
   InMemoryRefreshTokenRepository,
   InMemoryPasswordResetTokenRepository,
+  // Prisma repositories
+  PrismaUserRepository,
+  PrismaAuthUserRepository,
+  PrismaRefreshTokenRepository,
+  PrismaPasswordResetTokenRepository,
+  // Database
+  prisma,
+  // Services
   BcryptPasswordService,
   JwtServiceImpl,
   CryptoTokenHashService,
@@ -35,6 +44,10 @@ import {
   UserController,
   AuthController,
   AuthMiddleware,
+  SecurityMiddleware,
+  CorsMiddleware,
+  RateLimitMiddleware,
+  ValidationMiddleware,
   type RouteContext,
 } from '../presentation/index.js';
 
@@ -52,12 +65,13 @@ function getConfig() {
       rounds: parseInt(process.env.BCRYPT_ROUNDS ?? '10', 10),
     },
     debug: process.env.NODE_ENV !== 'production',
+    usePrisma: !!process.env.DATABASE_URL,
   };
 }
 
 /**
  * アプリケーションコンテキストを作成
- * 本番環境では環境変数等で実装を切り替える
+ * DATABASE_URL が設定されている場合は Prisma、なければ In-memory を使用
  */
 export function createAppContext(): RouteContext {
   const config = getConfig();
@@ -65,10 +79,21 @@ export function createAppContext(): RouteContext {
   // ============================================
   // Infrastructure - Repositories
   // ============================================
-  const userRepository = new InMemoryUserRepository();
-  const authUserRepository = new InMemoryAuthUserRepository();
-  const refreshTokenRepository = new InMemoryRefreshTokenRepository();
-  const passwordResetTokenRepository = new InMemoryPasswordResetTokenRepository();
+  const userRepository = config.usePrisma
+    ? new PrismaUserRepository(prisma)
+    : new InMemoryUserRepository();
+
+  const authUserRepository = config.usePrisma
+    ? new PrismaAuthUserRepository(prisma)
+    : new InMemoryAuthUserRepository();
+
+  const refreshTokenRepository = config.usePrisma
+    ? new PrismaRefreshTokenRepository(prisma)
+    : new InMemoryRefreshTokenRepository();
+
+  const passwordResetTokenRepository = config.usePrisma
+    ? new PrismaPasswordResetTokenRepository(prisma)
+    : new InMemoryPasswordResetTokenRepository();
 
   // ============================================
   // Infrastructure - Services
@@ -119,6 +144,11 @@ export function createAppContext(): RouteContext {
   const getCurrentUserUseCase = new GetCurrentUserUseCase(authUserRepository);
 
   // ============================================
+  // Middleware (validation needs to be before controllers)
+  // ============================================
+  const validationMiddleware = new ValidationMiddleware();
+
+  // ============================================
   // Controllers
   // ============================================
   const userController = new UserController(createUserUseCase, getUserUseCase);
@@ -129,17 +159,27 @@ export function createAppContext(): RouteContext {
     refreshTokenUseCase,
     forgotPasswordUseCase,
     resetPasswordUseCase,
-    getCurrentUserUseCase
+    getCurrentUserUseCase,
+    validationMiddleware
   );
 
   // ============================================
   // Middleware
   // ============================================
   const authMiddleware = new AuthMiddleware(jwtService);
+  const securityMiddleware = new SecurityMiddleware();
+  const corsMiddleware = new CorsMiddleware();
+  const rateLimitMiddleware = new RateLimitMiddleware({
+    windowMs: 60 * 1000, // 1 minute
+    maxRequests: 5, // 5 requests per minute per IP
+  });
 
   return {
     userController,
     authController,
     authMiddleware,
+    securityMiddleware,
+    corsMiddleware,
+    rateLimitMiddleware,
   };
 }
