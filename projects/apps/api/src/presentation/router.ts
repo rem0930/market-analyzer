@@ -10,6 +10,7 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { UserController } from './controllers/user-controller.js';
 import type { AuthController } from './controllers/auth-controller.js';
+import type { DeepPingController } from './controllers/deep-ping-controller.js';
 import type { AuthMiddleware } from './middleware/auth-middleware.js';
 import type { SecurityMiddleware } from './middleware/security-middleware.js';
 import type { CorsMiddleware } from './middleware/cors-middleware.js';
@@ -18,6 +19,7 @@ import type { RateLimitMiddleware } from './middleware/rate-limit-middleware.js'
 export interface RouteContext {
   userController: UserController;
   authController: AuthController;
+  deepPingController: DeepPingController;
   authMiddleware: AuthMiddleware;
   securityMiddleware: SecurityMiddleware;
   corsMiddleware: CorsMiddleware;
@@ -35,6 +37,7 @@ export async function handleRoutes(
   const {
     userController,
     authController,
+    deepPingController,
     authMiddleware,
     securityMiddleware,
     corsMiddleware,
@@ -57,6 +60,12 @@ export async function handleRoutes(
   if (pathname === '/health' && method === 'GET') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ status: 'ok', timestamp: new Date().toISOString() }));
+    return;
+  }
+
+  // Deep Ping - detailed health check including dependencies
+  if (pathname === '/ping/deep' && method === 'GET') {
+    await deepPingController.deepPing(res);
     return;
   }
 
