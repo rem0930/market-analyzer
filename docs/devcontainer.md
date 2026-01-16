@@ -1,17 +1,32 @@
 # DevContainer セットアップガイド
 
-Claude Code を安全に使用するための devcontainer 環境を提供します。
+Node.js モノレポプロダクト開発のための devcontainer 環境を提供します。
 
 ## 目的
 
-この devcontainer は、Claude Code（`--dangerously-skip-permissions`）をエージェント運用（無人実行）で現実的に使用できるようにするためのものです。
+この devcontainer は、Node.js + TypeScript + pnpm workspace を使用したモノレポ開発に特化した環境です。
+Claude Code（`--dangerously-skip-permissions`）をエージェント運用（無人実行）で安全に使用できます。
 
 ### 主な特徴
 
+- **Node.js モノレポ最適化**: pnpm workspace、TypeScript、ESLint/Prettier 統合
+- **VS Code 拡張機能**: TypeScript、React、ESLint、Prettier、OpenAPI 等がプリインストール
+- **pnpm store 永続化**: 依存関係キャッシュによる高速な `pnpm install`
 - **Secure-by-default**: 起動時に outbound ファイアウォールが有効化
 - **Deny-by-default**: allowlist にないドメインへの接続をブロック
-- **永続化**: Claude の設定とシェル履歴がコンテナ再作成後も維持
+- **永続化**: Claude の設定、シェル履歴、pnpm store がコンテナ再作成後も維持
 - **診断ツール**: トラブルシューティング用の make targets
+
+## 技術スタック
+
+| カテゴリ | ツール |
+|---------|--------|
+| Runtime | Node.js 20 |
+| Package Manager | pnpm 9.15+ (corepack) |
+| Language | TypeScript 5.3+ |
+| Frontend | React, Next.js |
+| Linter/Formatter | ESLint, Prettier |
+| API | OpenAPI (コード生成) |
 
 ## 起動手順
 
@@ -42,6 +57,15 @@ devcontainer exec --workspace-folder . bash
 ```
 
 ## 永続化
+
+### pnpm Store
+
+- **保存場所**: `/home/node/.local/share/pnpm`
+- **永続化方法**: named volume (`devcontainer-pnpm-store-${devcontainerId}`)
+- **環境変数**: `PNPM_HOME=/home/node/.local/share/pnpm`
+
+pnpm の依存関係キャッシュはコンテナを Rebuild しても維持されます。
+これにより、再ビルド後の `pnpm install` が高速に完了します。
 
 ### Claude 設定
 
@@ -309,8 +333,45 @@ sudo /usr/local/bin/init-firewall.sh
 | [.devcontainer/allowlist.domains](.devcontainer/allowlist.domains) | 許可ドメインリスト |
 | [.devcontainer/allowlist.readme.md](.devcontainer/allowlist.readme.md) | allowlist 管理ガイド |
 
+## プリインストール VS Code 拡張機能
+
+### 開発効率化
+
+| 拡張機能 | 用途 |
+|----------|------|
+| `esbenp.prettier-vscode` | Prettier フォーマッター |
+| `dbaeumer.vscode-eslint` | ESLint 統合 |
+| `ms-vscode.vscode-typescript-next` | TypeScript 最新機能 |
+| `christian-kohler.path-intellisense` | パス補完 |
+| `christian-kohler.npm-intellisense` | npm パッケージ補完 |
+| `usernamehw.errorlens` | インラインエラー表示 |
+
+### React / Frontend
+
+| 拡張機能 | 用途 |
+|----------|------|
+| `dsznajder.es7-react-js-snippets` | React スニペット |
+| `styled-components.vscode-styled-components` | styled-components 対応 |
+
+### API 開発
+
+| 拡張機能 | 用途 |
+|----------|------|
+| `42Crunch.vscode-openapi` | OpenAPI エディタ |
+| `Arjun.swagger-viewer` | Swagger UI プレビュー |
+
+### その他
+
+| 拡張機能 | 用途 |
+|----------|------|
+| `anthropic.claude-code` | Claude Code |
+| `eamodio.gitlens` | Git 拡張 |
+| `vitest.explorer` | Vitest テストランナー |
+| `ms-azuretools.vscode-docker` | Docker 統合 |
+
 ## リファレンス
 
 - [anthropics/claude-code devcontainer](https://github.com/anthropics/claude-code/tree/main/.devcontainer) - 本実装のベース
 - [VS Code Dev Containers](https://code.visualstudio.com/docs/devcontainers/containers)
 - [Dev Container CLI](https://github.com/devcontainers/cli)
+- [pnpm](https://pnpm.io/) - 高速なパッケージマネージャー
