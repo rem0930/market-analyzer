@@ -1,0 +1,32 @@
+{
+  "name": "@monorepo/shared",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./result": {
+      "import": "./dist/result.js",
+      "types": "./dist/result.d.ts"
+    },
+    "./domain-event": {
+      "import": "./dist/domain-event.js",
+      "types": "./dist/domain-event.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts src/result.ts src/domain-event.ts --format esm --dts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "vitest": "^1.2.0"
+  }
+}

@@ -18,6 +18,7 @@ contract_commands:
     - lint
     - test
     - build
+    - guardrail
   optional:
     - typecheck
     - e2e
@@ -37,7 +38,37 @@ scaffold_paths:
   - docker-compose.override.yaml.example
   - .vscode/launch.json
   - .vscode/tasks.json
+  - packages/shared/package.json
+  - packages/shared/tsconfig.json
+  - packages/shared/src/index.ts
+  - packages/shared/src/result.ts
+  - packages/shared/src/domain-event.ts
+  - packages/shared/src/entity.ts
+  - packages/shared/src/value-object.ts
+  - packages/shared/src/repository.ts
+  - packages/guardrails/package.json
+  - packages/guardrails/tsconfig.json
+  - packages/guardrails/src/cli.ts
+  - packages/guardrails/src/runner.ts
+  - packages/guardrails/src/guards/index.ts
+  - packages/guardrails/src/guards/repository-result.ts
+  - packages/guardrails/src/guards/domain-event-causation.ts
+  - packages/guardrails/src/guards/openapi-route-coverage.ts
+  - packages/guardrails/src/guards/value-object-immutability.ts
+  - packages/guardrails/src/guards/usecase-dependency.ts
   - apps/api/package.json
-  - apps/api/src/index.ts
-  - apps/api/src/index.test.ts
   - apps/api/Dockerfile.dev
+  - apps/api/src/domain/index.ts
+  - apps/api/src/domain/user/user.ts
+  - apps/api/src/domain/user/user-repository.ts
+  - apps/api/src/usecase/index.ts
+  - apps/api/src/usecase/user/create-user.ts
+  - apps/api/src/usecase/user/get-user.ts
+  - apps/api/src/presentation/index.ts
+  - apps/api/src/presentation/router.ts
+  - apps/api/src/presentation/server.ts
+  - apps/api/src/presentation/controllers/user-controller.ts
+  - apps/api/src/infrastructure/index.ts
+  - apps/api/src/infrastructure/repositories/in-memory-user-repository.ts
+  - apps/api/src/composition/index.ts
+  - apps/api/src/composition/container.ts

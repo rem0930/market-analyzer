@@ -219,6 +219,65 @@ OpenAPI 仕様を先に定義し、ドキュメント・クライアント・サ
 
 ---
 
+## Skill.Horizontal_Guardrails
+
+### Trigger
+- 新規実装開始時
+- コードレビュー時
+- CI失敗時（ガードレール関連）
+
+### Purpose
+ESLint boundaries + カスタムガードレールで Clean Architecture + DDD の制約を静的に検査し、AIが暴走してもアーキテクチャが崩壊しない仕組みを維持する。
+
+### Philosophy
+「横のガードレール」とは、**どう作るか**（非機能・実装品質・アーキテクチャ）を静的解析で検証する仕組み。
+
+| ガードレール | 検証対象 | 検証方法 |
+|-------------|---------|---------|
+| 横のガードレール | どう作るか（非機能） | 静的解析 |
+| 縦のガードレール | 何を提供するか（機能） | テスト実行 |
+
+### Guardrails
+
+#### ESLint (eslint-plugin-boundaries)
+レイヤー間の依存制約を検査:
+```
+presentation → usecase → domain ← infrastructure
+```
+
+#### Custom Guardrails
+| Guard ID | 検査内容 |
+|----------|----------|
+| `repository-result` | リポジトリが Result<T> を返すか |
+| `domain-event-causation` | ドメインイベントに因果メタがあるか |
+| `openapi-route-coverage` | OpenAPI仕様と実装の整合性 |
+| `value-object-immutability` | Value Object の不変性 |
+| `usecase-dependency` | UseCase の依存方向 |
+
+### Commands
+```bash
+./tools/contract lint        # ESLint + boundaries
+./tools/contract guardrail   # カスタムガードレール
+```
+
+### Comment Pattern
+```typescript
+/**
+ * @what 何を検査/実装するか（1行）
+ * @why なぜこの検査/実装が必要か（理由）
+ * @failure 違反時にどうなるか（ガードレールのみ）
+ */
+```
+
+### Output
+- ガードレール実行結果（GREEN/RED）
+- 違反箇所の特定と修正提案
+
+### Prompt Reference
+`prompts/skills/horizontal_guardrails.md`
+
+---
+
 ## Quick Reference Table
 
 | ID | Trigger | Purpose |
@@ -231,3 +290,4 @@ OpenAPI 仕様を先に定義し、ドキュメント・クライアント・サ
 | `Skill.Review_As_Staff` | Reviewer起動時 | DocDDリンク確認、NFR観点、rollback妥当性 |
 | `Skill.DevContainer_Safe_Mode` | firewall/permission問題時 | allowlist確認、safeプロファイル維持 |
 | `Skill.OpenAPI_Contract_First` | HTTP API設計/実装時 | OpenAPI仕様を先に定義、コード生成活用 |
+| `Skill.Horizontal_Guardrails` | 実装/レビュー時 | 横のガードレールでアーキテクチャ維持 |
