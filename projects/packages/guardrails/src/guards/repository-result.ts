@@ -4,9 +4,9 @@
  * @failure Result を使っていないリポジトリメソッドを検出した場合に非0終了
  *
  * 検査対象:
- * - domain/**/repository *.ts のインターフェース
-  * - 戻り値が Promise < Result <...>> でない場合は違反
-    */
+ * - domain/配下の repository ファイルのインターフェース
+ * - 戻り値が Promise Result でない場合は違反
+ */
 
 import { glob } from 'glob';
 import * as fs from 'node:fs';

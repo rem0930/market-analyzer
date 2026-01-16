@@ -4,9 +4,9 @@
  * @failure 必須プロパティ（causationId/correlationId/emittedAt）を欠くイベントを検出した場合に非0終了
  *
  * 検査対象:
- * - domain/**/*.ts 内の DomainEvent を継承したクラス
-  * - causationId, correlationId, emittedAt が存在すること
-    */
+ * - domain/ 配下の DomainEvent を継承したクラス
+ * - causationId, correlationId, emittedAt が存在すること
+ */
 
 import { glob } from 'glob';
 import * as fs from 'node:fs';
