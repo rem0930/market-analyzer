@@ -89,7 +89,7 @@ export async function checkOpenapiRouteCoverage(rootDir: string): Promise<GuardR
     while ((match = PARAM_ROUTE_PATTERN.exec(content)) !== null) {
       // 正規表現をOpenAPIパスに変換（簡易）
       // \/users\/([^/]+) → /users/{id}
-      let urlPath = match[1]
+      const urlPath = match[1]
         .replace(/\\\//g, '/')
         .replace(/\(\[\^\/\]\+\)/g, '{id}')
         .replace(/\(\[\^\/\]\*\)/g, '{id}');

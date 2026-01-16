@@ -28,7 +28,6 @@ export async function checkValueObjectImmutability(rootDir: string): Promise<Gua
 
   for (const file of files) {
     const content = fs.readFileSync(file, 'utf-8');
-    const lines = content.split('\n');
 
     // ValueObject を継承したクラスを検出
     let match;
