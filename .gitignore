@@ -144,3 +144,6 @@ temp/
 *.pfx
 secrets/
 .secrets/
+
+# Auto Claude data directory
+.auto-claude/

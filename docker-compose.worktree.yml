@@ -1,0 +1,72 @@
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile.dev
+    container_name: ${WORKTREE}-dev
+    volumes:
+      - .:/workspace:cached
+      - pnpm-store:/home/node/.local/share/pnpm
+    working_dir: /workspace
+    tty: true
+    stdin_open: true
+    networks:
+      - internal
+    command: sleep infinity
+
+  web:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile.dev
+    container_name: ${WORKTREE}-web
+    volumes:
+      - .:/workspace:cached
+      - pnpm-store:/home/node/.local/share/pnpm
+    working_dir: /workspace/projects
+    command: sh -c "pnpm install --frozen-lockfile && cd apps/web && pnpm next dev --hostname 0.0.0.0 --port 3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://be.${WORKTREE}.localhost
+    networks:
+      - internal
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${WORKTREE}-fe.rule=Host(`fe.${WORKTREE}.localhost`)"
+      - "traefik.http.routers.${WORKTREE}-fe.entrypoints=web"
+      - "traefik.http.services.${WORKTREE}-fe.loadbalancer.server.port=3000"
+    depends_on:
+      - dev
+
+  api:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile.dev
+    container_name: ${WORKTREE}-api
+    volumes:
+      - .:/workspace:cached
+      - pnpm-store:/home/node/.local/share/pnpm
+    working_dir: /workspace/projects
+    command: sh -c "pnpm install --frozen-lockfile && pnpm --filter @monorepo/api dev"
+    environment:
+      - NODE_ENV=development
+      - PORT=8080
+    networks:
+      - internal
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${WORKTREE}-be.rule=Host(`be.${WORKTREE}.localhost`)"
+      - "traefik.http.routers.${WORKTREE}-be.entrypoints=web"
+      - "traefik.http.services.${WORKTREE}-be.loadbalancer.server.port=8080"
+    depends_on:
+      - dev
+
+volumes:
+  pnpm-store:
+
+networks:
+  internal:
+    driver: bridge
+  traefik-public:
+    external: true
