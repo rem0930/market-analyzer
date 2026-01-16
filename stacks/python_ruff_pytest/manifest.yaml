@@ -22,10 +22,18 @@ contract_commands:
     - e2e
     - migrate
     - deploy-dryrun
+    - dev
+    - dev:stop
+    - dev:logs
 
 scaffold_paths:
   - pyproject.toml
+  - docker-compose.yaml
+  - Dockerfile.dev
+  - .vscode/launch.json
+  - .vscode/tasks.json
   - src/app/__init__.py
   - src/app/main.py
+  - src/app/server.py
   - tests/__init__.py
   - tests/test_main.py

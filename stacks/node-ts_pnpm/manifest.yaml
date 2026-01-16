@@ -23,6 +23,9 @@ contract_commands:
     - e2e
     - migrate
     - deploy-dryrun
+    - dev
+    - dev:stop
+    - dev:logs
 
 scaffold_paths:
   - package.json
@@ -30,6 +33,11 @@ scaffold_paths:
   - tsconfig.json
   - .prettierrc
   - .eslintrc.cjs
+  - docker-compose.yaml
+  - docker-compose.override.yaml.example
+  - .vscode/launch.json
+  - .vscode/tasks.json
   - apps/api/package.json
   - apps/api/src/index.ts
   - apps/api/src/index.test.ts
+  - apps/api/Dockerfile.dev
