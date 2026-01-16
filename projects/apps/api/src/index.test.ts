@@ -26,12 +26,12 @@ describe('Result', () => {
   });
 
   it('should map success result', () => {
-    const result = Result.ok(5).map((x) => x * 2);
+    const result = Result.ok(5).map((x: number) => x * 2);
     expect(result.value).toBe(10);
   });
 
   it('should not map failure result', () => {
-    const result = Result.fail<number, string>('error').map((x) => x * 2);
+    const result = Result.fail<number, string>('error').map((x: number) => x * 2);
     expect(result.isFailure()).toBe(true);
     expect(result.error).toBe('error');
   });

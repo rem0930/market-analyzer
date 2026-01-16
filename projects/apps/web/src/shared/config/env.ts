@@ -16,7 +16,7 @@ export interface AppConfig {
 /**
  * 環境変数を取得（必須）
  */
-function getEnvVar(key: string, fallback?: string): string {
+export function getEnvVar(key: string, fallback?: string): string {
   // Next.js の public env は NEXT_PUBLIC_ プレフィックス
   const value =
     (typeof process !== 'undefined' && process.env?.[key]) || fallback;
@@ -31,7 +31,7 @@ function getEnvVar(key: string, fallback?: string): string {
 /**
  * 環境変数を取得（オプション）
  */
-function getOptionalEnvVar(key: string, fallback = ''): string {
+export function getOptionalEnvVar(key: string, fallback = ''): string {
   return (typeof process !== 'undefined' && process.env?.[key]) || fallback;
 }
 
