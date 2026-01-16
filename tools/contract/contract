@@ -2,7 +2,18 @@
 #
 # Golden Commands - Node.js + TypeScript (pnpm workspace)
 #
+# DevContainer 対応:
+#   - ホストから実行: 自動的に DevContainer 内で実行
+#   - DevContainer 内から実行: 直接実行
+#
 set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+LIB_DIR="${REPO_ROOT}/tools/contract/lib"
+
+# DevContainer 実行ヘルパーを読み込み
+# shellcheck source=lib/devcontainer-exec.sh
+source "${LIB_DIR}/devcontainer-exec.sh"
 
 cmd="${1:-}"
 if [[ -z "${cmd}" ]]; then
@@ -26,7 +37,6 @@ if [[ -z "${cmd}" ]]; then
   exit 2
 fi
 
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "${REPO_ROOT}"
 
 script="tools/contract/stack/${cmd}"
@@ -42,4 +52,15 @@ if [[ ! -x "${script}" ]]; then
   chmod +x "${script}"
 fi
 
-exec "${script}" "${@:2}"
+# DevContainer 関連のコマンドはホストで直接実行
+# それ以外は DevContainer 内で実行
+case "${cmd}" in
+  dev|dev:stop|dev:logs)
+    # Docker Compose 操作はホストで実行
+    exec "${script}" "${@:2}"
+    ;;
+  *)
+    # その他のコマンドは DevContainer 内で実行
+    devcontainer_exec "${script}" "${@:2}"
+    ;;
+esac
