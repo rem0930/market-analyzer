@@ -13,6 +13,22 @@
 
 ---
 
+## 実行モード
+
+このスキルは 2 つのモードをサポート:
+
+| モード | 説明 | ユースケース |
+|--------|------|-------------|
+| **IDE モード** | VS Code DevContainer 内で Claude を実行 | VS Code ユーザー |
+| **CLI モード** | ホストから Claude CLI を実行し、コマンドは DevContainer 内で実行 | ターミナル派、Vim/Emacs ユーザー |
+
+**CLI モードの仕組み:**
+- ファイル編集: ホストから直接（ボリュームマウントで同期）
+- コマンド実行: `./tools/contract` 経由で自動的に DevContainer 内で実行
+- DevContainer 未起動時は自動起動
+
+---
+
 ## Automated Flow
 
 ### Step 1: 環境チェック
@@ -25,12 +41,12 @@ git worktree list && pwd
 
 **判定マトリクス:**
 
-| Worktree       | DevContainer | Action                                          |
-| -------------- | ------------ | ----------------------------------------------- |
-| ❌ main にいる | ❌ 外        | → Step 2, 3 を実行                              |
-| ✅ worktree    | ❌ 外        | → Step 3 を実行                                 |
-| ❌ main にいる | ✅ 内        | → Step 2 を実行（異常系：main の DevContainer） |
-| ✅ worktree    | ✅ 内        | → Step 4 へ（準備完了）                         |
+| Worktree       | DevContainer | Action                                            |
+| -------------- | ------------ | ------------------------------------------------- |
+| ❌ main にいる | ❌ 外        | → Step 2 を実行、Step 3 で選択肢を提示            |
+| ✅ worktree    | ❌ 外        | → Step 3 で選択肢を提示                           |
+| ❌ main にいる | ✅ 内        | → Step 2 を実行（異常系：main の DevContainer）   |
+| ✅ worktree    | ✅ 内        | → Step 4 へ（準備完了）                           |
 
 ### Step 2: Worktree 自動作成
 
@@ -59,27 +75,30 @@ git worktree list && pwd
 ./tools/worktree/spawn.sh implementer <generated-branch-name>
 ```
 
-### Step 3: DevContainer 自動起動
+### Step 3: 実行モード選択（DevContainer 外の場合）
 
-Worktree 作成後、VS Code DevContainer を自動起動:
+DevContainer 外で実行された場合、以下の選択肢を提示:
+
+**選択肢 A: CLI モード（推奨）**
+- このセッションを継続
+- DevContainer を起動（未起動の場合）
+- `./tools/contract` 経由でコマンドを DevContainer 内で実行
+
+**選択肢 B: IDE モード**
+- VS Code DevContainer を起動
+- 新しいウィンドウで `/kickoff` を再実行
 
 ```bash
-# Worktree パスから DevContainer URI を生成して起動
+# CLI モード: DevContainer を起動
+cd <worktree-path>
+./scripts/init-environment.sh
+
+# IDE モード: VS Code DevContainer を起動
 WORKTREE_PATH="/path/to/worktrees/<branch>"
 code --folder-uri "vscode-remote://dev-container+$(echo -n "$WORKTREE_PATH" | xxd -p | tr -d '\n')/workspace"
 ```
 
-**起動後の案内:**
-
-```text
-DevContainer を起動しました。
-新しい VS Code ウィンドウで DevContainer が起動したら、
-そこで再度 `/kickoff <タスク説明>` を実行してください。
-```
-
 ### Step 4: Contract 読み込みと DocDD 成果物特定
-
-DevContainer 内で実行された場合のみ:
 
 1. **AGENTS.md を読み込む**
 2. **タスク種別を判定**
@@ -111,11 +130,23 @@ START
   │
   ├─ [Check] DevContainer 内か？
   │    │
-  │    ├─ No → [Action] VS Code DevContainer を起動
-  │    │         ↓
-  │    │       [Output] 「DevContainer で再度 /kickoff を実行してください」
-  │    │         ↓
-  │    │       END (このセッションは終了)
+  │    ├─ No → [Ask] CLI モード or IDE モード？
+  │    │         │
+  │    │         ├─ CLI モード
+  │    │         │    ↓
+  │    │         │  [Action] DevContainer 起動（docker compose up）
+  │    │         │    ↓
+  │    │         │  [Output] 「CLI モードで準備完了」
+  │    │         │    ↓
+  │    │         │  続行 → Step 4
+  │    │         │
+  │    │         └─ IDE モード
+  │    │              ↓
+  │    │            [Action] VS Code DevContainer を起動
+  │    │              ↓
+  │    │            [Output] 「DevContainer で再度 /kickoff を実行してください」
+  │    │              ↓
+  │    │            END (このセッションは終了)
   │    │
   │    └─ Yes → 続行
   │
@@ -132,7 +163,36 @@ START
 
 ## Output Format
 
-### 環境構築中（Worktree/DevContainer 起動時）
+### CLI モード準備完了
+
+```markdown
+## Kickoff 完了: <タスク説明>
+
+### 環境 ✅
+| 項目 | 状態 |
+|------|------|
+| Worktree | ✅ `feat/add-login` |
+| 実行モード | 🖥️ CLI モード |
+| DevContainer | ✅ 起動中 (`feat-add-login-dev`) |
+
+### 動作
+- ファイル編集: ホストから直接
+- コマンド実行: `./tools/contract` → DevContainer 内で自動実行
+
+### 制約 (AGENTS.md)
+- DocDD: Spec/Plan/AC なしで実装しない
+- Golden Commands: `./tools/contract` 経由で実行
+
+### このタスクで必要な DocDD 成果物
+- [ ] Spec (`.specify/specs/<id>/spec.md`)
+- [ ] Plan (`.specify/specs/<id>/plan.md`)
+- [ ] Tests
+
+### 次のステップ
+1. Spec を作成: `Skill.DocDD_Spec_First` を実行
+```
+
+### IDE モード（DevContainer 起動案内）
 
 ```markdown
 ## Kickoff: <タスク説明>
@@ -155,7 +215,7 @@ DevContainer が起動したら、そのウィンドウで再度実行:
 | 項目 | 状態 |
 |------|------|
 | Worktree | ✅ `feat/add-login` |
-| DevContainer | ✅ 起動中 |
+| 実行モード | 🐳 IDE モード (DevContainer 内) |
 
 ### 制約 (AGENTS.md)
 - DocDD: Spec/Plan/AC なしで実装しない

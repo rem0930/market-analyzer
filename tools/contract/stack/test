@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
-REPO_ROOT="$(git rev-parse --show-toplevel)"
+# REPO_ROOT は環境変数で渡される場合があるため、未設定の場合のみ git で取得
+REPO_ROOT="${REPO_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
 PROJECTS_DIR="${REPO_ROOT}/projects"
 
 if [[ -d "${PROJECTS_DIR}" ]] && [[ -f "${PROJECTS_DIR}/package.json" ]]; then

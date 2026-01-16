@@ -3,7 +3,7 @@
 # OpenAPI から TypeScript クライアント/型を生成
 #
 set -euo pipefail
-REPO_ROOT="$(git rev-parse --show-toplevel)"
+REPO_ROOT="${REPO_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
 PROJECTS_DIR="${REPO_ROOT}/projects"
 
 if [[ -d "${PROJECTS_DIR}" ]] && [[ -f "${PROJECTS_DIR}/package.json" ]]; then
