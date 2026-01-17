@@ -152,10 +152,9 @@ secrets/
 !.claude/agents/
 !.claude/commands/
 !.claude/hooks/
-!.claude/rules/
 !.claude/skills/
 !.claude/settings.json
-!.claude/settings.local.json.template
+.claude/settings.local.json
 .auto-claude/
 
 # ==============================================================================

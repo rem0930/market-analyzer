@@ -1,34 +1,36 @@
 ---
-description: Start development workflow with worktree and environment setup
-allowed-tools: Bash(./tools/*:*), Bash(git:*), Bash(docker:*), Read, Glob
-argument-hint: <task-description>
+description: Start development with parallel subagent exploration
+allowed-tools: Bash, Read, Grep, Glob
 ---
 
-# Kickoff Development Workflow
+# Kickoff Development
 
-Start a new development task with proper environment setup.
+Start a new task with parallel exploration.
 
-## Task Description
+## Task
 
 $ARGUMENTS
 
-## Steps
+## Workflow
 
-1. Check current environment (worktree status, DevContainer)
-2. Create worktree if on main branch
-3. Setup DevContainer or CLI mode
-4. Load AGENTS.md contract
-5. Identify required DocDD artifacts
+1. **Parallel Exploration** (background agents)
+   - repo-explorer: Find relevant files
+   - security-auditor: Identify security concerns
+   - code-reviewer: Review related code
 
-## Execution
+2. **Read Contract**
+   - Load AGENTS.md
+   - Check DocDD requirements
 
-Run environment check:
+3. **Report** findings and next steps
+
+## Environment Check
+
 ```bash
-git worktree list && pwd
-[[ -f "/.dockerenv" ]] || [[ -n "$REMOTE_CONTAINERS" ]] && echo "DEVCONTAINER: true" || echo "DEVCONTAINER: false"
+git worktree list
+pwd
 ```
 
-Read the contract:
-```
-{{file:AGENTS.md}}
-```
+## Contract Reference
+
+Read `AGENTS.md` for repository rules.

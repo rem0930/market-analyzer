@@ -16,11 +16,10 @@ Claude Code の設定は **2 レイヤー** で構成されています。
 
 | Component | Path | Purpose |
 |-----------|------|---------|
-| **Rules** | `.claude/rules/` | 常設コンテキスト（メモリ階層） |
-| **Commands** | `.claude/commands/` | カスタム slash commands |
-| **Skills** | `.claude/skills/` | 再利用可能な知識・手順 |
-| **Hooks (Post)** | `settings.json` | 自動フォーマット・lint |
-| **Agents** | `.claude/agents/` | タスク特化サブエージェント |
+| **Agents** | `.claude/agents/` | 並列サブエージェント（探索/監査/テスト/レビュー/実装） |
+| **Skills** | `.claude/skills/` | ドメイン知識（DDD, FSD, Security, Quality Gates） |
+| **Commands** | `.claude/commands/` | スラッシュコマンド（/kickoff, /pr-check） |
+| **Hooks (Post)** | `settings.json` | 自動フォーマット |
 
 ### Layer B: Defense (セキュリティ・ガードレール)
 
@@ -30,53 +29,48 @@ Claude Code の設定は **2 レイヤー** で構成されています。
 |-----------|------|---------|
 | **Deny Rules** | `settings.json` | 絶対禁止（secrets保護、破壊的コマンド） |
 | **PreToolUse Hook** | `.claude/hooks/` | 実行前ブロック |
+| **Allow (minimal)** | `settings.json` | 背景サブエージェント用最小権限 |
 | **DevContainer** | `.devcontainer/` | 隔離環境での実行 |
-| **Ask Rules** | `settings.local.json` | 確認が必要な操作 |
 
 ---
 
-## Directory Structure
+## Sub-Agents (Parallel by Default)
+
+サブエージェントは **並列実行がデフォルト**。`"use proactively"` で自動委譲。
+
+| Agent | Role | Tools | Trigger Keywords |
+|-------|------|-------|------------------|
+| `repo-explorer` | コードベース探索（read-only） | Read, Grep, Glob | explore, find, where, how |
+| `security-auditor` | セキュリティ監査（read-only） | Read, Grep, Glob | security, audit, vulnerability |
+| `test-runner` | テスト/lint実行 | Bash, Read | test, lint, typecheck, ci |
+| `code-reviewer` | コードレビュー（read-only） | Read, Grep, Glob | review, PR, feedback |
+| `implementer` | 実装（最小差分） | All | implement, fix, add, create |
+
+### 並列実行例
 
 ```
-.claude/
-├── agents/                    # Sub-agents (task-specific)
-│   ├── architect.md
-│   ├── implementer.md
-│   ├── reviewer.md
-│   └── ...
-├── commands/                  # Slash commands (/kickoff, /review)
-│   ├── kickoff.md
-│   ├── review.md
-│   ├── fix-ci.md
-│   └── spec.md
-├── rules/                     # Persistent context rules
-│   ├── 00-core.md            # Non-negotiables
-│   ├── 01-typescript.md      # TypeScript conventions
-│   ├── 02-api.md             # API development
-│   └── 03-frontend.md        # Frontend conventions
-├── skills/                    # Reusable skills
-│   ├── minimize-diff/
-│   ├── docdd-spec-first/
-│   └── guardrails/
-├── hooks/                     # Execution hooks
-│   ├── pre-bash.sh           # PreToolUse: block dangerous ops
-│   └── post-edit.sh          # PostToolUse: auto-format
-├── settings.json              # Layer B: deny rules + hooks
-└── settings.local.json.template  # Layer A: allow/ask template
+User: "認証機能を追加して"
+
+→ 並列起動:
+  - repo-explorer: 既存コードを探索
+  - security-auditor: 認証関連のセキュリティ確認
+  - code-reviewer: 関連コードの品質確認
+
+→ 結果を統合して implementer が実装
+→ test-runner がテスト実行
 ```
 
 ---
 
-## Sub-Agents
+## Skills
 
-| Agent | Purpose | Trigger Example |
-|-------|---------|-----------------|
-| Implementer | Feature implementation, bug fixes | "Implement user auth" |
-| Architect | ADR creation, system design | "Create caching ADR" |
-| QA Tester | Test planning, quality assurance | "Create test plan for AC-001" |
-| Code Reviewer | PR reviews, code quality | "Review this PR" |
-| Product Designer | UX/UI design | "Design login flow" |
-| Product Manager | Requirements, Spec creation | "Create user registration spec" |
+| Skill | Purpose |
+|-------|---------|
+| `security-baseline` | 入力検証、認証、XSS、依存関係セキュリティ |
+| `ddd-clean-architecture` | レイヤー依存、境界、ドメイン純度 |
+| `fsd-frontend` | Feature-Sliced Design、Next.js配置 |
+| `quality-gates` | lint/test/typecheck の実行順序 |
+| `repo-conventions` | リポジトリ固有のルール（DocDD, ブランチ命名） |
 
 ---
 
@@ -84,57 +78,63 @@ Claude Code の設定は **2 レイヤー** で構成されています。
 
 | Command | Description |
 |---------|-------------|
-| `/kickoff <task>` | Start development workflow |
-| `/review [pr]` | Review code with Staff perspective |
-| `/fix-ci [error]` | Fix CI failures with minimal diff |
-| `/spec <feature>` | Create DocDD specification |
+| `/kickoff <task>` | 並列探索で開発開始 |
+| `/pr-check` | レビュー/テスト/セキュリティチェック |
+| `/deps-audit` | 依存関係監査 |
+
+---
+
+## Directory Structure
+
+```
+.claude/
+├── agents/           # Sub-agents (parallel execution)
+│   ├── repo-explorer.md
+│   ├── security-auditor.md
+│   ├── test-runner.md
+│   ├── code-reviewer.md
+│   └── implementer.md
+├── skills/           # Domain knowledge
+│   ├── security-baseline/
+│   ├── ddd-clean-architecture/
+│   ├── fsd-frontend/
+│   ├── quality-gates/
+│   └── repo-conventions/
+├── commands/         # Slash commands
+│   ├── kickoff.md
+│   ├── pr-check.md
+│   └── deps-audit.md
+├── hooks/            # Pre/Post tool hooks
+│   ├── pre-bash.sh
+│   └── post-edit.sh
+└── settings.json     # Permissions + hooks config
+```
 
 ---
 
 ## Security Configuration
 
-### Deny Rules (settings.json) - DO NOT MODIFY
+### Deny Rules (DO NOT MODIFY)
 
 Always blocked:
 
-- **Secrets**: `.env*`, `secrets/`, `*.pem`, `*.key`, `credentials*`
+- **Secrets**: `.env*`, `secrets/`, `*.pem`, `*.key`
 - **Destructive**: `rm -rf /`, `sudo *`, `curl | bash`
-- **Exfiltration**: `echo $*_KEY*`, `printenv *SECRET*`, `env > *`
+- **Exfiltration**: `echo $*_KEY*`, `printenv *SECRET*`
 - **Git Dangerous**: `git push --force`, `git reset --hard`
 
-### Allow Rules (settings.local.json) - Personal
+### Allow Rules (Minimal for Background Agents)
 
 Auto-approved:
 
-- `./tools/contract *` (Golden Commands)
-- `git status/diff/log` (read-only)
-- `docker ps/logs` (read-only)
+- `./tools/contract lint/test/typecheck/build`
+- `git status/diff/log`
+- `pnpm audit/outdated`
 
-### Ask Rules (settings.local.json) - Confirm Each Time
+### Hooks
 
-- `git add/commit/push` (write operations)
-- `docker compose up/down` (container lifecycle)
-- `pnpm install` (dependency changes)
-
-### Setup
-
-```bash
-cp .claude/settings.local.json.template .claude/settings.local.json
-```
-
----
-
-## Hooks
-
-### PreToolUse (pre-bash.sh)
-
-- Block main/master branch operations
-- Block force push
-- Warn about raw commands (use `./tools/contract`)
-
-### PostToolUse (post-edit.sh)
-
-- Auto-format TypeScript files after edit
+- **PreToolUse**: Block main branch ops, force push, pipe-to-shell
+- **PostToolUse**: Auto-format TypeScript files
 
 ---
 
@@ -149,10 +149,6 @@ cp .claude/settings.local.json.template .claude/settings.local.json
 ./tools/contract build
 ./tools/contract guardrail
 
-# Development
-./tools/contract dev
-./tools/contract dev:stop
-
 # Worktree
 ./tools/worktree/spawn.sh <branch>
 ./tools/worktree/cleanup.sh
@@ -160,26 +156,12 @@ cp .claude/settings.local.json.template .claude/settings.local.json
 
 ---
 
-## Key Paths
-
-| Category | Path |
-|----------|------|
-| Process | `docs/00_process/` |
-| Product | `docs/01_product/` |
-| Architecture | `docs/02_architecture/` |
-| Quality | `docs/03_quality/` |
-| Code | `projects/` |
-| Agent Prompts | `prompts/agents/` |
-| Skill Prompts | `prompts/skills/` |
-
----
-
 ## Workflow
 
-1. **Read Contract First**: `AGENTS.md` + `docs/00_process/process.md`
+1. **Read Contract First**: `AGENTS.md`
 2. **DocDD**: No implementation without Spec/Plan/AC
 3. **Golden Commands**: Always use `./tools/contract`
-4. **Docs Drift**: Update docs with code changes
+4. **Parallel Agents**: Let background agents explore/audit
 5. **Minimize Diff**: Single root cause, smallest fix
 
 ---
@@ -191,9 +173,3 @@ Use `context7` for latest library documentation:
 ```text
 Create Prisma user table use context7
 ```
-
-Recommended for:
-- New library introduction
-- Library updates
-- API implementation
-- Config file creation

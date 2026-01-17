@@ -38,8 +38,16 @@ if [[ "$COMMAND" =~ rm\ -rf\ [./]*$ ]] || \
   exit 2
 fi
 
+# Block pipe to shell execution
+if [[ "$COMMAND" =~ curl.*\|.*(bash|sh) ]] || \
+   [[ "$COMMAND" =~ wget.*\|.*(bash|sh) ]]; then
+  echo "BLOCKED: Piping download to shell execution is forbidden."
+  exit 2
+fi
+
 # Warn about raw commands (should use ./tools/contract)
-if [[ "$COMMAND" =~ ^(pnpm|npm|yarn|bun)\ (test|lint|build|format) ]]; then
+if [[ "$COMMAND" =~ ^(pnpm|npm|yarn|bun)\ (test|lint|build|format) ]] && \
+   [[ ! "$COMMAND" =~ ^pnpm\ (audit|outdated) ]]; then
   echo "WARNING: Use './tools/contract' instead of raw package manager commands."
   echo "Command: $COMMAND"
   # Exit 1 = warning, continues execution

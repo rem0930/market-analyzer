@@ -3,6 +3,20 @@
   "_comment": "Layer B (Defense): Security guardrails - DO NOT MODIFY deny rules",
 
   "permissions": {
+    "allow": [
+      "// === Safe Read-Only Commands (for background subagents) ===",
+      "Bash(./tools/contract lint:*)",
+      "Bash(./tools/contract typecheck:*)",
+      "Bash(./tools/contract test:*)",
+      "Bash(./tools/contract build:*)",
+      "Bash(./tools/contract format:*)",
+      "Bash(./tools/contract guardrail:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(pnpm audit:*)",
+      "Bash(pnpm outdated:*)"
+    ],
     "deny": [
       "// === Secrets & Credentials (File Access) ===",
       "Read(**/.env)",
@@ -73,7 +87,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/pre-bash.sh",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/pre-bash.sh",
             "timeout": 5
           }
         ]
@@ -85,7 +99,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/post-edit.sh",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/post-edit.sh",
             "timeout": 30
           }
         ]
