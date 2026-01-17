@@ -24,14 +24,20 @@ services:
     volumes:
       - .:/workspace:cached
       - pnpm-store:/home/node/.local/share/pnpm
-    working_dir: /workspace
+    working_dir: /workspace/projects
     tty: true
     stdin_open: true
     networks:
       - internal
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/app
-    command: sleep infinity
+    command: sh -c "pnpm install && touch /workspace/.dev-ready && sleep infinity"
+    healthcheck:
+      test: ["CMD", "test", "-f", "/workspace/.dev-ready"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+      start_period: 120s
     depends_on:
       db:
         condition: service_healthy
@@ -44,8 +50,8 @@ services:
     volumes:
       - .:/workspace:cached
       - pnpm-store:/home/node/.local/share/pnpm
-    working_dir: /workspace/projects
-    command: sh -c "pnpm install && cd apps/web && pnpm next dev --hostname 0.0.0.0 --port 3000"
+    working_dir: /workspace/projects/apps/web
+    command: sh -c "pnpm next dev --hostname 0.0.0.0 --port 3000"
     environment:
       - NODE_ENV=development
       - NEXT_PUBLIC_API_URL=http://be.${WORKTREE}.localhost
@@ -58,7 +64,8 @@ services:
       - "traefik.http.routers.${WORKTREE}-fe.entrypoints=web"
       - "traefik.http.services.${WORKTREE}-fe.loadbalancer.server.port=3000"
     depends_on:
-      - dev
+      dev:
+        condition: service_healthy
 
   api:
     build:
@@ -69,7 +76,7 @@ services:
       - .:/workspace:cached
       - pnpm-store:/home/node/.local/share/pnpm
     working_dir: /workspace/projects
-    command: sh -c "pnpm install && pnpm --filter @monorepo/shared build && pnpm --filter @monorepo/api db:generate && pnpm --filter @monorepo/api dev"
+    command: sh -c "pnpm --filter @monorepo/shared build && pnpm --filter @monorepo/api db:generate && pnpm --filter @monorepo/api dev"
     environment:
       - NODE_ENV=development
       - PORT=8080
@@ -84,7 +91,7 @@ services:
       - "traefik.http.routers.${WORKTREE}-be.entrypoints=web"
       - "traefik.http.services.${WORKTREE}-be.loadbalancer.server.port=8080"
     depends_on:
-      db:
+      dev:
         condition: service_healthy
 
 volumes:
