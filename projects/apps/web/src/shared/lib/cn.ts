@@ -1,8 +1,11 @@
 /**
  * @layer shared
  * @segment lib
- * @what クラス名結合ユーティリティ（tailwind-merge 風）
+ * @what クラス名結合ユーティリティ（Tailwind クラス競合を正しく解決）
  */
-export function cn(...classes: (string | undefined | null | false)[]): string {
-  return classes.filter(Boolean).join(' ');
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+export function cn(...inputs: ClassValue[]): string {
+  return twMerge(clsx(inputs));
 }

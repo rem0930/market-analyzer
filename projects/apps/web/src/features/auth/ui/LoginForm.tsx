@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useAuth } from '../model/useAuth';
-import { loginSchema, type LoginFormData } from '@/shared/lib/validation';
+import { typedLoginSchema, type LoginFormData } from '@/shared/lib/validation';
 import { Button, FormField } from '@/shared/ui';
 
 export function LoginForm() {
@@ -20,8 +20,7 @@ export function LoginForm() {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormData>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(loginSchema as any),
+    resolver: zodResolver(typedLoginSchema),
   });
 
   const onSubmit = (data: LoginFormData) => {

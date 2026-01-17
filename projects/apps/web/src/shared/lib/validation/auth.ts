@@ -6,6 +6,7 @@
  */
 
 import { z } from 'zod';
+import type { ZodType } from 'zod';
 
 export const loginSchema = z.object({
   email: z
@@ -37,3 +38,7 @@ export const registerSchema = z.object({
 
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
+
+// Type-safe schema exports for @hookform/resolvers compatibility
+export const typedLoginSchema: ZodType<LoginFormData> = loginSchema;
+export const typedRegisterSchema: ZodType<RegisterFormData> = registerSchema;
