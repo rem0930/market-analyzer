@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Contract: up:stop - Stop development environment
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+cd "${REPO_ROOT}"
+
+WORKTREE="${WORKTREE:-$(basename "$(pwd)")}"
+export WORKTREE
+
+if docker compose version &>/dev/null; then
+  COMPOSE_CMD="docker compose"
+else
+  COMPOSE_CMD="docker-compose"
+fi
+
+echo "🛑 Stopping development environment..."
+${COMPOSE_CMD} -f docker-compose.worktree.yml down
+
+echo "✅ Environment stopped."

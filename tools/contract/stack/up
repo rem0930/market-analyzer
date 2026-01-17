@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+# Contract: up - Start full development environment with DevContainer
+# Uses docker-compose.worktree.yml for web + api + db with Traefik routing
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+cd "${REPO_ROOT}"
+
+# Get worktree name from current directory or git branch
+WORKTREE="${WORKTREE:-$(basename "$(pwd)")}"
+export WORKTREE
+
+echo "🚀 Starting development environment with DevContainer..."
+echo "   Worktree: ${WORKTREE}"
+echo ""
+
+# Check if docker compose (V2) is available
+if docker compose version &>/dev/null; then
+  COMPOSE_CMD="docker compose"
+else
+  COMPOSE_CMD="docker-compose"
+fi
+
+# Check for compose file
+if [[ ! -f "docker-compose.worktree.yml" ]]; then
+  echo "ERROR: docker-compose.worktree.yml not found"
+  exit 1
+fi
+
+# Ensure traefik network exists
+if ! docker network inspect traefik-public &>/dev/null; then
+  echo "📡 Creating traefik-public network..."
+  docker network create traefik-public
+fi
+
+# Build and start all services (includes DevContainer 'dev' service)
+echo "🔨 Building and starting services..."
+${COMPOSE_CMD} -f docker-compose.worktree.yml up --build -d
+
+# Wait for dev container to be ready
+echo "⏳ Waiting for DevContainer to be ready..."
+DEV_CONTAINER="${WORKTREE}-dev"
+for i in {1..30}; do
+  if docker exec "${DEV_CONTAINER}" echo "ready" &>/dev/null; then
+    break
+  fi
+  sleep 1
+done
+
+# Run initial setup in DevContainer
+echo "📦 Installing dependencies in DevContainer..."
+docker exec -w /workspace/projects "${DEV_CONTAINER}" pnpm install 2>/dev/null || true
+
+echo ""
+echo "════════════════════════════════════════════════════════════════"
+echo "✅ Development environment started!"
+echo "════════════════════════════════════════════════════════════════"
+echo ""
+echo "📍 Access Points:"
+echo "┌─────────────┬──────────────────────────────────────────────┐"
+echo "│ Frontend    │ http://fe.${WORKTREE}.localhost              │"
+echo "│ API         │ http://be.${WORKTREE}.localhost              │"
+echo "│ Database    │ postgresql://postgres:postgres@localhost:5432/app │"
+echo "└─────────────┴──────────────────────────────────────────────┘"
+echo ""
+echo "🐳 DevContainer:"
+echo "   Container: ${DEV_CONTAINER}"
+echo "   Attach:    docker exec -it ${DEV_CONTAINER} bash"
+echo ""
+echo "🛠️  Commands:"
+echo "   ./tools/contract up:logs    - View logs"
+echo "   ./tools/contract up:logs web - View frontend logs"
+echo "   ./tools/contract up:logs api - View API logs"
+echo "   ./tools/contract up:stop    - Stop environment"
+echo "   ./tools/contract up:status  - Show container status"
+echo ""
+echo "════════════════════════════════════════════════════════════════"

@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Contract: up:logs - View development environment logs
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+cd "${REPO_ROOT}"
+
+WORKTREE="${WORKTREE:-$(basename "$(pwd)")}"
+export WORKTREE
+
+if docker compose version &>/dev/null; then
+  COMPOSE_CMD="docker compose"
+else
+  COMPOSE_CMD="docker-compose"
+fi
+
+# Pass service name if provided, otherwise show all
+SERVICE="${1:-}"
+
+if [[ -n "${SERVICE}" ]]; then
+  ${COMPOSE_CMD} -f docker-compose.worktree.yml logs -f "${SERVICE}"
+else
+  ${COMPOSE_CMD} -f docker-compose.worktree.yml logs -f
+fi
