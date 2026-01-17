@@ -1,4 +1,21 @@
 services:
+  db:
+    image: postgres:16-alpine
+    container_name: ${WORKTREE}-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=app
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   dev:
     build:
       context: .
@@ -12,7 +29,12 @@ services:
     stdin_open: true
     networks:
       - internal
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/app
     command: sleep infinity
+    depends_on:
+      db:
+        condition: service_healthy
 
   web:
     build:
@@ -52,6 +74,7 @@ services:
       - NODE_ENV=development
       - PORT=8080
       - CORS_ALLOWED_ORIGINS=http://fe.${WORKTREE}.localhost,http://localhost:3000
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/app
     networks:
       - internal
       - traefik-public
@@ -61,10 +84,12 @@ services:
       - "traefik.http.routers.${WORKTREE}-be.entrypoints=web"
       - "traefik.http.services.${WORKTREE}-be.loadbalancer.server.port=8080"
     depends_on:
-      - dev
+      db:
+        condition: service_healthy
 
 volumes:
   pnpm-store:
+  db-data:
 
 networks:
   internal:
