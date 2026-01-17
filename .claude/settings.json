@@ -1,0 +1,50 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker ps:*)"
+    ],
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/.env.local)",
+      "Read(**/secrets/**)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Read(**/*.p12)",
+      "Read(**/*.pfx)",
+      "Read(**/credentials*)",
+      "Read(**/*secret*)",
+      "Read(**/*credential*)",
+      "Edit(**/.env)",
+      "Edit(**/.env.*)",
+      "Edit(**/.env.local)",
+      "Edit(**/secrets/**)",
+      "Edit(**/*.pem)",
+      "Edit(**/*.key)",
+      "Write(**/.env)",
+      "Write(**/.env.*)",
+      "Write(**/.env.local)",
+      "Write(**/secrets/**)",
+      "Write(**/*.pem)",
+      "Write(**/*.key)",
+      "Bash(rm -rf /*)",
+      "Bash(rm -rf ~/*)",
+      "Bash(sudo *)",
+      "Bash(curl * | bash*)",
+      "Bash(curl * | sh*)",
+      "Bash(wget * | bash*)",
+      "Bash(wget * | sh*)",
+      "Bash(cat */.env*)",
+      "Bash(cat */secrets/*)",
+      "Bash(echo $*_KEY*)",
+      "Bash(echo $*_SECRET*)",
+      "Bash(echo $*_TOKEN*)",
+      "Bash(echo $*_PASSWORD*)",
+      "Bash(printenv *KEY*)",
+      "Bash(printenv *SECRET*)",
+      "Bash(printenv *TOKEN*)",
+      "Bash(export *=* > *)",
+      "Bash(env > *)"
+    ]
+  }
+}
