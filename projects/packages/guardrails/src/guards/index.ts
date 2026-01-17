@@ -9,6 +9,7 @@ export { checkDomainEventCausation } from './domain-event-causation.js';
 export { checkOpenapiRouteCoverage } from './openapi-route-coverage.js';
 export { checkValueObjectImmutability } from './value-object-immutability.js';
 export { checkUsecaseDependency } from './usecase-dependency.js';
+export { checkDomainPurity } from './domain-purity.js';
 
 // Feature-Sliced Design (Web) 用ガードレール
 export { checkFsdPublicApi } from './fsd-public-api.js';

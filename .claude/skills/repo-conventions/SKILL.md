@@ -1,10 +1,11 @@
 ---
 name: repo-conventions
-description: Repository-specific conventions and contracts. Apply when starting tasks, creating PRs, or questioning existing patterns.
-tools:
-  - Read
-  - Grep
-  - Glob
+description: Repository-specific conventions and contracts. Apply when starting tasks, creating PRs, or questioning existing patterns. Triggers on "convention", "workflow", "PR", "commit", "branch", "DocDD".
+globs:
+  - "AGENTS.md"
+  - "docs/00_process/**"
+  - ".specify/**"
+alwaysApply: false
 ---
 
 # Repository Conventions

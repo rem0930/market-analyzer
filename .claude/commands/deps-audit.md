@@ -1,32 +1,61 @@
 ---
 description: Audit dependencies for vulnerabilities and updates
-allowed-tools: Bash, Read, Grep
+allowed-tools: Bash, Read, Grep, Task
 ---
 
 # Dependency Audit
 
-Check for vulnerable or outdated dependencies.
+Comprehensive dependency security and health check.
 
-## Commands
+## Instructions
+
+### Step 1: Run Audit Commands
+
+Execute these commands (can run in parallel):
 
 ```bash
 # Check for known vulnerabilities
-pnpm audit
+pnpm audit --json 2>/dev/null || pnpm audit
 
 # List outdated packages
 pnpm outdated
 
-# Check for unused dependencies
-pnpm dlx depcheck
+# Check lock file integrity
+pnpm install --frozen-lockfile --dry-run
+```
+
+### Step 2: Security Scan (parallel)
+
+Launch security-auditor agent:
+- Prompt: "Scan dependencies for: supply chain risks, typosquatting, deprecated packages, known malicious packages."
+
+### Step 3: Generate Report
+
+```markdown
+## Dependency Audit Report
+
+### Vulnerabilities
+| Severity | Package | CVE | Fix Available |
+|----------|---------|-----|---------------|
+
+### Outdated Packages
+| Package | Current | Latest | Type |
+|---------|---------|--------|------|
+
+### Recommendations
+1. **Critical** (fix immediately): ...
+2. **High** (fix soon): ...
+3. **Medium** (plan upgrade): ...
+4. **Low** (informational): ...
+
+### Unused Dependencies
+- [ ] Package to remove: ...
 ```
 
 ## Review Points
 
 1. **Critical CVEs**: Must fix before merge
-2. **High CVEs**: Should fix soon
-3. **Outdated majors**: Plan upgrade path
+2. **High CVEs**: Should fix within sprint
+3. **Outdated majors**: Plan upgrade path (may have breaking changes)
 4. **Unused deps**: Remove to reduce attack surface
-
-## Output
-
-Report findings with severity and recommended actions.
+5. **Deprecated deps**: Plan migration to alternatives

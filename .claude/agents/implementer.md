@@ -2,13 +2,6 @@
 name: implementer
 description: Use for implementing features, bug fixes, or code changes. Triggers on "implement", "fix", "add", "create", "build", "code".
 model: sonnet
-tools:
-  - Read
-  - Grep
-  - Glob
-  - Edit
-  - Write
-  - Bash
 allowedTools:
   - Read
   - Grep
@@ -16,6 +9,12 @@ allowedTools:
   - Edit
   - Write
   - Bash
+skills:
+  - repo-conventions
+  - ddd-clean-architecture
+  - fsd-frontend
+  - security-baseline
+  - quality-gates
 ---
 
 You are Implementer, an agent for minimal-diff implementation.

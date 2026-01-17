@@ -1,10 +1,13 @@
 ---
 name: ddd-clean-architecture
-description: Domain-Driven Design and Clean Architecture principles. Apply when designing domain logic, implementing use cases, or reviewing architecture.
-tools:
-  - Read
-  - Grep
-  - Glob
+description: Domain-Driven Design and Clean Architecture principles. Apply when designing domain logic, implementing use cases, or reviewing architecture. Triggers on "domain", "usecase", "entity", "repository", "clean architecture", "DDD", "layer".
+globs:
+  - "projects/apps/api/**"
+  - "projects/packages/shared/**"
+  - "**/domain/**"
+  - "**/usecase/**"
+  - "**/infrastructure/**"
+alwaysApply: false
 ---
 
 # DDD + Clean Architecture

@@ -18,6 +18,7 @@ import {
   checkOpenapiRouteCoverage,
   checkValueObjectImmutability,
   checkUsecaseDependency,
+  checkDomainPurity,
   checkFsdPublicApi,
   checkFsdLayerDependency,
   checkFsdOpenapiCoverage,
@@ -59,6 +60,11 @@ const GUARDS: GuardDefinition[] = [
     id: 'usecase-dependency',
     description: 'UseCaseが禁止されたレイヤーをimportしていないか検査',
     exec: checkUsecaseDependency,
+  },
+  {
+    id: 'domain-purity',
+    description: 'Domain層が外部依存を持たず純粋なビジネスロジックか検査',
+    exec: checkDomainPurity,
   },
   // === Feature-Sliced Design (Web) 用 ===
   {

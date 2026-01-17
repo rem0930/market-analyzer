@@ -1,10 +1,12 @@
 ---
 name: fsd-frontend
-description: Feature-Sliced Design for React/Next.js frontend. Apply when organizing frontend code, creating features, or reviewing UI structure.
-tools:
-  - Read
-  - Grep
-  - Glob
+description: Feature-Sliced Design for React/Next.js frontend. Apply when organizing frontend code, creating features, or reviewing UI structure. Triggers on "feature", "component", "React", "Next.js", "frontend", "UI", "FSD", "slice".
+globs:
+  - "projects/apps/web/**"
+  - "**/features/**"
+  - "**/entities/**"
+  - "**/shared/ui/**"
+alwaysApply: false
 ---
 
 # Feature-Sliced Design (FSD)

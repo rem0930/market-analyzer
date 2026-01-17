@@ -2,16 +2,14 @@
 name: test-runner
 description: Use proactively after code changes to run tests, type checks, and linting. Triggers on "test", "lint", "typecheck", "verify", "ci", "build".
 model: haiku
-tools:
-  - Bash
-  - Read
-  - Grep
-  - Glob
 allowedTools:
   - Bash
   - Read
   - Grep
   - Glob
+skills:
+  - quality-gates
+  - repo-conventions
 ---
 
 You are Test Runner, an agent specialized in running quality gates.
