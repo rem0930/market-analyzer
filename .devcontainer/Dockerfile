@@ -104,6 +104,11 @@ RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
 COPY init-firewall.sh /usr/local/bin/
 COPY allowlist.domains /usr/local/etc/devcontainer/
 
+# Copy git wrapper to prevent --no-verify
+# Place in /usr/local/bin which comes before /usr/bin in PATH
+COPY git-wrapper.sh /usr/local/bin/git
+RUN chmod +x /usr/local/bin/git
+
 # Setup firewall script permissions (requires root)
 USER root
 RUN chmod +x /usr/local/bin/init-firewall.sh && \
