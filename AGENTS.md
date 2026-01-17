@@ -166,8 +166,7 @@
 ├── design/
 │   └── tokens/               # デザイントークン
 ├── prompts/
-│   ├── agents/               # エージェント別プロンプト
-│   └── skills/               # 再利用可能スキル
+│   └── skills/               # 再利用可能スキル（詳細ワークフロー）
 └── tools/
     ├── contract/             # Golden Commands エントリポイント
     │   └── stack/            # 各コマンドの実装
@@ -230,20 +229,20 @@ User: "認証機能を追加"
   test-runner: テスト実行
 ```
 
-### 概念エージェント（参考）
+### 概念エージェント（将来拡張用）
 
-`prompts/agents/` には詳細なプロンプト定義があります。Claude Code 以外の環境や、詳細な役割理解のために参照してください。
+以下は設計上の役割定義です。現在は Claude Code Sub-Agents で実装されています。
 
-| ID | Purpose | Reference |
-|----|---------|-----------|
-| `Orchestrator` | ルーティング、worktree管理 | `prompts/agents/orchestrator.md` |
-| `ProductIdentity_PdM` | Spec作成 | `prompts/agents/pdm.md` |
-| `ProductDesigner` | UX/UI要件 | `prompts/agents/designer.md` |
-| `DesignSystem` | デザイントークン | `prompts/agents/design_system.md` |
-| `Architect` | ADR/Plan作成 | `prompts/agents/architect.md` |
-| `QA` | テスト設計 | `prompts/agents/qa.md` |
-| `Implementer` | 実装 | `prompts/agents/implementer.md` |
-| `Reviewer` | レビュー | `prompts/agents/reviewer.md` |
+| ID                    | Purpose            | Status                              |
+|-----------------------|--------------------|-------------------------------------|
+| `Orchestrator`        | ルーティング       | Claude Code 本体が担当              |
+| `ProductIdentity_PdM` | Spec作成           | 手動 / 将来実装予定                 |
+| `ProductDesigner`     | UX/UI要件          | 手動 / 将来実装予定                 |
+| `DesignSystem`        | デザイントークン   | 手動 / 将来実装予定                 |
+| `Architect`           | ADR/Plan作成       | 手動 / 将来実装予定                 |
+| `QA`                  | テスト設計         | `test-runner` が一部カバー          |
+| `Implementer`         | 実装               | `.claude/agents/implementer.md`     |
+| `Reviewer`            | レビュー           | `.claude/agents/code-reviewer.md`   |
 
 ---
 
@@ -301,7 +300,10 @@ Claude Code の Task ツールで並列実行が可能。手動オーケスト�
 
 - Agent Operating Model: `docs/00_process/agent_operating_model.md`
 - Skills Catalog: `docs/00_process/skills_catalog.md`
-- Agent Prompts: `prompts/agents/`
-- Skill Prompts: `prompts/skills/`
-- **Claude Code Sub-Agents**: `.claude/agents/`
+- Skill Prompts (detailed workflows): `prompts/skills/`
+- **Claude Code Configuration**: `.claude/`
+  - Sub-Agents: `.claude/agents/`
+  - Skills (domain knowledge): `.claude/skills/`
+  - Rules (always-applied): `.claude/rules/`
+  - Commands (slash commands): `.claude/commands/`
 

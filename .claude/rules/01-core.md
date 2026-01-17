@@ -6,25 +6,26 @@
 
 ## Non-Negotiables
 
-1. **Worktree + DevContainer**: Never work on main directly
-2. **DocDD**: No implementation without Spec/Plan/AC
-3. **Golden Commands**: Use `./tools/contract` not raw commands
-4. **No Breaking Changes**: Preserve existing behavior unless explicitly requested
+See `AGENTS.md` for the authoritative list. Summary:
 
-## Before Any Implementation
+1. Worktree + DevContainer（main 直接編集禁止）
+2. DocDD（Spec/Plan/AC なしで実装開始しない）
+3. Golden Commands（`./tools/contract` 経由で実行）
+4. 破壊的変更の禁止
+5. CI/DevContainer/Contract が壊れた状態で完了宣言しない
+6. HTTP API は OpenAPI 仕様を先に定義
 
-1. Read `AGENTS.md`
-2. Check for existing Spec in `.specify/specs/<id>/`
-3. Understand the acceptance criteria
+## Quick Reference
 
-## Commit Rules
+| Topic                  | Skill Reference                            |
+|------------------------|--------------------------------------------|
+| Workflow & Conventions | `.claude/skills/repo-conventions/SKILL.md` |
+| Quality Gates          | `.claude/skills/quality-gates/SKILL.md`    |
 
-- Format: `<type>(<scope>): <subject>`
-- Types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `build`, `ci`
-- Subject: Imperative mood, no period at end
+## Commit Format
 
-## PR Rules
+```text
+<type>(<scope>): <subject>
+```
 
-- Title follows Conventional Commits
-- Link to Spec/Plan/ADR in description
-- CI must pass before merge
+Types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `build`, `ci`

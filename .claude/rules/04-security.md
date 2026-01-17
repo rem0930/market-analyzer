@@ -1,62 +1,36 @@
 # Security Rules (Always Applied)
 
-## Input Validation
+## Absolute Prohibitions (NEVER)
 
-- Validate ALL user input at boundaries
-- Use Zod schemas for validation
-- Never trust client-side validation alone
+| Category        | NEVER do this                                      |
+|-----------------|----------------------------------------------------|
+| Secrets         | Commit secrets to git                              |
+| Logging         | Log passwords, tokens, API keys, PII               |
+| SQL             | Interpolate user input into queries                |
+| Files           | Read/Write `.env*`, `*.pem`, `*.key`, `secrets/`   |
 
-## Authentication
+## Required Practices (MUST)
 
-- Use established libraries (Passport, next-auth)
-- Hash passwords with bcrypt (cost ≥ 12)
-- JWT: RS256 preferred, short expiry with refresh
+| Category        | MUST do this                                       |
+|-----------------|----------------------------------------------------|
+| Input           | Validate ALL user input at boundaries (use Zod)    |
+| Auth            | Use established libraries (Passport, next-auth)    |
+| Passwords       | Hash with bcrypt (cost ≥ 12)                       |
+| Authorization   | Deny by default, allow explicitly                  |
+| Queries         | Use parameterized queries / ORM only               |
+| Dependencies    | Run `pnpm audit` before adding new deps            |
 
-## Authorization
+## Quick Checklist
 
-- Check permissions on every protected route
-- Deny by default, allow explicitly
-- Use middleware, not per-route checks
+- [ ] Input validated with Zod schema?
+- [ ] Auth using established library?
+- [ ] Permissions checked via middleware?
+- [ ] No secrets in code?
+- [ ] Parameterized queries only?
+- [ ] No PII in logs?
 
-## Secrets
+## Detailed Reference
 
-- **NEVER** commit secrets to git
-- Use `.env` files (gitignored)
-- Reference: `.env.example` for required vars
-- Production: Use secret managers
+For implementation patterns, Next.js headers, and CSRF setup:
 
-## SQL/NoSQL Injection
-
-- Parameterized queries ONLY
-- Never interpolate user input
-- Use ORM query builders
-
-## XSS Prevention
-
-- React escapes by default (keep it that way)
-- Sanitize if rendering user HTML
-- Set CSP headers in production
-
-## CSRF Protection
-
-- Use CSRF tokens for state-changing requests
-- SameSite cookies
-- Verify Origin header
-
-## Dependencies
-
-- Run `pnpm audit` before adding new deps
-- Pin versions in production
-- Review security advisories
-
-## Logging
-
-- **NEVER** log: passwords, tokens, API keys, PII
-- Use structured logging
-- Mask sensitive fields
-
-## Files to Never Read/Write
-
-- `.env*` (except `.env.example`)
-- `*.pem`, `*.key`
-- `secrets/`, `credentials/`
+→ `.claude/skills/security-baseline/SKILL.md`

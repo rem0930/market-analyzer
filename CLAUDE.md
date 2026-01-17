@@ -116,14 +116,21 @@ User: "認証機能を追加して"
 └── settings.json     # Permissions + hooks config
 ```
 
-### Rules vs Skills
+### Rules vs Skills vs prompts/skills/
 
-| Type | Location | Application |
-|------|----------|-------------|
-| **Rules** | `.claude/rules/` | Always auto-applied |
-| **Skills** | `.claude/skills/` | Injected via `inject_skills` |
+| Type              | Location           | Application            | Content                       |
+|-------------------|--------------------|------------------------|-------------------------------|
+| **Rules**         | `.claude/rules/`   | Always auto-applied    | MUST/MUST NOT constraints     |
+| **Skills**        | `.claude/skills/`  | Injected on demand     | HOW TO with code examples     |
+| **Skill Prompts** | `prompts/skills/`  | Reference / manual use | Detailed procedural workflows |
 
-Rules are for project-wide constraints that should **always** apply. Skills are for domain-specific knowledge injected when relevant.
+**Design Principle**:
+
+- **Rules**: Minimal constraints (what to enforce)
+- **Skills**: Implementation guidance (how to do it)
+- **prompts/skills/**: Detailed workflows for human reference or other AI tools
+
+Rules reference Skills for details: `→ .claude/skills/<name>/SKILL.md`
 
 ---
 

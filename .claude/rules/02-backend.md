@@ -2,48 +2,34 @@
 
 ## Architecture: Clean Architecture + DDD
 
-```
+```text
 presentation → usecase → domain ← infrastructure
 ```
 
 **Dependencies point INWARD toward domain.**
 
-## Layer Rules
+## Layer Constraints (MUST)
 
-### Domain Layer
-- Pure business logic only
-- No external dependencies (frameworks, I/O, DB)
-- Location: `projects/apps/*/src/domain/`
+| Layer          | MUST                          | MUST NOT                        |
+|----------------|-------------------------------|---------------------------------|
+| Domain         | Pure business logic           | Import frameworks, I/O, DB      |
+| UseCase        | Orchestrate domain            | Contain business logic          |
+| Infrastructure | Implement domain interfaces   | Be imported by domain/usecase   |
+| Presentation   | Map HTTP ↔ UseCase            | Contain business logic          |
 
-### UseCase Layer
-- Orchestrates domain objects
-- Depends only on domain interfaces
-- Location: `projects/apps/*/src/usecase/`
-
-### Infrastructure Layer
-- Implements domain interfaces
-- Contains DB, external APIs, file system
-- Location: `projects/apps/*/src/infrastructure/`
-
-### Presentation Layer
-- HTTP routes, controllers, CLI
-- Thin adapter between HTTP and UseCase
-- Location: `projects/apps/*/src/presentation/`
-
-## API Rules
+## API Rules (MUST)
 
 - Define OpenAPI spec FIRST (`docs/02_architecture/api/*.yaml`)
 - Generate types from spec
 - Never hand-write HTTP clients
 
-## Database Rules
+## Database Rules (MUST)
 
-- Use parameterized queries only
+- Parameterized queries only (no raw SQL interpolation)
 - Migrations via `./tools/contract migrate`
-- No raw SQL interpolation
 
-## Testing
+## Detailed Reference
 
-- Test UseCase layer thoroughly
-- Mock infrastructure in tests
-- Run with `./tools/contract test`
+For code examples, patterns, and when-to-break-rules guidance:
+
+→ `.claude/skills/ddd-clean-architecture/SKILL.md`

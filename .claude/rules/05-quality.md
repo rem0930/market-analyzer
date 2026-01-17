@@ -1,8 +1,6 @@
 # Quality Rules (Always Applied)
 
-## Golden Commands
-
-Always use `./tools/contract` instead of raw commands:
+## Golden Commands (MUST use)
 
 ```bash
 ./tools/contract format     # Prettier
@@ -13,49 +11,36 @@ Always use `./tools/contract` instead of raw commands:
 ./tools/contract guardrail  # Architecture checks
 ```
 
-## Fix Order (When CI Fails)
+**NEVER run raw `pnpm lint` or `npm test` directly.**
 
-Fix in this specific order:
+## Fix Order (MUST follow when CI fails)
 
-```
-1. format    → Style issues that cause lint errors
-2. lint      → Static analysis issues
+```text
+1. format    → Style issues
+2. lint      → Static analysis
 3. typecheck → Type errors
 4. test      → Broken tests
 5. build     → Build issues
 ```
 
-## Minimal Diff Strategy
+## Pre-Commit (MUST pass)
 
-When fixing issues:
+- [ ] `./tools/contract format`
+- [ ] `./tools/contract lint`
+- [ ] `./tools/contract typecheck`
+- [ ] `./tools/contract test`
 
-1. Identify ONE root cause (not symptoms)
-2. Make the smallest fix for that cause
-3. Re-run quality gates in order
-4. Max 3 iterations, then ask for help
+## Code Standards (MUST NOT)
 
-## Pre-Commit Checklist
+| MUST NOT                        | Why                              |
+|---------------------------------|----------------------------------|
+| `console.log` in production     | Use structured logger            |
+| Commented-out code              | Delete or use feature flags      |
+| TODO without issue link         | Track in issue tracker           |
+| Magic numbers                   | Use named constants              |
 
-Before every commit:
+## Detailed Reference
 
-- [ ] `./tools/contract format` passes
-- [ ] `./tools/contract lint` passes
-- [ ] `./tools/contract typecheck` passes
-- [ ] `./tools/contract test` passes
-- [ ] New code has tests
-- [ ] Docs updated if behavior changed
+For minimal diff strategy, CI mapping, and troubleshooting:
 
-## Code Review Standards
-
-- No console.log in production code
-- No commented-out code
-- No TODO without issue link
-- No magic numbers (use constants)
-- Error handling is explicit
-
-## Test Requirements
-
-- New features require tests
-- Bug fixes require regression tests
-- Coverage should not decrease
-- Tests must be deterministic
+→ `.claude/skills/quality-gates/SKILL.md`
