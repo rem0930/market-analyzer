@@ -6,232 +6,194 @@ If anything conflicts, follow `AGENTS.md`.
 
 ---
 
-## Sub-Agents 🤖
+## Configuration Architecture (2-Layer Design)
 
-Claude Code には、タスクに応じて自動起動する専用サブエージェントが設定されています。
+Claude Code の設定は **2 レイヤー** で構成されています。
 
-### 利用可能なサブエージェント
+### Layer A: Offense (速度と品質を同時に上げる)
 
-| エージェント | 用途 | 起動例 |
-|-------------|------|-------|
-| 🛠️ Implementer | 機能実装、バグ修正 | "ユーザー認証を実装して" |
-| 🏗️ Architect | ADR作成、設計 | "キャッシュ戦略のADRを作成" |
-| 🧪 QA Tester | テスト計画、品質保証 | "AC-001のテスト計画を作成" |
-| 👀 Code Reviewer | PRレビュー | "このPRをレビューして" |
-| 🎨 Product Designer | UX/UI設計 | "ログイン画面のUXフローを設計" |
-| 📋 Product Manager | 要件定義、Spec作成 | "ユーザー登録機能のSpecを作成" |
+「Claude が迷わない」「毎回同じ手順で終わる」「品質ゲートが自動で掛かる」
 
-### 自動ルーティング
+| Component | Path | Purpose |
+|-----------|------|---------|
+| **Rules** | `.claude/rules/` | 常設コンテキスト（メモリ階層） |
+| **Commands** | `.claude/commands/` | カスタム slash commands |
+| **Skills** | `.claude/skills/` | 再利用可能な知識・手順 |
+| **Hooks (Post)** | `settings.json` | 自動フォーマット・lint |
+| **Agents** | `.claude/agents/` | タスク特化サブエージェント |
 
-Claude は自動的に適切なサブエージェントを選択します：
+### Layer B: Defense (セキュリティ・ガードレール)
 
-```
-👤 User: "PRをレビューしてください"
-🤖 Claude: Code Reviewer サブエージェントを起動...
-```
+「事故を起こせない」「起きても被害半径が小さい」「監査できる」
 
-### 手動起動
-
-特定のサブエージェントを明示的に呼び出すこともできます：
-
-```
-/agent Implementer ログイン機能を実装
-```
-
-### サブエージェントの利点
-
-1. **コンテキスト分離**: 各タスクが独立したコンテキストで実行
-2. **専門性**: 役割に特化したプロンプトとツールセット
-3. **効率化**: 並列実行により複数タスクを同時進行可能
-
-詳細は `.claude/agents/README.md` を参照してください。
+| Component | Path | Purpose |
+|-----------|------|---------|
+| **Deny Rules** | `settings.json` | 絶対禁止（secrets保護、破壊的コマンド） |
+| **PreToolUse Hook** | `.claude/hooks/` | 実行前ブロック |
+| **DevContainer** | `.devcontainer/` | 隔離環境での実行 |
+| **Ask Rules** | `settings.local.json` | 確認が必要な操作 |
 
 ---
 
-## Autonomy Configuration
+## Directory Structure
 
-| Setting | Value |
-|---------|-------|
-| `risk_profile` | `safe` |
-| `allow_auto_commit` | `true` |
-| `allow_auto_pr` | `true` |
-| `dangerously_skip_permissions` | `false` |
-
-**safe モード**: 自動実行はするが、以下は明示承認が必要:
-- force push
-- main/master への直接 push
-- 既存ファイルの削除
-- セキュリティ設定の変更
-
----
-
-## Security Configuration (Permission Rules)
-
-### 設定ファイル
-
-| ファイル | スコープ | 用途 |
-|---------|---------|------|
-| `.claude/settings.json` | リポジトリ共有 | deny ルール（secrets 保護、危険コマンド禁止） |
-| `.claude/settings.local.json` | 個人（.gitignore 対象） | allow/ask ルール（日常作業用） |
-
-### deny ルール（settings.json で定義）
-
-以下の操作は **常にブロック** されます：
-
-**ファイルアクセス禁止:**
-- `.env`, `.env.*`, `.env.local` の Read/Edit/Write
-- `secrets/` ディレクトリ配下
-- `*.pem`, `*.key`, `*.p12`, `*.pfx`（秘密鍵）
-- `credentials*`, `*secret*`, `*credential*`
-
-**危険な Bash コマンド禁止:**
-- `rm -rf /`, `rm -rf ~/`（破壊的削除）
-- `sudo *`（特権昇格）
-- `curl | bash`, `wget | sh`（リモートスクリプト実行）
-- `cat */.env*`, `cat */secrets/*`（secrets 表示）
-- `echo $*_KEY*`, `echo $*_SECRET*` 等（環境変数出力）
-- `printenv *KEY*`, `env > *`（環境変数ダンプ）
-
-### allow ルール（settings.local.json で定義）
-
-以下は **確認なしで実行可能**：
-
-- `./tools/contract *`（Golden Commands）
-- `./tools/worktree/*`, `./tools/policy/*`
-- git 読み取り系（status, diff, log, branch, fetch, rev-parse, worktree list）
-- docker 読み取り系（ps, logs, inspect, network ls/inspect, volume ls, compose ps/logs）
-- ファイル確認系（ls, tree, wc, xxd）
-
-### ask ルール（settings.local.json で定義）
-
-以下は **毎回確認** されます：
-
-- git 書き込み系（add, commit, push, checkout, switch, stash, pull, clean, worktree add/remove）
-- GitHub CLI（gh pr create/list）
-- docker 操作系（exec, stop, rm, restart, cp, volume rm, compose up/down/restart）
-- パッケージ管理（pnpm install, pnpm --filter, npx）
-- 権限変更（chmod）
-
-### 運用ガイドライン
-
-1. **deny は変更しない**: settings.json の deny は全員に適用される安全弁
-2. **allow は最小限に**: 必要になったら ask → allow に昇格を検討
-3. **新しいツール追加時**: まず ask で運用し、安全が確認できたら allow に
+```
+.claude/
+├── agents/                    # Sub-agents (task-specific)
+│   ├── architect.md
+│   ├── implementer.md
+│   ├── reviewer.md
+│   └── ...
+├── commands/                  # Slash commands (/kickoff, /review)
+│   ├── kickoff.md
+│   ├── review.md
+│   ├── fix-ci.md
+│   └── spec.md
+├── rules/                     # Persistent context rules
+│   ├── 00-core.md            # Non-negotiables
+│   ├── 01-typescript.md      # TypeScript conventions
+│   ├── 02-api.md             # API development
+│   └── 03-frontend.md        # Frontend conventions
+├── skills/                    # Reusable skills
+│   ├── minimize-diff/
+│   ├── docdd-spec-first/
+│   └── guardrails/
+├── hooks/                     # Execution hooks
+│   ├── pre-bash.sh           # PreToolUse: block dangerous ops
+│   └── post-edit.sh          # PostToolUse: auto-format
+├── settings.json              # Layer B: deny rules + hooks
+└── settings.local.json.template  # Layer A: allow/ask template
+```
 
 ---
 
-## DevContainer Notes
+## Sub-Agents
 
-- firewall allowlist 確認: `docs/devcontainer.md` を参照
-- 問題時は `Skill.DevContainer_Safe_Mode` に従う
-- `dangerously-skip-permissions` は devcontainer の firewall 前提でのみ許容
+| Agent | Purpose | Trigger Example |
+|-------|---------|-----------------|
+| Implementer | Feature implementation, bug fixes | "Implement user auth" |
+| Architect | ADR creation, system design | "Create caching ADR" |
+| QA Tester | Test planning, quality assurance | "Create test plan for AC-001" |
+| Code Reviewer | PR reviews, code quality | "Review this PR" |
+| Product Designer | UX/UI design | "Design login flow" |
+| Product Manager | Requirements, Spec creation | "Create user registration spec" |
 
 ---
 
-## 並列開発環境 (Git Worktree + Traefik)
+## Slash Commands
 
-### 自動起動
-このプロジェクトを開くと `scripts/init-environment.sh` が実行され、環境が自動起動します。
+| Command | Description |
+|---------|-------------|
+| `/kickoff <task>` | Start development workflow |
+| `/review [pr]` | Review code with Staff perspective |
+| `/fix-ci [error]` | Fix CI failures with minimal diff |
+| `/spec <feature>` | Create DocDD specification |
 
-### 手動起動
+---
+
+## Security Configuration
+
+### Deny Rules (settings.json) - DO NOT MODIFY
+
+Always blocked:
+
+- **Secrets**: `.env*`, `secrets/`, `*.pem`, `*.key`, `credentials*`
+- **Destructive**: `rm -rf /`, `sudo *`, `curl | bash`
+- **Exfiltration**: `echo $*_KEY*`, `printenv *SECRET*`, `env > *`
+- **Git Dangerous**: `git push --force`, `git reset --hard`
+
+### Allow Rules (settings.local.json) - Personal
+
+Auto-approved:
+
+- `./tools/contract *` (Golden Commands)
+- `git status/diff/log` (read-only)
+- `docker ps/logs` (read-only)
+
+### Ask Rules (settings.local.json) - Confirm Each Time
+
+- `git add/commit/push` (write operations)
+- `docker compose up/down` (container lifecycle)
+- `pnpm install` (dependency changes)
+
+### Setup
+
 ```bash
-./scripts/init-environment.sh
+cp .claude/settings.local.json.template .claude/settings.local.json
 ```
 
-### Worktree 作成
-```bash
-git worktree add ../feature-x feature-x
-cd ../feature-x
-# VS Code または Claude Code で開くと自動的に環境が起動
-```
+---
 
-### アクセスURL
-- Frontend: `http://fe.<worktree名>.localhost`
-- Backend: `http://be.<worktree名>.localhost`
-- Traefik Dashboard: `http://localhost:8080`
+## Hooks
 
-### 停止
-```bash
-./scripts/down.sh
-```
+### PreToolUse (pre-bash.sh)
 
-### 仕組み
-- **ルートリポジトリ**: Traefik のみ起動
-- **Worktree**: Traefik確認 + 開発サービス（frontend/backend）起動
-- 各 worktree は独立した Docker Compose プロジェクトとして管理
-- Traefik により動的なルーティングを実現
+- Block main/master branch operations
+- Block force push
+- Warn about raw commands (use `./tools/contract`)
+
+### PostToolUse (post-edit.sh)
+
+- Auto-format TypeScript files after edit
 
 ---
 
 ## Quick Reference
 
 ```bash
-# Golden Commands (always use these)
+# Golden Commands
 ./tools/contract format
 ./tools/contract lint
 ./tools/contract typecheck
 ./tools/contract test
 ./tools/contract build
 ./tools/contract guardrail
-./tools/contract e2e
-./tools/contract migrate
-./tools/contract deploy-dryrun
 
-# Development server
+# Development
 ./tools/contract dev
 ./tools/contract dev:stop
-./tools/contract dev:logs
 
-# Policy check
-./tools/policy/check_required_artifacts.sh
-./tools/policy/check_docdd_minimum.sh
-./tools/policy/check_instruction_consistency.sh
+# Worktree
+./tools/worktree/spawn.sh <branch>
+./tools/worktree/cleanup.sh
 ```
-
-## Key Paths
-
-- Process docs: `docs/00_process/`
-- Product docs: `docs/01_product/`
-- Architecture: `docs/02_architecture/`
-- Quality: `docs/03_quality/`
-- Delivery: `docs/04_delivery/`
-- Application code: `projects/`
-- Agent Prompts: `prompts/agents/`
-- Skill Prompts: `prompts/skills/`
-
-## Workflow
-
-1. **Read Contract First**: `AGENTS.md` と `docs/00_process/process.md` を読む
-2. **DocDD**: Spec/Plan/Tasks なしで実装を開始しない
-3. **Golden Commands**: 必ず `./tools/contract` 経由で実行
-4. **Docs Drift**: コード変更時は関連 Docs も更新
-5. **Minimize Diff**: CI 失敗時は原因を1つに絞り最小差分で修正
 
 ---
 
-## Context7 MCP (最新ドキュメント参照)
+## Key Paths
 
-ライブラリやフレームワークの実装時は **必ず context7 を使用** して最新のドキュメントを参照すること。
-これにより、古いAPIや非推奨パターンの混入を防ぐ。
+| Category | Path |
+|----------|------|
+| Process | `docs/00_process/` |
+| Product | `docs/01_product/` |
+| Architecture | `docs/02_architecture/` |
+| Quality | `docs/03_quality/` |
+| Code | `projects/` |
+| Agent Prompts | `prompts/agents/` |
+| Skill Prompts | `prompts/skills/` |
 
-### 使い方
+---
 
-プロンプトに `use context7` を含めるか、以下のように明示的に指定:
+## Workflow
+
+1. **Read Contract First**: `AGENTS.md` + `docs/00_process/process.md`
+2. **DocDD**: No implementation without Spec/Plan/AC
+3. **Golden Commands**: Always use `./tools/contract`
+4. **Docs Drift**: Update docs with code changes
+5. **Minimize Diff**: Single root cause, smallest fix
+
+---
+
+## Context7 MCP
+
+Use `context7` for latest library documentation:
 
 ```text
-Prismaでユーザーテーブルを作成して use context7
+Create Prisma user table use context7
 ```
 
-### 自動適用ルール
-
-以下のケースでは context7 の使用を強く推奨:
-
-- 新しいライブラリの導入時
-- 既存ライブラリのアップデート後
-- API実装・クライアント生成時
-- 設定ファイルの作成時
-
-### 設定
-
-MCP設定は `.mcp.json` に定義済み。追加設定不要。
-
+Recommended for:
+- New library introduction
+- Library updates
+- API implementation
+- Config file creation

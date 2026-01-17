@@ -1,0 +1,76 @@
+{
+  "$schema": "https://claude.ai/schemas/settings.json",
+  "_comment": "Layer A (Offense): Personal workflow settings - copy to settings.local.json",
+
+  "permissions": {
+    "allow": [
+      "// === Golden Commands (always safe) ===",
+      "Bash(./tools/contract:*)",
+      "Bash(./tools/contract/*:*)",
+      "Bash(./tools/worktree/*:*)",
+      "Bash(./tools/policy/*:*)",
+
+      "// === Environment Scripts ===",
+      "Bash(./scripts/init-environment.sh:*)",
+      "Bash(./scripts/down.sh:*)",
+
+      "// === Git Read-Only ===",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git branch:*)",
+      "Bash(git fetch:*)",
+      "Bash(git rev-parse:*)",
+      "Bash(git worktree list:*)",
+      "Bash(git check-ignore:*)",
+
+      "// === Docker Read-Only ===",
+      "Bash(docker ps:*)",
+      "Bash(docker logs:*)",
+      "Bash(docker inspect:*)",
+      "Bash(docker network ls:*)",
+      "Bash(docker network inspect:*)",
+      "Bash(docker volume ls:*)",
+      "Bash(docker compose ps:*)",
+      "Bash(docker compose logs:*)",
+      "Bash(docker --version:*)",
+
+      "// === File Inspection ===",
+      "Bash(ls:*)",
+      "Bash(tree:*)",
+      "Bash(wc:*)",
+      "Bash(node --version:*)"
+    ],
+
+    "ask": [
+      "// === Git Write Operations ===",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git checkout:*)",
+      "Bash(git switch:*)",
+      "Bash(git stash:*)",
+      "Bash(git pull:*)",
+      "Bash(git worktree add:*)",
+      "Bash(git worktree remove:*)",
+
+      "// === GitHub CLI ===",
+      "Bash(gh pr create:*)",
+      "Bash(gh pr list:*)",
+
+      "// === Docker Operations ===",
+      "Bash(docker exec:*)",
+      "Bash(docker stop:*)",
+      "Bash(docker rm:*)",
+      "Bash(docker restart:*)",
+      "Bash(docker compose up:*)",
+      "Bash(docker compose down:*)",
+      "Bash(docker compose restart:*)",
+
+      "// === Package Management ===",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm --filter:*)",
+      "Bash(npx:*)"
+    ]
+  }
+}
