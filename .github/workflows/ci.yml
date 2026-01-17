@@ -4,6 +4,10 @@ on:
   push:
     branches: ["main"]
 
+# Minimum permissions for security
+permissions:
+  contents: read
+
 jobs:
   policy:
     name: Policy Check

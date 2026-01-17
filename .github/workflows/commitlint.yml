@@ -4,6 +4,10 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, edited]
 
+# Minimum permissions for security
+permissions:
+  contents: read
+
 jobs:
   commitlint:
     name: Lint Commits

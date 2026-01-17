@@ -4,6 +4,10 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+# Minimum permissions for security
+permissions:
+  contents: read
+
 jobs:
   docdd:
     name: DocDD Policy Check
