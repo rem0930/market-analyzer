@@ -204,45 +204,58 @@
 
 ## Agents (役割定義)
 
-各エージェントは責務・入力・出力・ゲートを持つ。詳細は `prompts/agents/` を参照。
+エージェントは **並列実行がデフォルト**。read-only エージェントは背景で自動起動。
 
-| ID | Purpose | Key Outputs | Gate |
-|----|---------|-------------|------|
-| `Orchestrator` | リクエストをルーティング、worktree管理 | routing decision, worktree context | 適切なエージェントに割り当て |
-| `ProductIdentity_PdM` | プロダクト意図・Spec作成 | identity.md, prd.md, spec.md | AC/NFRが存在 |
-| `ProductDesigner` | UX/IA/UI要件整備 | ux_flows.md, ui_requirements.md | ACとUI要件の整合 |
-| `DesignSystem` | デザイン契約を固定 | tokens.json, overview.md | 命名規則が文書化 |
-| `Architect` | ADR/Planを作成 | adr/*.md, plan.md | 代替案/トレードオフ記載 |
-| `QA` | テスト設計と検証 | test-plan/*.md, evidence/* | ACカバレッジ |
-| `Implementer` | 最小差分で実装 | code + tests + docs | contract 成功, docs drift なし |
-| `Reviewer` | Staff視点でレビュー | review comments | DocDDリンク完備 |
+### Claude Code Sub-Agents（推奨）
 
-### Claude Code Sub-Agents
+Claude Code 使用時は `.claude/agents/` のサブエージェントが自動的に利用されます。
 
-Claude Code を使用している場合、上記エージェントはサブエージェントとして自動的に利用可能です。
+| ID | Purpose | Tools | Mode |
+|----|---------|-------|------|
+| `repo-explorer` | コードベース探索 | Read, Grep, Glob | read-only, 並列 |
+| `security-auditor` | セキュリティ監査 | Read, Grep, Glob | read-only, 並列 |
+| `test-runner` | テスト/lint実行 | Bash, Read | 自動実行 |
+| `code-reviewer` | コードレビュー | Read, Grep, Glob | read-only, 並列 |
+| `implementer` | 最小差分実装 | All | メイン作業 |
 
-- **設定ファイル**: `.claude/agents/*.md`
-- **使い方**: Claude が自動的にタスクに応じて適切なサブエージェントを起動
-- **詳細**: `.claude/agents/README.md` を参照
+**並列実行フロー:**
+```
+User: "認証機能を追加"
+  ├─ repo-explorer: 関連コード探索
+  ├─ security-auditor: 認証のセキュリティ確認
+  └─ code-reviewer: 既存認証コードの品質確認
+      ↓ (結果統合)
+  implementer: 実装
+      ↓
+  test-runner: テスト実行
+```
+
+### 概念エージェント（参考）
+
+`prompts/agents/` には詳細なプロンプト定義があります。Claude Code 以外の環境や、詳細な役割理解のために参照してください。
+
+| ID | Purpose | Reference |
+|----|---------|-----------|
+| `Orchestrator` | ルーティング、worktree管理 | `prompts/agents/orchestrator.md` |
+| `ProductIdentity_PdM` | Spec作成 | `prompts/agents/pdm.md` |
+| `ProductDesigner` | UX/UI要件 | `prompts/agents/designer.md` |
+| `DesignSystem` | デザイントークン | `prompts/agents/design_system.md` |
+| `Architect` | ADR/Plan作成 | `prompts/agents/architect.md` |
+| `QA` | テスト設計 | `prompts/agents/qa.md` |
+| `Implementer` | 実装 | `prompts/agents/implementer.md` |
+| `Reviewer` | レビュー | `prompts/agents/reviewer.md` |
 
 ---
 
 ## Agent Orchestration
 
-複数エージェントを worktree ベースで並列実行する仕組み。
+Claude Code の Task ツールで並列実行が可能。手動オーケストレーションは `tools/orchestrate/` を参照。
 
 ```bash
-# タスクを開始（自動ルーティング）
+# 手動オーケストレーション（オプション）
 ./tools/orchestrate/orchestrate.sh start "認証機能を追加"
-
-# 状態確認
 ./tools/orchestrate/orchestrate.sh status
-
-# モニタリング
-./tools/orchestrate/monitor.sh --watch
 ```
-
-詳細: `tools/orchestrate/README.md`
 
 ---
 

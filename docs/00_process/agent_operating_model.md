@@ -55,19 +55,34 @@ Spec → Plan → Tasks → Implement → QA → Release
 
 詳細なプロンプトは `prompts/agents/` を参照。
 
-### Claude Code Sub-Agents
+### Claude Code Sub-Agents（並列実行）
 
-Claude Code 使用時は、上記エージェントがサブエージェントとして自動的に利用可能になります。
+Claude Code 使用時は、以下のサブエージェントが **並列実行** で自動的に利用可能になります。
 
 **設定場所**: `.claude/agents/*.md`
 
-各サブエージェントは：
-- 独立したコンテキストウィンドウを持つ
-- 専用のシステムプロンプトで動作
-- 制限されたツールセットで安全に実行
-- タスクの種類に応じて自動的に起動
+| Agent | Purpose | Tools | Mode |
+|-------|---------|-------|------|
+| `repo-explorer` | コードベース探索 | Read, Grep, Glob | read-only, 並列 |
+| `security-auditor` | セキュリティ監査 | Read, Grep, Glob | read-only, 並列 |
+| `test-runner` | テスト/lint 実行 | Bash, Read | 自動実行 |
+| `code-reviewer` | コードレビュー | Read, Grep, Glob | read-only, 並列 |
+| `implementer` | 最小差分実装 | All | メイン作業 |
 
-**詳細**: `.claude/agents/README.md` を参照
+**並列実行フロー**:
+
+```text
+User: "認証機能を追加"
+  ├─ repo-explorer: 関連コード探索 (背景)
+  ├─ security-auditor: 認証のセキュリティ確認 (背景)
+  └─ code-reviewer: 既存認証コードの品質確認 (背景)
+      ↓ (結果統合)
+  implementer: 実装
+      ↓
+  test-runner: テスト実行
+```
+
+**詳細**: [ADR-0005](../02_architecture/adr/0005_claude_code_subagents.md) を参照
 
 ---
 
