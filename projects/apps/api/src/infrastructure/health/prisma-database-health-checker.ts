@@ -3,7 +3,7 @@
  * @why データベース接続の疎通確認を行う
  */
 
-import type { PrismaClient } from '@prisma/client';
+import type { PrismaClient } from '../database/index.js';
 import type { DatabaseHealthChecker } from '../../usecase/health/index.js';
 
 /**
@@ -18,8 +18,7 @@ export class PrismaDatabaseHealthChecker implements DatabaseHealthChecker {
       await this.prisma.$queryRaw`SELECT 1`;
       return { ok: true, message: 'Database connection successful' };
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Database connection failed';
+      const message = error instanceof Error ? error.message : 'Database connection failed';
       return { ok: false, message };
     }
   }
