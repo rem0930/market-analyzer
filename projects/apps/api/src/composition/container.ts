@@ -41,11 +41,14 @@ import {
   GetCurrentUserUseCase,
   ConsoleEmailService,
   DeepPingUseCase,
+  ChangeNameUseCase,
+  ChangePasswordUseCase,
 } from '../usecase/index.js';
 
 import {
   UserController,
   AuthController,
+  ProfileController,
   DeepPingController,
   AuthMiddleware,
   SecurityMiddleware,
@@ -66,7 +69,7 @@ function getConfig() {
       refreshTokenExpiresIn: parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRES_IN ?? '604800', 10),
     },
     bcrypt: {
-      rounds: parseInt(process.env.BCRYPT_ROUNDS ?? '10', 10),
+      rounds: parseInt(process.env.BCRYPT_ROUNDS ?? '12', 10),
     },
     debug: process.env.NODE_ENV !== 'production',
     usePrisma: !!process.env.DATABASE_URL,
@@ -148,11 +151,19 @@ export function createAppContext(): RouteContext {
   const getCurrentUserUseCase = new GetCurrentUserUseCase(authUserRepository);
 
   // ============================================
+  // UseCases - Profile
+  // ============================================
+  const changeNameUseCase = new ChangeNameUseCase(userRepository);
+  const changePasswordUseCase = new ChangePasswordUseCase(
+    authUserRepository,
+    refreshTokenRepository,
+    passwordService
+  );
+
+  // ============================================
   // UseCases - Health
   // ============================================
-  const databaseHealthChecker = config.usePrisma
-    ? new PrismaDatabaseHealthChecker(prisma)
-    : null;
+  const databaseHealthChecker = config.usePrisma ? new PrismaDatabaseHealthChecker(prisma) : null;
   const deepPingUseCase = new DeepPingUseCase(databaseHealthChecker);
 
   // ============================================
@@ -175,6 +186,11 @@ export function createAppContext(): RouteContext {
     getCurrentUserUseCase,
     validationMiddleware
   );
+  const profileController = new ProfileController(
+    changeNameUseCase,
+    changePasswordUseCase,
+    validationMiddleware
+  );
 
   // ============================================
   // Middleware
@@ -190,6 +206,7 @@ export function createAppContext(): RouteContext {
   return {
     userController,
     authController,
+    profileController,
     deepPingController,
     authMiddleware,
     securityMiddleware,

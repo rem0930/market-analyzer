@@ -10,6 +10,7 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { UserController } from './controllers/user-controller.js';
 import type { AuthController } from './controllers/auth-controller.js';
+import type { ProfileController } from './controllers/profile-controller.js';
 import type { DeepPingController } from './controllers/deep-ping-controller.js';
 import type { AuthMiddleware } from './middleware/auth-middleware.js';
 import type { SecurityMiddleware } from './middleware/security-middleware.js';
@@ -19,6 +20,7 @@ import type { RateLimitMiddleware } from './middleware/rate-limit-middleware.js'
 export interface RouteContext {
   userController: UserController;
   authController: AuthController;
+  profileController: ProfileController;
   deepPingController: DeepPingController;
   authMiddleware: AuthMiddleware;
   securityMiddleware: SecurityMiddleware;
@@ -37,6 +39,7 @@ export async function handleRoutes(
   const {
     userController,
     authController,
+    profileController,
     deepPingController,
     authMiddleware,
     securityMiddleware,
@@ -137,6 +140,32 @@ export async function handleRoutes(
       return;
     }
     await authController.getCurrentUser(req, res, authResult.user.userId);
+    return;
+  }
+
+  // ============================================
+  // Profile Routes (Protected)
+  // ============================================
+
+  // PATCH /users/me/name - Update name
+  if (pathname === '/users/me/name' && method === 'PATCH') {
+    const authResult = authMiddleware.authenticate(req);
+    if (!authResult.authenticated) {
+      authMiddleware.sendUnauthorized(res, authResult.error);
+      return;
+    }
+    await profileController.updateName(req, res, authResult.user.userId);
+    return;
+  }
+
+  // PATCH /users/me/password - Update password
+  if (pathname === '/users/me/password' && method === 'PATCH') {
+    const authResult = authMiddleware.authenticate(req);
+    if (!authResult.authenticated) {
+      authMiddleware.sendUnauthorized(res, authResult.error);
+      return;
+    }
+    await profileController.updatePassword(req, res, authResult.user.userId);
     return;
   }
 

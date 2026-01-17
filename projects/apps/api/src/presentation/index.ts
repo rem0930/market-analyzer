@@ -5,8 +5,13 @@
 
 export { UserController } from './controllers/user-controller.js';
 export { AuthController } from './controllers/auth-controller.js';
+export { ProfileController } from './controllers/profile-controller.js';
 export { DeepPingController } from './controllers/deep-ping-controller.js';
-export { AuthMiddleware, type AuthenticatedRequest, type AuthResult } from './middleware/auth-middleware.js';
+export {
+  AuthMiddleware,
+  type AuthenticatedRequest,
+  type AuthResult,
+} from './middleware/auth-middleware.js';
 export { SecurityMiddleware, type SecurityConfig } from './middleware/security-middleware.js';
 export { CorsMiddleware, type CorsConfig } from './middleware/cors-middleware.js';
 export { RateLimitMiddleware, type RateLimitConfig } from './middleware/rate-limit-middleware.js';

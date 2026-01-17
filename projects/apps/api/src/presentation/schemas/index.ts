@@ -18,7 +18,11 @@ export {
   type LogoutInput,
 } from './auth-schemas.js';
 
+export { createUserSchema, type CreateUserInput } from './user-schemas.js';
+
 export {
-  createUserSchema,
-  type CreateUserInput,
-} from './user-schemas.js';
+  updateNameSchema,
+  updatePasswordSchema,
+  type UpdateNameInput,
+  type UpdatePasswordInput,
+} from './profile-schemas.js';
