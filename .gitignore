@@ -149,6 +149,7 @@ secrets/
 # Claude Code
 # ==============================================================================
 .claude/*
+!.claude/rules/
 !.claude/agents/
 !.claude/commands/
 !.claude/hooks/

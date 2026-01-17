@@ -1,6 +1,7 @@
 {
   "$schema": "https://claude.ai/schemas/settings.json",
   "_comment": "Layer B (Defense): Security guardrails - DO NOT MODIFY deny rules",
+  "_rules_comment": "Rules in .claude/rules/ are always auto-applied (01-core, 02-backend, 03-frontend, 04-security, 05-quality)",
 
   "permissions": {
     "allow": [

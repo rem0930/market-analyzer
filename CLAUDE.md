@@ -88,13 +88,19 @@ User: "認証機能を追加して"
 
 ```
 .claude/
+├── rules/            # Always auto-applied rules
+│   ├── 01-core.md        # Canonical source, non-negotiables
+│   ├── 02-backend.md     # DDD + Clean Architecture
+│   ├── 03-frontend.md    # Feature-Sliced Design
+│   ├── 04-security.md    # Security baseline
+│   └── 05-quality.md     # Quality gates
 ├── agents/           # Sub-agents (parallel execution)
 │   ├── repo-explorer.md
 │   ├── security-auditor.md
 │   ├── test-runner.md
 │   ├── code-reviewer.md
 │   └── implementer.md
-├── skills/           # Domain knowledge
+├── skills/           # Domain knowledge (injected on demand)
 │   ├── security-baseline/
 │   ├── ddd-clean-architecture/
 │   ├── fsd-frontend/
@@ -109,6 +115,15 @@ User: "認証機能を追加して"
 │   └── post-edit.sh
 └── settings.json     # Permissions + hooks config
 ```
+
+### Rules vs Skills
+
+| Type | Location | Application |
+|------|----------|-------------|
+| **Rules** | `.claude/rules/` | Always auto-applied |
+| **Skills** | `.claude/skills/` | Injected via `inject_skills` |
+
+Rules are for project-wide constraints that should **always** apply. Skills are for domain-specific knowledge injected when relevant.
 
 ---
 
