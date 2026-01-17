@@ -8,8 +8,8 @@
     "init": "bash ${localWorkspaceFolder}/scripts/init-environment.sh"
   },
   "postCreateCommand": {
-    "deps": "pnpm install",
-    "husky": "pnpm prepare",
+    "deps": "cd /workspace/projects && pnpm install",
+    "husky": "cd /workspace/projects && pnpm prepare",
     "git-config": "git config --global --add safe.directory /workspace"
   },
   "customizations": {

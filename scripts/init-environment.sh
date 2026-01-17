@@ -21,14 +21,12 @@ ensure_traefik() {
 
 prepare_env() {
     local worktree_name="$1"
-    if [[ ! -f .env ]]; then
-        cat > .env << EOF
+    # Always regenerate .env to ensure correct values for current worktree/branch
+    cat > .env << EOF
 WORKTREE=$worktree_name
 COMPOSE_PROJECT_NAME=$worktree_name
+HOST_WORKSPACE_PATH=$ROOT_DIR
 EOF
-    else
-        sed -i.bak "s/^WORKTREE=.*/WORKTREE=$worktree_name/" .env && rm -f .env.bak
-    fi
     export WORKTREE="$worktree_name"
 }
 
