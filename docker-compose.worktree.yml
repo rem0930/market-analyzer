@@ -76,7 +76,7 @@ services:
       - .:/workspace:cached
       - pnpm-store:/home/node/.local/share/pnpm
     working_dir: /workspace/projects
-    command: sh -c "pnpm --filter @monorepo/shared build && pnpm --filter @monorepo/api db:generate && pnpm --filter @monorepo/api dev"
+    command: sh -c "pnpm --filter @monorepo/shared build && pnpm --filter @monorepo/api db:generate && pnpm --filter @monorepo/api db:push && pnpm --filter @monorepo/api db:seed && pnpm --filter @monorepo/api dev"
     environment:
       - NODE_ENV=development
       - PORT=8080
