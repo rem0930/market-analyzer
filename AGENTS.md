@@ -53,6 +53,10 @@
 | `./tools/contract dev` | 開発サーバー起動（docker-compose） |
 | `./tools/contract dev:stop` | 開発サーバー停止 |
 | `./tools/contract dev:logs` | 開発サーバーログ表示 |
+| `./tools/contract up` | DevContainer + フルスタック環境起動（Traefik ルーティング） |
+| `./tools/contract up:stop` | フルスタック環境停止 |
+| `./tools/contract up:logs` | フルスタック環境ログ表示 |
+| `./tools/contract up:status` | コンテナステータス表示 |
 
 ---
 

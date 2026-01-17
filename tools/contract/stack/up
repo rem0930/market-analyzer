@@ -6,9 +6,30 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 cd "${REPO_ROOT}"
 
-# Get worktree name from current directory or git branch
-WORKTREE="${WORKTREE:-$(basename "$(pwd)")}"
+# Determine worktree name: use directory name (works for both main repo and worktrees)
+get_worktree_name() {
+    basename "$(pwd)"
+}
+
+# Load existing .env or create new one
+if [[ -f .env ]]; then
+    # shellcheck source=/dev/null
+    source .env
+fi
+
+# Always use directory name as worktree identifier
+WORKTREE="$(get_worktree_name)"
+COMPOSE_PROJECT_NAME="${WORKTREE}"
+
+# Update .env with current values
+cat > .env << EOF
+WORKTREE=${WORKTREE}
+COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
+HOST_WORKSPACE_PATH=${REPO_ROOT}
+EOF
+
 export WORKTREE
+export COMPOSE_PROJECT_NAME
 
 echo "🚀 Starting development environment with DevContainer..."
 echo "   Worktree: ${WORKTREE}"
