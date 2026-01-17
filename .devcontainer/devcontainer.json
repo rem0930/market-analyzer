@@ -7,6 +7,11 @@
   "initializeCommand": {
     "init": "bash ${localWorkspaceFolder}/scripts/init-environment.sh"
   },
+  "postCreateCommand": {
+    "deps": "pnpm install",
+    "husky": "pnpm prepare",
+    "git-config": "git config --global --add safe.directory /workspace"
+  },
   "customizations": {
     "vscode": {
       "extensions": [
