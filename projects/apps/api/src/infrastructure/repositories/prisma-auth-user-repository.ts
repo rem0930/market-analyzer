@@ -5,7 +5,7 @@
 
 import { Result, Email } from '@monorepo/shared';
 import type { RepositoryError } from '@monorepo/shared';
-import type { PrismaClient } from '@prisma/client';
+import type { PrismaClient } from '../database/index.js';
 import type { AuthUserRepository } from '../../domain/auth/auth-user-repository.js';
 import { AuthUser, AuthUserId, PasswordHash } from '../../domain/auth/auth-user.js';
 
@@ -136,11 +136,6 @@ export class PrismaAuthUserRepository implements AuthUserRepository {
   }
 
   private isUniqueConstraintError(error: unknown): boolean {
-    return (
-      typeof error === 'object' &&
-      error !== null &&
-      'code' in error &&
-      error.code === 'P2002'
-    );
+    return typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002';
   }
 }

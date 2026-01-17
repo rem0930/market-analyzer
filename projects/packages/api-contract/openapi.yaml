@@ -259,6 +259,77 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
   # ============================================
+  # Profile Endpoints
+  # ============================================
+  /users/me/name:
+    patch:
+      operationId: updateMyName
+      summary: Update current user's name
+      tags:
+        - Profile
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateNameRequest'
+      responses:
+        '200':
+          description: Name updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/me/password:
+    patch:
+      operationId: updateMyPassword
+      summary: Update current user's password
+      tags:
+        - Profile
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePasswordRequest'
+      responses:
+        '200':
+          description: Password updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          description: Validation error or current password incorrect
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ============================================
   # User Endpoints
   # ============================================
   /users/{userId}:
@@ -370,9 +441,9 @@ components:
           type: object
           additionalProperties: true
 
-  # ============================================
-  # Auth Schemas
-  # ============================================
+    # ============================================
+    # Auth Schemas
+    # ============================================
     RegisterRequest:
       type: object
       required:
@@ -476,6 +547,33 @@ components:
       properties:
         message:
           type: string
+
+    # ============================================
+    # Profile Schemas
+    # ============================================
+    UpdateNameRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+
+    UpdatePasswordRequest:
+      type: object
+      required:
+        - currentPassword
+        - newPassword
+      properties:
+        currentPassword:
+          type: string
+        newPassword:
+          type: string
+          minLength: 8
+          maxLength: 128
+          description: Must contain at least one letter and one number
 
   securitySchemes:
     BearerAuth:

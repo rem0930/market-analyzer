@@ -57,3 +57,15 @@ export {
   type HealthCheck,
   type DatabaseHealthChecker,
 } from './health/index.js';
+
+// Profile usecases
+export {
+  ChangeNameUseCase,
+  type ChangeNameInput,
+  type ChangeNameOutput,
+  type ChangeNameError,
+  ChangePasswordUseCase,
+  type ChangePasswordInput,
+  type ChangePasswordOutput,
+  type ChangePasswordError,
+} from './profile/index.js';

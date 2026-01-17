@@ -5,13 +5,8 @@
 
 import { Result, Email } from '@monorepo/shared';
 import type { RepositoryError } from '@monorepo/shared';
-import type { PrismaClient } from '@prisma/client';
-import {
-  User,
-  UserId,
-  type UserRepository,
-  type UserRepositoryError,
-} from '../../domain/index.js';
+import type { PrismaClient } from '../database/index.js';
+import { User, UserId, type UserRepository, type UserRepositoryError } from '../../domain/index.js';
 
 export class PrismaUserRepository implements UserRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -120,28 +115,14 @@ export class PrismaUserRepository implements UserRepository {
     }
   }
 
-  private toDomain(record: {
-    id: string;
-    name: string;
-    email: string;
-  }): User {
+  private toDomain(record: { id: string; name: string; email: string }): User {
     // Email.create() throws on invalid email, so we trust the database has valid emails
     const email = Email.create(record.email);
 
-    return User.restore(
-      new UserId(record.id),
-      email,
-      record.name,
-      1
-    );
+    return User.restore(new UserId(record.id), email, record.name, 1);
   }
 
   private isUniqueConstraintError(error: unknown): boolean {
-    return (
-      typeof error === 'object' &&
-      error !== null &&
-      'code' in error &&
-      error.code === 'P2002'
-    );
+    return typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002';
   }
 }

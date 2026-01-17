@@ -5,9 +5,12 @@
 
 import { Result } from '@monorepo/shared';
 import type { RepositoryError } from '@monorepo/shared';
-import type { PrismaClient } from '@prisma/client';
+import type { PrismaClient } from '../database/index.js';
 import type { PasswordResetTokenRepository } from '../../domain/auth/password-reset-token-repository.js';
-import { PasswordResetToken, PasswordResetTokenId } from '../../domain/auth/password-reset-token.js';
+import {
+  PasswordResetToken,
+  PasswordResetTokenId,
+} from '../../domain/auth/password-reset-token.js';
 import { TokenHash } from '../../domain/auth/refresh-token.js';
 import { AuthUserId } from '../../domain/auth/auth-user.js';
 
@@ -32,7 +35,9 @@ export class PrismaPasswordResetTokenRepository implements PasswordResetTokenRep
     }
   }
 
-  async findById(id: PasswordResetTokenId): Promise<Result<PasswordResetToken | null, RepositoryError>> {
+  async findById(
+    id: PasswordResetTokenId
+  ): Promise<Result<PasswordResetToken | null, RepositoryError>> {
     try {
       const record = await this.prisma.passwordResetToken.findUnique({
         where: { id: id.value },
@@ -48,7 +53,9 @@ export class PrismaPasswordResetTokenRepository implements PasswordResetTokenRep
     }
   }
 
-  async findByTokenHash(tokenHash: TokenHash): Promise<Result<PasswordResetToken | null, RepositoryError>> {
+  async findByTokenHash(
+    tokenHash: TokenHash
+  ): Promise<Result<PasswordResetToken | null, RepositoryError>> {
     try {
       const record = await this.prisma.passwordResetToken.findFirst({
         where: { tokenHash: tokenHash.value },

@@ -5,7 +5,7 @@
 
 import { Result } from '@monorepo/shared';
 import type { RepositoryError } from '@monorepo/shared';
-import type { PrismaClient } from '@prisma/client';
+import type { PrismaClient } from '../database/index.js';
 import type { RefreshTokenRepository } from '../../domain/auth/refresh-token-repository.js';
 import { RefreshToken, RefreshTokenId, TokenHash } from '../../domain/auth/refresh-token.js';
 import { AuthUserId } from '../../domain/auth/auth-user.js';
@@ -47,7 +47,9 @@ export class PrismaRefreshTokenRepository implements RefreshTokenRepository {
     }
   }
 
-  async findByTokenHash(tokenHash: TokenHash): Promise<Result<RefreshToken | null, RepositoryError>> {
+  async findByTokenHash(
+    tokenHash: TokenHash
+  ): Promise<Result<RefreshToken | null, RepositoryError>> {
     try {
       const record = await this.prisma.refreshToken.findFirst({
         where: { tokenHash: tokenHash.value },
