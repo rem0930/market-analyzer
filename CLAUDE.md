@@ -65,6 +65,61 @@ Claude は自動的に適切なサブエージェントを選択します：
 
 ---
 
+## Security Configuration (Permission Rules)
+
+### 設定ファイル
+
+| ファイル | スコープ | 用途 |
+|---------|---------|------|
+| `.claude/settings.json` | リポジトリ共有 | deny ルール（secrets 保護、危険コマンド禁止） |
+| `.claude/settings.local.json` | 個人（.gitignore 対象） | allow/ask ルール（日常作業用） |
+
+### deny ルール（settings.json で定義）
+
+以下の操作は **常にブロック** されます：
+
+**ファイルアクセス禁止:**
+- `.env`, `.env.*`, `.env.local` の Read/Edit/Write
+- `secrets/` ディレクトリ配下
+- `*.pem`, `*.key`, `*.p12`, `*.pfx`（秘密鍵）
+- `credentials*`, `*secret*`, `*credential*`
+
+**危険な Bash コマンド禁止:**
+- `rm -rf /`, `rm -rf ~/`（破壊的削除）
+- `sudo *`（特権昇格）
+- `curl | bash`, `wget | sh`（リモートスクリプト実行）
+- `cat */.env*`, `cat */secrets/*`（secrets 表示）
+- `echo $*_KEY*`, `echo $*_SECRET*` 等（環境変数出力）
+- `printenv *KEY*`, `env > *`（環境変数ダンプ）
+
+### allow ルール（settings.local.json で定義）
+
+以下は **確認なしで実行可能**：
+
+- `./tools/contract *`（Golden Commands）
+- `./tools/worktree/*`, `./tools/policy/*`
+- git 読み取り系（status, diff, log, branch, fetch, rev-parse, worktree list）
+- docker 読み取り系（ps, logs, inspect, network ls/inspect, volume ls, compose ps/logs）
+- ファイル確認系（ls, tree, wc, xxd）
+
+### ask ルール（settings.local.json で定義）
+
+以下は **毎回確認** されます：
+
+- git 書き込み系（add, commit, push, checkout, switch, stash, pull, clean, worktree add/remove）
+- GitHub CLI（gh pr create/list）
+- docker 操作系（exec, stop, rm, restart, cp, volume rm, compose up/down/restart）
+- パッケージ管理（pnpm install, pnpm --filter, npx）
+- 権限変更（chmod）
+
+### 運用ガイドライン
+
+1. **deny は変更しない**: settings.json の deny は全員に適用される安全弁
+2. **allow は最小限に**: 必要になったら ask → allow に昇格を検討
+3. **新しいツール追加時**: まず ask で運用し、安全が確認できたら allow に
+
+---
+
 ## DevContainer Notes
 
 - firewall allowlist 確認: `docs/devcontainer.md` を参照

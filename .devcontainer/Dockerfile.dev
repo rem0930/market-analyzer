@@ -4,10 +4,10 @@ RUN apt-get update && apt-get install -y \
     git curl wget jq vim \
     && rm -rf /var/lib/apt/lists/*
 
-# pnpm setup
+# pnpm setup (corepack removed from Node.js 25+)
 ENV PNPM_HOME="/home/node/.local/share/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
+RUN npm install -g --force corepack && corepack enable && corepack prepare pnpm@9.15.0 --activate
 
 USER node
 WORKDIR /workspace
