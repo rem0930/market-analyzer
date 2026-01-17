@@ -6,232 +6,192 @@ If anything conflicts, follow `AGENTS.md`.
 
 ---
 
-## Sub-Agents 🤖
+## Configuration Architecture (2-Layer Design)
 
-Claude Code には、タスクに応じて自動起動する専用サブエージェントが設定されています。
+Claude Code の設定は **2 レイヤー** で構成されています。
 
-### 利用可能なサブエージェント
+### Layer A: Offense (速度と品質を同時に上げる)
 
-| エージェント | 用途 | 起動例 |
-|-------------|------|-------|
-| 🛠️ Implementer | 機能実装、バグ修正 | "ユーザー認証を実装して" |
-| 🏗️ Architect | ADR作成、設計 | "キャッシュ戦略のADRを作成" |
-| 🧪 QA Tester | テスト計画、品質保証 | "AC-001のテスト計画を作成" |
-| 👀 Code Reviewer | PRレビュー | "このPRをレビューして" |
-| 🎨 Product Designer | UX/UI設計 | "ログイン画面のUXフローを設計" |
-| 📋 Product Manager | 要件定義、Spec作成 | "ユーザー登録機能のSpecを作成" |
+「Claude が迷わない」「毎回同じ手順で終わる」「品質ゲートが自動で掛かる」
 
-### 自動ルーティング
+| Component | Path | Purpose |
+|-----------|------|---------|
+| **Agents** | `.claude/agents/` | 並列サブエージェント（探索/監査/テスト/レビュー/実装） |
+| **Skills** | `.claude/skills/` | ドメイン知識（DDD, FSD, Security, Quality Gates） |
+| **Commands** | `.claude/commands/` | スラッシュコマンド（/kickoff, /pr-check） |
+| **Hooks (Post)** | `settings.json` | 自動フォーマット |
 
-Claude は自動的に適切なサブエージェントを選択します：
+### Layer B: Defense (セキュリティ・ガードレール)
 
-```
-👤 User: "PRをレビューしてください"
-🤖 Claude: Code Reviewer サブエージェントを起動...
-```
+「事故を起こせない」「起きても被害半径が小さい」「監査できる」
 
-### 手動起動
-
-特定のサブエージェントを明示的に呼び出すこともできます：
-
-```
-/agent Implementer ログイン機能を実装
-```
-
-### サブエージェントの利点
-
-1. **コンテキスト分離**: 各タスクが独立したコンテキストで実行
-2. **専門性**: 役割に特化したプロンプトとツールセット
-3. **効率化**: 並列実行により複数タスクを同時進行可能
-
-詳細は `.claude/agents/README.md` を参照してください。
+| Component | Path | Purpose |
+|-----------|------|---------|
+| **Deny Rules** | `settings.json` | 絶対禁止（secrets保護、破壊的コマンド） |
+| **PreToolUse Hook** | `.claude/hooks/` | 実行前ブロック |
+| **Allow (minimal)** | `settings.json` | 背景サブエージェント用最小権限 |
+| **DevContainer** | `.devcontainer/` | 隔離環境での実行 |
 
 ---
 
-## Autonomy Configuration
+## Sub-Agents (Parallel by Default)
 
-| Setting | Value |
-|---------|-------|
-| `risk_profile` | `safe` |
-| `allow_auto_commit` | `true` |
-| `allow_auto_pr` | `true` |
-| `dangerously_skip_permissions` | `false` |
+サブエージェントは **並列実行がデフォルト**。`"use proactively"` で自動委譲。
 
-**safe モード**: 自動実行はするが、以下は明示承認が必要:
-- force push
-- main/master への直接 push
-- 既存ファイルの削除
-- セキュリティ設定の変更
+| Agent | Role | Tools | Trigger Keywords |
+|-------|------|-------|------------------|
+| `repo-explorer` | コードベース探索（read-only） | Read, Grep, Glob | explore, find, where, how |
+| `security-auditor` | セキュリティ監査（read-only） | Read, Grep, Glob | security, audit, vulnerability |
+| `test-runner` | テスト/lint実行 | Bash, Read | test, lint, typecheck, ci |
+| `code-reviewer` | コードレビュー（read-only） | Read, Grep, Glob | review, PR, feedback |
+| `implementer` | 実装（最小差分） | All | implement, fix, add, create |
+
+### 並列実行例
+
+```
+User: "認証機能を追加して"
+
+→ 並列起動:
+  - repo-explorer: 既存コードを探索
+  - security-auditor: 認証関連のセキュリティ確認
+  - code-reviewer: 関連コードの品質確認
+
+→ 結果を統合して implementer が実装
+→ test-runner がテスト実行
+```
 
 ---
 
-## Security Configuration (Permission Rules)
+## Skills
 
-### 設定ファイル
-
-| ファイル | スコープ | 用途 |
-|---------|---------|------|
-| `.claude/settings.json` | リポジトリ共有 | deny ルール（secrets 保護、危険コマンド禁止） |
-| `.claude/settings.local.json` | 個人（.gitignore 対象） | allow/ask ルール（日常作業用） |
-
-### deny ルール（settings.json で定義）
-
-以下の操作は **常にブロック** されます：
-
-**ファイルアクセス禁止:**
-- `.env`, `.env.*`, `.env.local` の Read/Edit/Write
-- `secrets/` ディレクトリ配下
-- `*.pem`, `*.key`, `*.p12`, `*.pfx`（秘密鍵）
-- `credentials*`, `*secret*`, `*credential*`
-
-**危険な Bash コマンド禁止:**
-- `rm -rf /`, `rm -rf ~/`（破壊的削除）
-- `sudo *`（特権昇格）
-- `curl | bash`, `wget | sh`（リモートスクリプト実行）
-- `cat */.env*`, `cat */secrets/*`（secrets 表示）
-- `echo $*_KEY*`, `echo $*_SECRET*` 等（環境変数出力）
-- `printenv *KEY*`, `env > *`（環境変数ダンプ）
-
-### allow ルール（settings.local.json で定義）
-
-以下は **確認なしで実行可能**：
-
-- `./tools/contract *`（Golden Commands）
-- `./tools/worktree/*`, `./tools/policy/*`
-- git 読み取り系（status, diff, log, branch, fetch, rev-parse, worktree list）
-- docker 読み取り系（ps, logs, inspect, network ls/inspect, volume ls, compose ps/logs）
-- ファイル確認系（ls, tree, wc, xxd）
-
-### ask ルール（settings.local.json で定義）
-
-以下は **毎回確認** されます：
-
-- git 書き込み系（add, commit, push, checkout, switch, stash, pull, clean, worktree add/remove）
-- GitHub CLI（gh pr create/list）
-- docker 操作系（exec, stop, rm, restart, cp, volume rm, compose up/down/restart）
-- パッケージ管理（pnpm install, pnpm --filter, npx）
-- 権限変更（chmod）
-
-### 運用ガイドライン
-
-1. **deny は変更しない**: settings.json の deny は全員に適用される安全弁
-2. **allow は最小限に**: 必要になったら ask → allow に昇格を検討
-3. **新しいツール追加時**: まず ask で運用し、安全が確認できたら allow に
+| Skill | Purpose |
+|-------|---------|
+| `security-baseline` | 入力検証、認証、XSS、依存関係セキュリティ |
+| `ddd-clean-architecture` | レイヤー依存、境界、ドメイン純度 |
+| `fsd-frontend` | Feature-Sliced Design、Next.js配置 |
+| `quality-gates` | lint/test/typecheck の実行順序 |
+| `repo-conventions` | リポジトリ固有のルール（DocDD, ブランチ命名） |
 
 ---
 
-## DevContainer Notes
+## Slash Commands
 
-- firewall allowlist 確認: `docs/devcontainer.md` を参照
-- 問題時は `Skill.DevContainer_Safe_Mode` に従う
-- `dangerously-skip-permissions` は devcontainer の firewall 前提でのみ許容
+| Command | Description |
+|---------|-------------|
+| `/kickoff <task>` | 並列探索で開発開始 |
+| `/pr-check` | レビュー/テスト/セキュリティチェック |
+| `/deps-audit` | 依存関係監査 |
 
 ---
 
-## 並列開発環境 (Git Worktree + Traefik)
+## Directory Structure
 
-### 自動起動
-このプロジェクトを開くと `scripts/init-environment.sh` が実行され、環境が自動起動します。
-
-### 手動起動
-```bash
-./scripts/init-environment.sh
+```
+.claude/
+├── rules/            # Always auto-applied rules
+│   ├── 01-core.md        # Canonical source, non-negotiables
+│   ├── 02-backend.md     # DDD + Clean Architecture
+│   ├── 03-frontend.md    # Feature-Sliced Design
+│   ├── 04-security.md    # Security baseline
+│   └── 05-quality.md     # Quality gates
+├── agents/           # Sub-agents (parallel execution)
+│   ├── repo-explorer.md
+│   ├── security-auditor.md
+│   ├── test-runner.md
+│   ├── code-reviewer.md
+│   └── implementer.md
+├── skills/           # Domain knowledge (injected on demand)
+│   ├── security-baseline/
+│   ├── ddd-clean-architecture/
+│   ├── fsd-frontend/
+│   ├── quality-gates/
+│   └── repo-conventions/
+├── commands/         # Slash commands
+│   ├── kickoff.md
+│   ├── pr-check.md
+│   └── deps-audit.md
+├── hooks/            # Pre/Post tool hooks
+│   ├── pre-bash.sh
+│   └── post-edit.sh
+└── settings.json     # Permissions + hooks config
 ```
 
-### Worktree 作成
-```bash
-git worktree add ../feature-x feature-x
-cd ../feature-x
-# VS Code または Claude Code で開くと自動的に環境が起動
-```
+### Rules vs Skills vs prompts/skills/
 
-### アクセスURL
-- Frontend: `http://fe.<worktree名>.localhost`
-- Backend: `http://be.<worktree名>.localhost`
-- Traefik Dashboard: `http://localhost:8080`
+| Type              | Location           | Application            | Content                       |
+|-------------------|--------------------|------------------------|-------------------------------|
+| **Rules**         | `.claude/rules/`   | Always auto-applied    | MUST/MUST NOT constraints     |
+| **Skills**        | `.claude/skills/`  | Injected on demand     | HOW TO with code examples     |
+| **Skill Prompts** | `prompts/skills/`  | Reference / manual use | Detailed procedural workflows |
 
-### 停止
-```bash
-./scripts/down.sh
-```
+**Design Principle**:
 
-### 仕組み
-- **ルートリポジトリ**: Traefik のみ起動
-- **Worktree**: Traefik確認 + 開発サービス（frontend/backend）起動
-- 各 worktree は独立した Docker Compose プロジェクトとして管理
-- Traefik により動的なルーティングを実現
+- **Rules**: Minimal constraints (what to enforce)
+- **Skills**: Implementation guidance (how to do it)
+- **prompts/skills/**: Detailed workflows for human reference or other AI tools
+
+Rules reference Skills for details: `→ .claude/skills/<name>/SKILL.md`
+
+---
+
+## Security Configuration
+
+### Deny Rules (DO NOT MODIFY)
+
+Always blocked:
+
+- **Secrets**: `.env*`, `secrets/`, `*.pem`, `*.key`
+- **Destructive**: `rm -rf /`, `sudo *`, `curl | bash`
+- **Exfiltration**: `echo $*_KEY*`, `printenv *SECRET*`
+- **Git Dangerous**: `git push --force`, `git reset --hard`
+
+### Allow Rules (Minimal for Background Agents)
+
+Auto-approved:
+
+- `./tools/contract lint/test/typecheck/build`
+- `git status/diff/log`
+- `pnpm audit/outdated`
+
+### Hooks
+
+- **PreToolUse**: Block main branch ops, force push, pipe-to-shell
+- **PostToolUse**: Auto-format TypeScript files
 
 ---
 
 ## Quick Reference
 
 ```bash
-# Golden Commands (always use these)
+# Golden Commands
 ./tools/contract format
 ./tools/contract lint
 ./tools/contract typecheck
 ./tools/contract test
 ./tools/contract build
 ./tools/contract guardrail
-./tools/contract e2e
-./tools/contract migrate
-./tools/contract deploy-dryrun
 
-# Development server
-./tools/contract dev
-./tools/contract dev:stop
-./tools/contract dev:logs
-
-# Policy check
-./tools/policy/check_required_artifacts.sh
-./tools/policy/check_docdd_minimum.sh
-./tools/policy/check_instruction_consistency.sh
+# Worktree
+./tools/worktree/spawn.sh <branch>
+./tools/worktree/cleanup.sh
 ```
-
-## Key Paths
-
-- Process docs: `docs/00_process/`
-- Product docs: `docs/01_product/`
-- Architecture: `docs/02_architecture/`
-- Quality: `docs/03_quality/`
-- Delivery: `docs/04_delivery/`
-- Application code: `projects/`
-- Agent Prompts: `prompts/agents/`
-- Skill Prompts: `prompts/skills/`
-
-## Workflow
-
-1. **Read Contract First**: `AGENTS.md` と `docs/00_process/process.md` を読む
-2. **DocDD**: Spec/Plan/Tasks なしで実装を開始しない
-3. **Golden Commands**: 必ず `./tools/contract` 経由で実行
-4. **Docs Drift**: コード変更時は関連 Docs も更新
-5. **Minimize Diff**: CI 失敗時は原因を1つに絞り最小差分で修正
 
 ---
 
-## Context7 MCP (最新ドキュメント参照)
+## Workflow
 
-ライブラリやフレームワークの実装時は **必ず context7 を使用** して最新のドキュメントを参照すること。
-これにより、古いAPIや非推奨パターンの混入を防ぐ。
+1. **Read Contract First**: `AGENTS.md`
+2. **DocDD**: No implementation without Spec/Plan/AC
+3. **Golden Commands**: Always use `./tools/contract`
+4. **Parallel Agents**: Let background agents explore/audit
+5. **Minimize Diff**: Single root cause, smallest fix
 
-### 使い方
+---
 
-プロンプトに `use context7` を含めるか、以下のように明示的に指定:
+## Context7 MCP
+
+Use `context7` for latest library documentation:
 
 ```text
-Prismaでユーザーテーブルを作成して use context7
+Create Prisma user table use context7
 ```
-
-### 自動適用ルール
-
-以下のケースでは context7 の使用を強く推奨:
-
-- 新しいライブラリの導入時
-- 既存ライブラリのアップデート後
-- API実装・クライアント生成時
-- 設定ファイルの作成時
-
-### 設定
-
-MCP設定は `.mcp.json` に定義済み。追加設定不要。
-

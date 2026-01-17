@@ -149,9 +149,13 @@ secrets/
 # Claude Code
 # ==============================================================================
 .claude/*
-!.claude/commands
+!.claude/rules/
 !.claude/agents/
+!.claude/commands/
+!.claude/hooks/
+!.claude/skills/
 !.claude/settings.json
+.claude/settings.local.json
 .auto-claude/
 
 # ==============================================================================

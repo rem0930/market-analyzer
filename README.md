@@ -116,18 +116,19 @@ pnpm install
 
 このリポジトリは AI エージェント（GitHub Copilot, Claude Code）による自動化をサポートしています。
 
-### Claude Code Sub-Agents
+### Claude Code Sub-Agents（並列実行）
 
-Claude Code を使用している場合、以下のサブエージェントが自動的に利用可能です：
+Claude Code を使用している場合、以下のサブエージェントが **並列実行** で自動的に利用可能です：
 
-- 🛠️ **Implementer**: 機能実装、バグ修正
-- 🏗️ **Architect**: ADR作成、システム設計
-- 🧪 **QA Tester**: テスト計画、品質保証
-- 👀 **Code Reviewer**: PRレビュー
-- 🎨 **Product Designer**: UX/UI設計
-- 📋 **Product Manager**: 要件定義、Spec作成
+| Agent | Purpose | Mode |
+|-------|---------|------|
+| `repo-explorer` | コードベース探索 | read-only, 並列 |
+| `security-auditor` | セキュリティ監査 | read-only, 並列 |
+| `test-runner` | テスト/lint 実行 | 自動実行 |
+| `code-reviewer` | コードレビュー | read-only, 並列 |
+| `implementer` | 最小差分実装 | メイン作業 |
 
-詳細は [.claude/agents/README.md](.claude/agents/README.md) を参照してください。
+詳細は [AGENTS.md](AGENTS.md) および [ADR-0005](docs/02_architecture/adr/0005_claude_code_subagents.md) を参照してください。
 
 ---
 
