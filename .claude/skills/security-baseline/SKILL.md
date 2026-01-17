@@ -1,10 +1,11 @@
 ---
 name: security-baseline
-description: Security best practices for Node.js/TypeScript applications. Apply when implementing auth, handling user input, or reviewing security.
-tools:
-  - Read
-  - Grep
-  - Glob
+description: Security best practices for Node.js/TypeScript applications. Apply when implementing auth, handling user input, or reviewing security. Triggers on "auth", "security", "validation", "XSS", "CSRF", "injection", "secrets".
+globs:
+  - "**/*auth*"
+  - "**/*security*"
+  - "**/*middleware*"
+alwaysApply: false
 ---
 
 # Security Baseline

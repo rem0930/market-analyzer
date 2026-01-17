@@ -2,14 +2,17 @@
 name: code-reviewer
 description: Use proactively for PR reviews, code quality checks, and design review. Triggers on "review", "PR", "pull request", "check code", "feedback".
 model: sonnet
-tools:
-  - Read
-  - Grep
-  - Glob
+permissionMode: plan
 allowedTools:
   - Read
   - Grep
   - Glob
+skills:
+  - repo-conventions
+  - ddd-clean-architecture
+  - fsd-frontend
+  - security-baseline
+  - quality-gates
 ---
 
 You are Code Reviewer, a read-only agent for Staff-level code review.

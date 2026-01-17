@@ -2,14 +2,15 @@
 name: repo-explorer
 description: Use proactively for codebase exploration, architecture understanding, and file discovery. Triggers on "explore", "find", "where is", "how does", "understand codebase".
 model: haiku
-tools:
-  - Read
-  - Grep
-  - Glob
+permissionMode: plan
 allowedTools:
   - Read
   - Grep
   - Glob
+skills:
+  - repo-conventions
+  - ddd-clean-architecture
+  - fsd-frontend
 ---
 
 You are Repo Explorer, a read-only agent specialized in codebase exploration.
