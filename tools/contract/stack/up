@@ -37,19 +37,20 @@ fi
 echo "🔨 Building and starting services..."
 ${COMPOSE_CMD} -f docker-compose.worktree.yml up --build -d
 
-# Wait for dev container to be ready
-echo "⏳ Waiting for DevContainer to be ready..."
+# Wait for dev container to be healthy (dependencies installed)
+echo "⏳ Waiting for DevContainer to install dependencies..."
 DEV_CONTAINER="${WORKTREE}-dev"
-for i in {1..30}; do
-  if docker exec "${DEV_CONTAINER}" echo "ready" &>/dev/null; then
+for i in {1..120}; do
+  STATUS=$(docker inspect --format='{{.State.Health.Status}}' "${DEV_CONTAINER}" 2>/dev/null || echo "unknown")
+  if [[ "${STATUS}" == "healthy" ]]; then
+    echo "✅ Dependencies installed successfully"
     break
   fi
-  sleep 1
+  if [[ $i -eq 120 ]]; then
+    echo "⚠️  Timeout waiting for dependencies. Check logs with: ./tools/contract up:logs dev"
+  fi
+  sleep 2
 done
-
-# Run initial setup in DevContainer
-echo "📦 Installing dependencies in DevContainer..."
-docker exec -w /workspace/projects "${DEV_CONTAINER}" pnpm install 2>/dev/null || true
 
 echo ""
 echo "════════════════════════════════════════════════════════════════"
