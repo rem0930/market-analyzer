@@ -18,6 +18,14 @@ export class InMemoryPasswordResetTokenRepository implements PasswordResetTokenR
     return Result.ok(undefined);
   }
 
+  async update(token: PasswordResetToken): Promise<Result<void, RepositoryError>> {
+    if (!this.tokens.has(token.id.value)) {
+      return Result.fail('not_found');
+    }
+    this.tokens.set(token.id.value, token);
+    return Result.ok(undefined);
+  }
+
   async findById(id: PasswordResetTokenId): Promise<Result<PasswordResetToken | null, RepositoryError>> {
     const token = this.tokens.get(id.value);
     return Result.ok(token ?? null);

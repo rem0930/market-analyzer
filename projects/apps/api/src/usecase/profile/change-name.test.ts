@@ -38,13 +38,15 @@ describe('ChangeNameUseCase', () => {
   const validInput = {
     userId: '550e8400-e29b-41d4-a716-446655440000',
     name: 'New Name',
+    causationId: 'causation-1',
+    correlationId: 'correlation-1',
   };
 
   describe('successful name change', () => {
     it('should change name successfully', async () => {
       const user = createMockUser();
       vi.mocked(mockUserRepository.findById).mockResolvedValue(Result.ok(user));
-      vi.mocked(mockUserRepository.save).mockResolvedValue(Result.ok(undefined));
+      vi.mocked(mockUserRepository.update).mockResolvedValue(Result.ok(undefined));
 
       const result = await useCase.execute(validInput);
 
@@ -57,17 +59,17 @@ describe('ChangeNameUseCase', () => {
     it('should persist the user after name change', async () => {
       const user = createMockUser();
       vi.mocked(mockUserRepository.findById).mockResolvedValue(Result.ok(user));
-      vi.mocked(mockUserRepository.save).mockResolvedValue(Result.ok(undefined));
+      vi.mocked(mockUserRepository.update).mockResolvedValue(Result.ok(undefined));
 
       await useCase.execute(validInput);
 
-      expect(mockUserRepository.save).toHaveBeenCalled();
+      expect(mockUserRepository.update).toHaveBeenCalled();
     });
 
     it('should update name on the user entity', async () => {
       const user = createMockUser('Old Name');
       vi.mocked(mockUserRepository.findById).mockResolvedValue(Result.ok(user));
-      vi.mocked(mockUserRepository.save).mockResolvedValue(Result.ok(undefined));
+      vi.mocked(mockUserRepository.update).mockResolvedValue(Result.ok(undefined));
 
       const result = await useCase.execute({ ...validInput, name: 'Updated Name' });
 
@@ -121,7 +123,7 @@ describe('ChangeNameUseCase', () => {
 
       expect(result.isFailure()).toBe(true);
       expect(result.error).toBe('invalid_name');
-      expect(mockUserRepository.save).not.toHaveBeenCalled();
+      expect(mockUserRepository.update).not.toHaveBeenCalled();
     });
 
     it('should fail with name exceeding 100 characters', async () => {
@@ -135,13 +137,13 @@ describe('ChangeNameUseCase', () => {
 
       expect(result.isFailure()).toBe(true);
       expect(result.error).toBe('invalid_name');
-      expect(mockUserRepository.save).not.toHaveBeenCalled();
+      expect(mockUserRepository.update).not.toHaveBeenCalled();
     });
 
     it('should accept name with exactly 100 characters', async () => {
       const user = createMockUser();
       vi.mocked(mockUserRepository.findById).mockResolvedValue(Result.ok(user));
-      vi.mocked(mockUserRepository.save).mockResolvedValue(Result.ok(undefined));
+      vi.mocked(mockUserRepository.update).mockResolvedValue(Result.ok(undefined));
 
       const result = await useCase.execute({
         ...validInput,
@@ -154,7 +156,7 @@ describe('ChangeNameUseCase', () => {
     it('should accept single character name', async () => {
       const user = createMockUser();
       vi.mocked(mockUserRepository.findById).mockResolvedValue(Result.ok(user));
-      vi.mocked(mockUserRepository.save).mockResolvedValue(Result.ok(undefined));
+      vi.mocked(mockUserRepository.update).mockResolvedValue(Result.ok(undefined));
 
       const result = await useCase.execute({
         ...validInput,
@@ -165,11 +167,27 @@ describe('ChangeNameUseCase', () => {
     });
   });
 
+  describe('same name validation', () => {
+    it('should fail when changing to same name', async () => {
+      const user = createMockUser('Test User');
+      vi.mocked(mockUserRepository.findById).mockResolvedValue(Result.ok(user));
+
+      const result = await useCase.execute({
+        ...validInput,
+        name: 'Test User',
+      });
+
+      expect(result.isFailure()).toBe(true);
+      expect(result.error).toBe('same_name');
+      expect(mockUserRepository.update).not.toHaveBeenCalled();
+    });
+  });
+
   describe('user persistence', () => {
-    it('should fail when save fails', async () => {
+    it('should fail when update fails', async () => {
       const user = createMockUser();
       vi.mocked(mockUserRepository.findById).mockResolvedValue(Result.ok(user));
-      vi.mocked(mockUserRepository.save).mockResolvedValue(Result.fail('db_error'));
+      vi.mocked(mockUserRepository.update).mockResolvedValue(Result.fail('db_error'));
 
       const result = await useCase.execute(validInput);
 

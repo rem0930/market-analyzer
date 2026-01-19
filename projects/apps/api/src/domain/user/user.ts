@@ -73,6 +73,29 @@ export class UserEmailChangedEvent extends DomainEvent<'UserEmailChanged'> {
 }
 
 /**
+ * ユーザー名変更イベント
+ */
+export class UserNameChangedEvent extends DomainEvent<'UserNameChanged'> {
+  constructor(
+    aggregateId: string,
+    aggregateVersion: number,
+    public readonly oldName: string,
+    public readonly newName: string,
+    causationId: string,
+    correlationId: string
+  ) {
+    super('UserNameChanged', aggregateId, aggregateVersion, causationId, correlationId);
+  }
+
+  toPayload(): Record<string, unknown> {
+    return {
+      oldName: this.oldName,
+      newName: this.newName,
+    };
+  }
+}
+
+/**
  * ユーザー作成パラメータ
  */
 export interface CreateUserParams {
@@ -176,12 +199,34 @@ export class User extends AggregateRoot<UserId> {
   /**
    * 名前を変更
    */
-  changeName(newName: string): Result<void, 'invalid_name'> {
+  changeName(
+    newName: string,
+    causationId: string,
+    correlationId: string
+  ): Result<void, 'invalid_name' | 'same_name'> {
     if (newName.length < 1 || newName.length > 100) {
       return Result.fail('invalid_name');
     }
+
+    if (this._name === newName) {
+      return Result.fail('same_name');
+    }
+
+    const oldName = this._name;
     this._name = newName;
     this.incrementVersion();
+
+    this.addDomainEvent(
+      new UserNameChangedEvent(
+        this.id.value,
+        this.version,
+        oldName,
+        newName,
+        causationId,
+        correlationId
+      )
+    );
+
     return Result.ok(undefined);
   }
 }

@@ -74,6 +74,7 @@ describe('RefreshTokenUseCase', () => {
       findById: vi.fn(),
       findByTokenHash: vi.fn(),
       save: vi.fn(),
+      update: vi.fn(),
       delete: vi.fn(),
       revokeAllByUserId: vi.fn(),
     };
@@ -112,6 +113,7 @@ describe('RefreshTokenUseCase', () => {
         Result.ok(createMockRefreshToken())
       );
       vi.mocked(mockAuthUserRepository.findById).mockResolvedValue(Result.ok(createMockUser()));
+      vi.mocked(mockRefreshTokenRepository.update).mockResolvedValue(Result.ok(undefined));
       vi.mocked(mockRefreshTokenRepository.save).mockResolvedValue(Result.ok(undefined));
       vi.mocked(mockJwtService.generateTokenPair).mockReturnValue(Result.ok(mockTokenPair));
 
@@ -133,13 +135,15 @@ describe('RefreshTokenUseCase', () => {
         Result.ok(storedToken)
       );
       vi.mocked(mockAuthUserRepository.findById).mockResolvedValue(Result.ok(createMockUser()));
+      vi.mocked(mockRefreshTokenRepository.update).mockResolvedValue(Result.ok(undefined));
       vi.mocked(mockRefreshTokenRepository.save).mockResolvedValue(Result.ok(undefined));
       vi.mocked(mockJwtService.generateTokenPair).mockReturnValue(Result.ok(mockTokenPair));
 
       await useCase.execute(validInput);
 
-      // save is called twice: once for revoking old token, once for new token
-      expect(mockRefreshTokenRepository.save).toHaveBeenCalledTimes(2);
+      // update is called for revoking old token, save is called for new token
+      expect(mockRefreshTokenRepository.update).toHaveBeenCalledTimes(1);
+      expect(mockRefreshTokenRepository.save).toHaveBeenCalledTimes(1);
     });
 
     it('should save new refresh token', async () => {
@@ -151,6 +155,7 @@ describe('RefreshTokenUseCase', () => {
         Result.ok(createMockRefreshToken())
       );
       vi.mocked(mockAuthUserRepository.findById).mockResolvedValue(Result.ok(createMockUser()));
+      vi.mocked(mockRefreshTokenRepository.update).mockResolvedValue(Result.ok(undefined));
       vi.mocked(mockRefreshTokenRepository.save).mockResolvedValue(Result.ok(undefined));
       vi.mocked(mockJwtService.generateTokenPair).mockReturnValue(Result.ok(mockTokenPair));
 
@@ -273,7 +278,7 @@ describe('RefreshTokenUseCase', () => {
         Result.ok(createMockRefreshToken())
       );
       vi.mocked(mockAuthUserRepository.findById).mockResolvedValue(Result.ok(createMockUser()));
-      vi.mocked(mockRefreshTokenRepository.save).mockResolvedValue(Result.ok(undefined));
+      vi.mocked(mockRefreshTokenRepository.update).mockResolvedValue(Result.ok(undefined));
       vi.mocked(mockJwtService.generateTokenPair).mockReturnValue(Result.fail('sign_failed'));
 
       const result = await useCase.execute(validInput);
@@ -293,10 +298,9 @@ describe('RefreshTokenUseCase', () => {
         Result.ok(createMockRefreshToken())
       );
       vi.mocked(mockAuthUserRepository.findById).mockResolvedValue(Result.ok(createMockUser()));
-      // First save succeeds (for revoking), second fails (for new token)
-      vi.mocked(mockRefreshTokenRepository.save)
-        .mockResolvedValueOnce(Result.ok(undefined))
-        .mockResolvedValueOnce(Result.fail('db_error'));
+      // update succeeds (for revoking old token), save fails (for new token)
+      vi.mocked(mockRefreshTokenRepository.update).mockResolvedValue(Result.ok(undefined));
+      vi.mocked(mockRefreshTokenRepository.save).mockResolvedValue(Result.fail('db_error'));
       vi.mocked(mockJwtService.generateTokenPair).mockReturnValue(Result.ok(mockTokenPair));
 
       const result = await useCase.execute(validInput);

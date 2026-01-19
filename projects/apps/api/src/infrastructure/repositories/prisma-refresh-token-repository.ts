@@ -31,6 +31,20 @@ export class PrismaRefreshTokenRepository implements RefreshTokenRepository {
     }
   }
 
+  async update(token: RefreshToken): Promise<Result<void, RepositoryError>> {
+    try {
+      await this.prisma.refreshToken.update({
+        where: { id: token.id.value },
+        data: {
+          revokedAt: token.revokedAt,
+        },
+      });
+      return Result.ok(undefined);
+    } catch {
+      return Result.fail('db_error');
+    }
+  }
+
   async findById(id: RefreshTokenId): Promise<Result<RefreshToken | null, RepositoryError>> {
     try {
       const record = await this.prisma.refreshToken.findUnique({

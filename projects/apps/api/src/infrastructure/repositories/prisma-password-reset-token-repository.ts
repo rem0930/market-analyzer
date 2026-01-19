@@ -35,6 +35,20 @@ export class PrismaPasswordResetTokenRepository implements PasswordResetTokenRep
     }
   }
 
+  async update(token: PasswordResetToken): Promise<Result<void, RepositoryError>> {
+    try {
+      await this.prisma.passwordResetToken.update({
+        where: { id: token.id.value },
+        data: {
+          usedAt: token.usedAt,
+        },
+      });
+      return Result.ok(undefined);
+    } catch {
+      return Result.fail('db_error');
+    }
+  }
+
   async findById(
     id: PasswordResetTokenId
   ): Promise<Result<PasswordResetToken | null, RepositoryError>> {

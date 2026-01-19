@@ -10,6 +10,8 @@ import { UserId } from '../../domain/index.js';
 export interface ChangeNameInput {
   userId: string;
   name: string;
+  causationId: string;
+  correlationId: string;
 }
 
 export interface ChangeNameOutput {
@@ -20,7 +22,7 @@ export interface ChangeNameOutput {
   updatedAt: Date;
 }
 
-export type ChangeNameError = 'user_not_found' | 'invalid_name' | 'internal_error';
+export type ChangeNameError = 'user_not_found' | 'invalid_name' | 'same_name' | 'internal_error';
 
 export class ChangeNameUseCase {
   constructor(private readonly userRepository: UserRepository) {}
@@ -45,14 +47,17 @@ export class ChangeNameUseCase {
     }
 
     // 2. 名前の変更
-    const changeResult = user.changeName(input.name);
+    const changeResult = user.changeName(input.name, input.causationId, input.correlationId);
     if (changeResult.isFailure()) {
+      if (changeResult.error === 'same_name') {
+        return Result.fail('same_name');
+      }
       return Result.fail('invalid_name');
     }
 
-    // 3. 保存
-    const saveResult = await this.userRepository.save(user);
-    if (saveResult.isFailure()) {
+    // 3. 保存（既存ユーザーの更新なので update を使用）
+    const updateResult = await this.userRepository.update(user);
+    if (updateResult.isFailure()) {
       return Result.fail('internal_error');
     }
 

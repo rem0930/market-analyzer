@@ -12,9 +12,14 @@ import type { AuthUserId } from './auth-user.js';
  */
 export interface RefreshTokenRepository {
   /**
-   * トークンを保存
+   * トークンを保存（新規作成）
    */
   save(token: RefreshToken): Promise<Result<void, RepositoryError>>;
+
+  /**
+   * トークンを更新（既存トークンの更新）
+   */
+  update(token: RefreshToken): Promise<Result<void, RepositoryError>>;
 
   /**
    * IDでトークンを取得
