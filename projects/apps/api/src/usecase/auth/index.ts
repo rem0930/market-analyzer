@@ -31,7 +31,6 @@ export {
 
 export {
   ForgotPasswordUseCase,
-  ConsoleEmailService,
   type ForgotPasswordInput,
   type ForgotPasswordOutput,
   type ForgotPasswordError,

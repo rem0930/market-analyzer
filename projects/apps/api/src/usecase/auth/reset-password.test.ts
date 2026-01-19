@@ -67,7 +67,6 @@ describe('ResetPasswordUseCase', () => {
     mockPasswordResetTokenRepository = {
       findById: vi.fn(),
       findByTokenHash: vi.fn(),
-      findByUserId: vi.fn(),
       save: vi.fn(),
       delete: vi.fn(),
       invalidateAllByUserId: vi.fn(),
@@ -76,7 +75,6 @@ describe('ResetPasswordUseCase', () => {
     mockRefreshTokenRepository = {
       findById: vi.fn(),
       findByTokenHash: vi.fn(),
-      findByUserId: vi.fn(),
       save: vi.fn(),
       delete: vi.fn(),
       revokeAllByUserId: vi.fn(),
