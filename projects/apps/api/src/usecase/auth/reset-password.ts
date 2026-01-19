@@ -4,12 +4,13 @@
  */
 
 import { Result } from '@monorepo/shared';
-import {
-  type AuthUserRepository,
-  type PasswordResetTokenRepository,
-  type RefreshTokenRepository,
+import type {
+  AuthUserRepository,
+  PasswordResetTokenRepository,
+  RefreshTokenRepository,
+  PasswordService,
+  TokenHashService,
 } from '../../domain/index.js';
-import type { PasswordService, TokenHashService } from '../../infrastructure/index.js';
 
 export interface ResetPasswordInput {
   token: string;
@@ -37,7 +38,9 @@ export class ResetPasswordUseCase {
     private readonly tokenHashService: TokenHashService
   ) {}
 
-  async execute(input: ResetPasswordInput): Promise<Result<ResetPasswordOutput, ResetPasswordError>> {
+  async execute(
+    input: ResetPasswordInput
+  ): Promise<Result<ResetPasswordOutput, ResetPasswordError>> {
     // 1. パスワード強度の検証
     const strengthResult = this.passwordService.validateStrength(input.password);
     if (strengthResult.isFailure()) {
@@ -78,11 +81,7 @@ export class ResetPasswordUseCase {
     }
 
     // 5. パスワードの更新
-    user.changePassword(
-      hashResult.value,
-      input.causationId,
-      input.correlationId
-    );
+    user.changePassword(hashResult.value, input.causationId, input.correlationId);
 
     const saveResult = await this.authUserRepository.save(user);
     if (saveResult.isFailure()) {

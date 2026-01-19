@@ -1,23 +1,16 @@
 /**
- * @what パスワードハッシュサービス
+ * @what パスワードハッシュサービス実装
  * @why bcryptを使用したパスワードのハッシュ化と検証
  *
  * infrastructure層のルール:
  * - 外部ライブラリの詳細を隠蔽
- * - ドメイン層のインターフェースに依存
+ * - ドメイン層のインターフェースを実装
  */
 
 import bcrypt from 'bcrypt';
 import { Result } from '@monorepo/shared';
 import { PasswordHash } from '../../domain/auth/auth-user.js';
-
-export type PasswordServiceError = 'hash_failed' | 'verify_failed';
-
-export interface PasswordService {
-  hash(plainPassword: string): Promise<Result<PasswordHash, PasswordServiceError>>;
-  verify(plainPassword: string, hash: PasswordHash): Promise<Result<boolean, PasswordServiceError>>;
-  validateStrength(password: string): Result<void, 'weak_password'>;
-}
+import type { PasswordService, PasswordServiceError } from '../../domain/auth/password-service.js';
 
 export class BcryptPasswordService implements PasswordService {
   constructor(private readonly rounds: number = 12) {}

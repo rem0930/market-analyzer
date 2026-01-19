@@ -4,9 +4,12 @@
  */
 
 import { Result } from '@monorepo/shared';
-import type { AuthUserRepository, RefreshTokenRepository } from '../../domain/index.js';
+import type {
+  AuthUserRepository,
+  RefreshTokenRepository,
+  PasswordService,
+} from '../../domain/index.js';
 import { AuthUserId } from '../../domain/index.js';
-import type { PasswordService } from '../../infrastructure/index.js';
 
 export interface ChangePasswordInput {
   userId: string;

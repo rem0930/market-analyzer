@@ -29,4 +29,8 @@ export type {
   RefreshTokenRepository,
   CreatePasswordResetTokenParams,
   PasswordResetTokenRepository,
+  // Service interfaces
+  PasswordService,
+  PasswordServiceError,
+  TokenHashService,
 } from './auth/index.js';

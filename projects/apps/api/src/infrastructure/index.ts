@@ -18,12 +18,9 @@ export { PrismaPasswordResetTokenRepository } from './repositories/prisma-passwo
 // Database
 export { prisma } from './database/index.js';
 
-// Services
-export {
-  BcryptPasswordService,
-  type PasswordService,
-  type PasswordServiceError,
-} from './services/password-service.js';
+// Services (implementations only - interfaces are in domain layer)
+export { BcryptPasswordService } from './services/password-service.js';
+export { CryptoTokenHashService } from './services/token-hash-service.js';
 
 export {
   JwtServiceImpl,
@@ -33,11 +30,6 @@ export {
   type TokenPair,
   type JwtServiceError,
 } from './services/jwt-service.js';
-
-export {
-  CryptoTokenHashService,
-  type TokenHashService,
-} from './services/token-hash-service.js';
 
 // Health checkers
 export { PrismaDatabaseHealthChecker } from './health/index.js';

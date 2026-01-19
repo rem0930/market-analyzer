@@ -10,12 +10,10 @@ import {
   RefreshTokenId,
   type AuthUserRepository,
   type RefreshTokenRepository,
+  type PasswordService,
+  type TokenHashService,
 } from '../../domain/index.js';
-import type {
-  PasswordService,
-  JwtService,
-  TokenHashService,
-} from '../../infrastructure/index.js';
+import type { JwtService } from '../../infrastructure/index.js';
 
 export interface LoginInput {
   email: string;
@@ -32,9 +30,7 @@ export interface LoginOutput {
   };
 }
 
-export type LoginError =
-  | 'invalid_credentials'
-  | 'internal_error';
+export type LoginError = 'invalid_credentials' | 'internal_error';
 
 export class LoginUseCase {
   constructor(
@@ -66,10 +62,7 @@ export class LoginUseCase {
     }
 
     // 3. パスワードの検証
-    const verifyResult = await this.passwordService.verify(
-      input.password,
-      user.passwordHash
-    );
+    const verifyResult = await this.passwordService.verify(input.password, user.passwordHash);
     if (verifyResult.isFailure()) {
       return Result.fail('internal_error');
     }
@@ -79,10 +72,7 @@ export class LoginUseCase {
     }
 
     // 4. トークンペアの生成
-    const tokenPairResult = this.jwtService.generateTokenPair(
-      user.id.value,
-      user.email.value
-    );
+    const tokenPairResult = this.jwtService.generateTokenPair(user.id.value, user.email.value);
     if (tokenPairResult.isFailure()) {
       return Result.fail('internal_error');
     }
