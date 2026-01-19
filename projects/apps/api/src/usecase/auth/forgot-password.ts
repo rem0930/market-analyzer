@@ -32,13 +32,7 @@ export interface EmailService {
   sendPasswordResetEmail(email: string, token: string): Promise<Result<void, 'send_failed'>>;
 }
 
-// 開発用のダミーメールサービス
-export class ConsoleEmailService implements EmailService {
-  async sendPasswordResetEmail(email: string, token: string): Promise<Result<void, 'send_failed'>> {
-    console.log(`[Email] Password reset token for ${email}: ${token}`);
-    return Result.ok(undefined);
-  }
-}
+// ConsoleEmailService は infrastructure層に移動 (infrastructure/services/email-service.ts)
 
 export class ForgotPasswordUseCase {
   // トークンの有効期限: 1時間

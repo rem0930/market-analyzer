@@ -10,6 +10,7 @@
 import { createServer } from 'node:http';
 import { handleRoutes } from './router.js';
 import { createAppContext } from '../composition/container.js';
+import { logger } from '../infrastructure/index.js';
 
 const PORT = process.env.PORT ?? 3000;
 
@@ -21,7 +22,7 @@ const server = createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  logger.info('Server started', { port: Number(PORT), url: `http://localhost:${PORT}` });
 });
 
 export { server };

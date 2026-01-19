@@ -35,7 +35,6 @@ export {
   type RefreshTokenOutput,
   type RefreshTokenError,
   ForgotPasswordUseCase,
-  ConsoleEmailService,
   type ForgotPasswordInput,
   type ForgotPasswordOutput,
   type ForgotPasswordError,

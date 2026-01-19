@@ -25,8 +25,11 @@ import {
   BcryptPasswordService,
   JwtServiceImpl,
   CryptoTokenHashService,
+  LoggerEmailService,
   // Health checkers
   PrismaDatabaseHealthChecker,
+  // Logger
+  logger,
 } from '../infrastructure/index.js';
 
 import {
@@ -39,7 +42,6 @@ import {
   ForgotPasswordUseCase,
   ResetPasswordUseCase,
   GetCurrentUserUseCase,
-  ConsoleEmailService,
   DeepPingUseCase,
   ChangeNameUseCase,
   ChangePasswordUseCase,
@@ -58,20 +60,43 @@ import {
   type RouteContext,
 } from '../presentation/index.js';
 
+const DEV_JWT_SECRET = 'dev-secret-key-do-not-use-in-production';
+const MIN_JWT_SECRET_LENGTH = 32;
+
 /**
  * 環境変数から設定を読み込む
  */
 function getConfig() {
+  const isProduction = process.env.NODE_ENV === 'production';
+  const jwtSecret = process.env.JWT_SECRET;
+
+  // 本番環境でのJWT_SECRET検証
+  if (isProduction) {
+    if (!jwtSecret) {
+      logger.error('JWT_SECRET is required in production environment');
+      throw new Error('JWT_SECRET environment variable is required in production');
+    }
+    if (jwtSecret.length < MIN_JWT_SECRET_LENGTH) {
+      logger.error('JWT_SECRET is too short', {
+        minLength: MIN_JWT_SECRET_LENGTH,
+        actualLength: jwtSecret.length,
+      });
+      throw new Error(`JWT_SECRET must be at least ${MIN_JWT_SECRET_LENGTH} characters`);
+    }
+  } else if (!jwtSecret) {
+    logger.warn('Using default JWT_SECRET for development - do not use in production');
+  }
+
   return {
     jwt: {
-      secret: process.env.JWT_SECRET ?? 'dev-secret-key',
+      secret: jwtSecret ?? DEV_JWT_SECRET,
       accessTokenExpiresIn: parseInt(process.env.JWT_ACCESS_TOKEN_EXPIRES_IN ?? '900', 10),
       refreshTokenExpiresIn: parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRES_IN ?? '604800', 10),
     },
     bcrypt: {
       rounds: parseInt(process.env.BCRYPT_ROUNDS ?? '12', 10),
     },
-    debug: process.env.NODE_ENV !== 'production',
+    debug: !isProduction,
     usePrisma: !!process.env.DATABASE_URL,
   };
 }
@@ -108,7 +133,7 @@ export function createAppContext(): RouteContext {
   const passwordService = new BcryptPasswordService(config.bcrypt.rounds);
   const jwtService = new JwtServiceImpl(config.jwt);
   const tokenHashService = new CryptoTokenHashService();
-  const emailService = new ConsoleEmailService();
+  const emailService = new LoggerEmailService();
 
   // ============================================
   // UseCases - User

@@ -21,6 +21,7 @@ export { prisma } from './database/index.js';
 // Services (implementations only - interfaces are in domain layer)
 export { BcryptPasswordService } from './services/password-service.js';
 export { CryptoTokenHashService } from './services/token-hash-service.js';
+export { LoggerEmailService } from './services/email-service.js';
 
 export {
   JwtServiceImpl,
@@ -33,3 +34,6 @@ export {
 
 // Health checkers
 export { PrismaDatabaseHealthChecker } from './health/index.js';
+
+// Logger
+export { logger, type LogLevel } from './logger/index.js';
