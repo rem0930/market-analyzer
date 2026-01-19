@@ -58,7 +58,6 @@ describe('LoginUseCase', () => {
     mockRefreshTokenRepository = {
       findById: vi.fn(),
       findByTokenHash: vi.fn(),
-      findByUserId: vi.fn(),
       save: vi.fn(),
       delete: vi.fn(),
       revokeAllByUserId: vi.fn(),
@@ -72,9 +71,9 @@ describe('LoginUseCase', () => {
 
     mockJwtService = {
       generateTokenPair: vi.fn(),
+      generateAccessToken: vi.fn(),
       verifyAccessToken: vi.fn(),
       verifyRefreshToken: vi.fn(),
-      decodeToken: vi.fn(),
     };
 
     mockTokenHashService = {
@@ -194,7 +193,7 @@ describe('LoginUseCase', () => {
       const user = createMockUser();
       vi.mocked(mockAuthUserRepository.findByEmail).mockResolvedValue(Result.ok(user));
       vi.mocked(mockPasswordService.verify).mockResolvedValue(Result.ok(true));
-      vi.mocked(mockJwtService.generateTokenPair).mockReturnValue(Result.fail('generation_failed'));
+      vi.mocked(mockJwtService.generateTokenPair).mockReturnValue(Result.fail('sign_failed'));
 
       const result = await useCase.execute(validInput);
 

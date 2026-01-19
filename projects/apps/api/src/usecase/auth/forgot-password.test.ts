@@ -48,7 +48,6 @@ describe('ForgotPasswordUseCase', () => {
     mockPasswordResetTokenRepository = {
       findById: vi.fn(),
       findByTokenHash: vi.fn(),
-      findByUserId: vi.fn(),
       save: vi.fn(),
       delete: vi.fn(),
       invalidateAllByUserId: vi.fn(),
