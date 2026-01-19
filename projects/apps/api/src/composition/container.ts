@@ -56,6 +56,7 @@ import {
   SecurityMiddleware,
   CorsMiddleware,
   RateLimitMiddleware,
+  CsrfMiddleware,
   ValidationMiddleware,
   type RouteContext,
 } from '../presentation/index.js';
@@ -227,6 +228,7 @@ export function createAppContext(): RouteContext {
     windowMs: 60 * 1000, // 1 minute
     maxRequests: 5, // 5 requests per minute per IP
   });
+  const csrfMiddleware = new CsrfMiddleware();
 
   return {
     userController,
@@ -237,5 +239,6 @@ export function createAppContext(): RouteContext {
     securityMiddleware,
     corsMiddleware,
     rateLimitMiddleware,
+    csrfMiddleware,
   };
 }

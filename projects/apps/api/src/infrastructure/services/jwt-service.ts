@@ -1,45 +1,28 @@
 /**
- * @what JWTサービス
+ * @what JWTサービス実装
  * @why アクセストークンとリフレッシュトークンの生成・検証
  *
  * infrastructure層のルール:
  * - 外部ライブラリの詳細を隠蔽
+ * - domain層のインターフェースを実装
  */
 
 import jwt from 'jsonwebtoken';
 import { Result } from '@monorepo/shared';
+import type {
+  JwtService,
+  JwtPayload,
+  TokenPair,
+  JwtServiceError,
+} from '../../domain/index.js';
 
-export interface JwtPayload {
-  sub: string;
-  email: string;
-  iat: number;
-  exp: number;
-}
-
-export interface TokenPair {
-  accessToken: string;
-  refreshToken: string;
-  accessTokenExpiresIn: number;
-  refreshTokenExpiresIn: number;
-}
-
-export type JwtServiceError =
-  | 'sign_failed'
-  | 'verify_failed'
-  | 'token_expired'
-  | 'invalid_token';
+// Re-export types from domain for convenience
+export type { JwtService, JwtPayload, TokenPair, JwtServiceError };
 
 export interface JwtServiceConfig {
   secret: string;
   accessTokenExpiresIn: number; // seconds
   refreshTokenExpiresIn: number; // seconds
-}
-
-export interface JwtService {
-  generateTokenPair(userId: string, email: string): Result<TokenPair, JwtServiceError>;
-  generateAccessToken(userId: string, email: string): Result<string, JwtServiceError>;
-  verifyAccessToken(token: string): Result<JwtPayload, JwtServiceError>;
-  verifyRefreshToken(token: string): Result<JwtPayload, JwtServiceError>;
 }
 
 export class JwtServiceImpl implements JwtService {

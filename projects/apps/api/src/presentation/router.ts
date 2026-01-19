@@ -16,6 +16,7 @@ import type { AuthMiddleware } from './middleware/auth-middleware.js';
 import type { SecurityMiddleware } from './middleware/security-middleware.js';
 import type { CorsMiddleware } from './middleware/cors-middleware.js';
 import type { RateLimitMiddleware } from './middleware/rate-limit-middleware.js';
+import type { CsrfMiddleware } from './middleware/csrf-middleware.js';
 
 export interface RouteContext {
   userController: UserController;
@@ -26,6 +27,7 @@ export interface RouteContext {
   securityMiddleware: SecurityMiddleware;
   corsMiddleware: CorsMiddleware;
   rateLimitMiddleware: RateLimitMiddleware;
+  csrfMiddleware: CsrfMiddleware;
 }
 
 /**
@@ -45,6 +47,7 @@ export async function handleRoutes(
     securityMiddleware,
     corsMiddleware,
     rateLimitMiddleware,
+    csrfMiddleware,
   } = context;
 
   // セキュリティヘッダーを全レスポンスに付与
@@ -52,6 +55,11 @@ export async function handleRoutes(
 
   // CORS 処理（プリフライトの場合はここで終了）
   if (corsMiddleware.handle(req, res)) {
+    return;
+  }
+
+  // CSRF 検証（GETリクエストと除外パスはスキップ）
+  if (!csrfMiddleware.verify(req, res)) {
     return;
   }
 
