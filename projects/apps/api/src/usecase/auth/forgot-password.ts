@@ -32,8 +32,6 @@ export interface EmailService {
   sendPasswordResetEmail(email: string, token: string): Promise<Result<void, 'send_failed'>>;
 }
 
-// ConsoleEmailService は infrastructure層に移動 (infrastructure/services/email-service.ts)
-
 export class ForgotPasswordUseCase {
   // トークンの有効期限: 1時間
   private readonly TOKEN_EXPIRY_MS = 60 * 60 * 1000;
