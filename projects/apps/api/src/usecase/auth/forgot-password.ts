@@ -47,12 +47,19 @@ export class ForgotPasswordUseCase {
   async execute(
     input: ForgotPasswordInput
   ): Promise<Result<ForgotPasswordOutput, ForgotPasswordError>> {
+    const successMessage = 'If the email exists, a reset link has been sent.';
+
+    // タイミング攻撃対策: ユーザー存在有無に関わらず同じ処理フローを実行
+    // 常にトークン生成とハッシュ化を行い、レスポンス時間を均一化
+    const dummyToken = this.tokenHashService.generateToken();
+    this.tokenHashService.hashToken(dummyToken);
+
     // セキュリティ上、ユーザーが存在しなくても成功レスポンスを返す
     let email: Email;
     try {
       email = Email.create(input.email);
     } catch {
-      return Result.ok({ message: 'If the email exists, a reset link has been sent.' });
+      return Result.ok({ message: successMessage });
     }
 
     const userResult = await this.authUserRepository.findByEmail(email);
@@ -62,8 +69,9 @@ export class ForgotPasswordUseCase {
 
     const user = userResult.value;
     if (!user) {
-      // ユーザーが存在しなくても成功レスポンス（タイミング攻撃対策）
-      return Result.ok({ message: 'If the email exists, a reset link has been sent.' });
+      // ユーザーが存在しなくても成功レスポンス
+      // ダミーのトークン生成は既に上で実行済み（タイミング攻撃対策）
+      return Result.ok({ message: successMessage });
     }
 
     // 既存の未使用トークンを無効化
@@ -93,7 +101,7 @@ export class ForgotPasswordUseCase {
     await this.emailService.sendPasswordResetEmail(user.email.value, rawToken);
 
     const output: ForgotPasswordOutput = {
-      message: 'If the email exists, a reset link has been sent.',
+      message: successMessage,
     };
 
     // デバッグモードでのみトークンを返す
