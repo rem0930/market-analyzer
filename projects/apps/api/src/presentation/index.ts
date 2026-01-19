@@ -16,4 +16,5 @@ export { SecurityMiddleware, type SecurityConfig } from './middleware/security-m
 export { CorsMiddleware, type CorsConfig } from './middleware/cors-middleware.js';
 export { RateLimitMiddleware, type RateLimitConfig } from './middleware/rate-limit-middleware.js';
 export { ValidationMiddleware } from './middleware/validation-middleware.js';
+export { CsrfMiddleware, type CsrfConfig } from './middleware/csrf-middleware.js';
 export { handleRoutes, type RouteContext } from './router.js';
