@@ -27,10 +27,13 @@ export class ProfileController {
     if (!validation.success) return;
 
     const { name } = validation.data;
+    const requestId = crypto.randomUUID();
 
     const result = await this.changeNameUseCase.execute({
       userId,
       name,
+      causationId: requestId,
+      correlationId: requestId,
     });
 
     if (result.isFailure()) {
@@ -40,6 +43,9 @@ export class ProfileController {
           return;
         case 'invalid_name':
           this.sendError(res, 400, 'INVALID_NAME', 'Name must be 1-100 characters');
+          return;
+        case 'same_name':
+          this.sendError(res, 400, 'SAME_NAME', 'Name is the same as current name');
           return;
         default:
           this.sendError(res, 500, 'INTERNAL_ERROR', 'Internal server error');

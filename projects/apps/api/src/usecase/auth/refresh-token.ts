@@ -74,9 +74,9 @@ export class RefreshTokenUseCase {
       return Result.fail('user_not_found');
     }
 
-    // 4. 古いリフレッシュトークンを無効化
+    // 4. 古いリフレッシュトークンを無効化（既存トークンの更新なので update を使用）
     storedToken.revoke();
-    await this.refreshTokenRepository.save(storedToken);
+    await this.refreshTokenRepository.update(storedToken);
 
     // 5. 新しいトークンペアを生成
     const tokenPairResult = this.jwtService.generateTokenPair(user.id.value, user.email.value);

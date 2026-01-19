@@ -47,6 +47,7 @@ describe('ChangePasswordUseCase', () => {
       findById: vi.fn(),
       findByTokenHash: vi.fn(),
       save: vi.fn(),
+      update: vi.fn(),
       delete: vi.fn(),
       revokeAllByUserId: vi.fn(),
     };
@@ -81,7 +82,7 @@ describe('ChangePasswordUseCase', () => {
       vi.mocked(mockPasswordService.hash).mockResolvedValue(
         Result.ok(PasswordHash.create('$2b$12$newhash'))
       );
-      vi.mocked(mockAuthUserRepository.save).mockResolvedValue(Result.ok(undefined));
+      vi.mocked(mockAuthUserRepository.update).mockResolvedValue(Result.ok(undefined));
       vi.mocked(mockRefreshTokenRepository.revokeAllByUserId).mockResolvedValue(
         Result.ok(undefined)
       );
@@ -91,7 +92,7 @@ describe('ChangePasswordUseCase', () => {
       expect(result.isSuccess()).toBe(true);
       expect(result.value.message).toBe('Password has been changed successfully.');
       expect(mockRefreshTokenRepository.revokeAllByUserId).toHaveBeenCalledWith(user.id);
-      expect(mockAuthUserRepository.save).toHaveBeenCalled();
+      expect(mockAuthUserRepository.update).toHaveBeenCalled();
     });
   });
 
@@ -184,8 +185,8 @@ describe('ChangePasswordUseCase', () => {
     });
   });
 
-  describe('saving user', () => {
-    it('should fail when save fails', async () => {
+  describe('updating user', () => {
+    it('should fail when update fails', async () => {
       const user = createMockUser();
       vi.mocked(mockPasswordService.validateStrength).mockReturnValue(Result.ok(undefined));
       vi.mocked(mockAuthUserRepository.findById).mockResolvedValue(Result.ok(user));
@@ -193,7 +194,7 @@ describe('ChangePasswordUseCase', () => {
       vi.mocked(mockPasswordService.hash).mockResolvedValue(
         Result.ok(PasswordHash.create('$2b$12$newhash'))
       );
-      vi.mocked(mockAuthUserRepository.save).mockResolvedValue(Result.fail('db_error'));
+      vi.mocked(mockAuthUserRepository.update).mockResolvedValue(Result.fail('db_error'));
 
       const result = await useCase.execute(validInput);
 

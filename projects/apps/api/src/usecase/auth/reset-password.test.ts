@@ -68,6 +68,7 @@ describe('ResetPasswordUseCase', () => {
       findById: vi.fn(),
       findByTokenHash: vi.fn(),
       save: vi.fn(),
+      update: vi.fn(),
       delete: vi.fn(),
       invalidateAllByUserId: vi.fn(),
     };
@@ -76,6 +77,7 @@ describe('ResetPasswordUseCase', () => {
       findById: vi.fn(),
       findByTokenHash: vi.fn(),
       save: vi.fn(),
+      update: vi.fn(),
       delete: vi.fn(),
       revokeAllByUserId: vi.fn(),
     };
@@ -120,8 +122,8 @@ describe('ResetPasswordUseCase', () => {
       vi.mocked(mockPasswordService.hash).mockResolvedValue(
         Result.ok(PasswordHash.create('$2b$12$newhashedpassword'))
       );
-      vi.mocked(mockAuthUserRepository.save).mockResolvedValue(Result.ok(undefined));
-      vi.mocked(mockPasswordResetTokenRepository.save).mockResolvedValue(Result.ok(undefined));
+      vi.mocked(mockAuthUserRepository.update).mockResolvedValue(Result.ok(undefined));
+      vi.mocked(mockPasswordResetTokenRepository.update).mockResolvedValue(Result.ok(undefined));
       vi.mocked(mockRefreshTokenRepository.revokeAllByUserId).mockResolvedValue(
         Result.ok(undefined)
       );
@@ -144,8 +146,8 @@ describe('ResetPasswordUseCase', () => {
       vi.mocked(mockPasswordService.hash).mockResolvedValue(
         Result.ok(PasswordHash.create('$2b$12$newhashedpassword'))
       );
-      vi.mocked(mockAuthUserRepository.save).mockResolvedValue(Result.ok(undefined));
-      vi.mocked(mockPasswordResetTokenRepository.save).mockResolvedValue(Result.ok(undefined));
+      vi.mocked(mockAuthUserRepository.update).mockResolvedValue(Result.ok(undefined));
+      vi.mocked(mockPasswordResetTokenRepository.update).mockResolvedValue(Result.ok(undefined));
       vi.mocked(mockRefreshTokenRepository.revokeAllByUserId).mockResolvedValue(
         Result.ok(undefined)
       );
@@ -168,8 +170,8 @@ describe('ResetPasswordUseCase', () => {
       vi.mocked(mockPasswordService.hash).mockResolvedValue(
         Result.ok(PasswordHash.create('$2b$12$newhashedpassword'))
       );
-      vi.mocked(mockAuthUserRepository.save).mockResolvedValue(Result.ok(undefined));
-      vi.mocked(mockPasswordResetTokenRepository.save).mockResolvedValue(Result.ok(undefined));
+      vi.mocked(mockAuthUserRepository.update).mockResolvedValue(Result.ok(undefined));
+      vi.mocked(mockPasswordResetTokenRepository.update).mockResolvedValue(Result.ok(undefined));
       vi.mocked(mockRefreshTokenRepository.revokeAllByUserId).mockResolvedValue(
         Result.ok(undefined)
       );
@@ -177,7 +179,7 @@ describe('ResetPasswordUseCase', () => {
       await useCase.execute(validInput);
 
       // Token repository save is called to mark token as used
-      expect(mockPasswordResetTokenRepository.save).toHaveBeenCalled();
+      expect(mockPasswordResetTokenRepository.update).toHaveBeenCalled();
     });
 
     it('should revoke all refresh tokens after password reset', async () => {
@@ -192,8 +194,8 @@ describe('ResetPasswordUseCase', () => {
       vi.mocked(mockPasswordService.hash).mockResolvedValue(
         Result.ok(PasswordHash.create('$2b$12$newhashedpassword'))
       );
-      vi.mocked(mockAuthUserRepository.save).mockResolvedValue(Result.ok(undefined));
-      vi.mocked(mockPasswordResetTokenRepository.save).mockResolvedValue(Result.ok(undefined));
+      vi.mocked(mockAuthUserRepository.update).mockResolvedValue(Result.ok(undefined));
+      vi.mocked(mockPasswordResetTokenRepository.update).mockResolvedValue(Result.ok(undefined));
       vi.mocked(mockRefreshTokenRepository.revokeAllByUserId).mockResolvedValue(
         Result.ok(undefined)
       );
@@ -335,7 +337,7 @@ describe('ResetPasswordUseCase', () => {
   });
 
   describe('user persistence', () => {
-    it('should fail when user save fails', async () => {
+    it('should fail when user update fails', async () => {
       vi.mocked(mockPasswordService.validateStrength).mockReturnValue(Result.ok(undefined));
       vi.mocked(mockTokenHashService.hashToken).mockReturnValue(
         TokenHash.create('hashed-reset-token')
@@ -347,7 +349,7 @@ describe('ResetPasswordUseCase', () => {
       vi.mocked(mockPasswordService.hash).mockResolvedValue(
         Result.ok(PasswordHash.create('$2b$12$newhashedpassword'))
       );
-      vi.mocked(mockAuthUserRepository.save).mockResolvedValue(Result.fail('db_error'));
+      vi.mocked(mockAuthUserRepository.update).mockResolvedValue(Result.fail('db_error'));
 
       const result = await useCase.execute(validInput);
 

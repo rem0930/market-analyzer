@@ -83,8 +83,9 @@ export class ResetPasswordUseCase {
     // 5. パスワードの更新
     user.changePassword(hashResult.value, input.causationId, input.correlationId);
 
-    const saveResult = await this.authUserRepository.save(user);
-    if (saveResult.isFailure()) {
+    // 既存ユーザーの更新なので update を使用
+    const updateResult = await this.authUserRepository.update(user);
+    if (updateResult.isFailure()) {
       return Result.fail('internal_error');
     }
 
@@ -94,7 +95,8 @@ export class ResetPasswordUseCase {
       // すでに使用済みまたは期限切れ
       return Result.fail('invalid_token');
     }
-    await this.passwordResetTokenRepository.save(resetToken);
+    // 既存トークンの更新なので update を使用
+    await this.passwordResetTokenRepository.update(resetToken);
 
     // 7. 既存のリフレッシュトークンをすべて無効化
     await this.refreshTokenRepository.revokeAllByUserId(user.id);

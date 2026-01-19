@@ -84,8 +84,9 @@ export class ChangePasswordUseCase {
     // 5. パスワードの更新
     user.changePassword(hashResult.value, input.causationId, input.correlationId);
 
-    const saveResult = await this.authUserRepository.save(user);
-    if (saveResult.isFailure()) {
+    // 既存ユーザーの更新なので update を使用
+    const updateResult = await this.authUserRepository.update(user);
+    if (updateResult.isFailure()) {
       return Result.fail('internal_error');
     }
 

@@ -17,6 +17,14 @@ export class InMemoryRefreshTokenRepository implements RefreshTokenRepository {
     return Result.ok(undefined);
   }
 
+  async update(token: RefreshToken): Promise<Result<void, RepositoryError>> {
+    if (!this.tokens.has(token.id.value)) {
+      return Result.fail('not_found');
+    }
+    this.tokens.set(token.id.value, token);
+    return Result.ok(undefined);
+  }
+
   async findById(id: RefreshTokenId): Promise<Result<RefreshToken | null, RepositoryError>> {
     const token = this.tokens.get(id.value);
     return Result.ok(token ?? null);
