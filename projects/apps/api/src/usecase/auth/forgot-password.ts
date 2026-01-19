@@ -10,8 +10,8 @@ import {
   PasswordResetTokenId,
   type AuthUserRepository,
   type PasswordResetTokenRepository,
+  type TokenHashService,
 } from '../../domain/index.js';
-import type { TokenHashService } from '../../infrastructure/index.js';
 
 export interface ForgotPasswordInput {
   email: string;
@@ -34,10 +34,7 @@ export interface EmailService {
 
 // 開発用のダミーメールサービス
 export class ConsoleEmailService implements EmailService {
-  async sendPasswordResetEmail(
-    email: string,
-    token: string
-  ): Promise<Result<void, 'send_failed'>> {
+  async sendPasswordResetEmail(email: string, token: string): Promise<Result<void, 'send_failed'>> {
     console.log(`[Email] Password reset token for ${email}: ${token}`);
     return Result.ok(undefined);
   }
@@ -55,7 +52,9 @@ export class ForgotPasswordUseCase {
     private readonly debug: boolean = false
   ) {}
 
-  async execute(input: ForgotPasswordInput): Promise<Result<ForgotPasswordOutput, ForgotPasswordError>> {
+  async execute(
+    input: ForgotPasswordInput
+  ): Promise<Result<ForgotPasswordOutput, ForgotPasswordError>> {
     // セキュリティ上、ユーザーが存在しなくても成功レスポンスを返す
     let email: Email;
     try {

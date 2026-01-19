@@ -11,10 +11,7 @@ export {
   type CreateAuthUserParams,
 } from './auth-user.js';
 
-export type {
-  AuthUserRepository,
-  AuthUserRepositoryError,
-} from './auth-user-repository.js';
+export type { AuthUserRepository, AuthUserRepositoryError } from './auth-user-repository.js';
 
 export {
   RefreshTokenId,
@@ -32,3 +29,7 @@ export {
 } from './password-reset-token.js';
 
 export type { PasswordResetTokenRepository } from './password-reset-token-repository.js';
+
+// Service interfaces (implementations in infrastructure layer)
+export type { PasswordService, PasswordServiceError } from './password-service.js';
+export type { TokenHashService } from './token-hash-service.js';

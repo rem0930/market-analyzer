@@ -9,8 +9,8 @@ import {
   AuthUser,
   AuthUserId,
   type AuthUserRepository,
+  type PasswordService,
 } from '../../domain/index.js';
-import type { PasswordService } from '../../infrastructure/index.js';
 
 export interface RegisterInput {
   email: string;

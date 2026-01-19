@@ -10,11 +10,9 @@ import {
   RefreshTokenId,
   type AuthUserRepository,
   type RefreshTokenRepository,
+  type TokenHashService,
 } from '../../domain/index.js';
-import type {
-  JwtService,
-  TokenHashService,
-} from '../../infrastructure/index.js';
+import type { JwtService } from '../../infrastructure/index.js';
 
 export interface RefreshTokenInput {
   refreshToken: string;
@@ -81,10 +79,7 @@ export class RefreshTokenUseCase {
     await this.refreshTokenRepository.save(storedToken);
 
     // 5. 新しいトークンペアを生成
-    const tokenPairResult = this.jwtService.generateTokenPair(
-      user.id.value,
-      user.email.value
-    );
+    const tokenPairResult = this.jwtService.generateTokenPair(user.id.value, user.email.value);
     if (tokenPairResult.isFailure()) {
       return Result.fail('internal_error');
     }
