@@ -22,7 +22,7 @@ export function PasswordChangeForm() {
     formState: { errors },
     reset,
   } = useForm<UpdatePasswordFormData>({
-    resolver: zodResolver(updatePasswordSchema) as any,
+    resolver: zodResolver(updatePasswordSchema as any),
   });
 
   const onSubmit = (data: UpdatePasswordFormData) => {

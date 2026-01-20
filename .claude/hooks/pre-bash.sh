@@ -75,7 +75,8 @@ if [[ "$COMMAND" =~ rm\ -rf\ [./]*$ ]] || \
 fi
 
 # Block sudo (no privilege escalation)
-if [[ "$COMMAND" =~ ^sudo\ ]] || [[ "$COMMAND" =~ \|\ *sudo ]]; then
+PIPE_SUDO_PATTERN='[|][ ]*sudo'
+if [[ "$COMMAND" =~ ^sudo\  ]] || [[ "$COMMAND" =~ $PIPE_SUDO_PATTERN ]]; then
   echo "BLOCKED: sudo is not allowed."
   exit 2
 fi
@@ -108,14 +109,22 @@ if [[ "$COMMAND" =~ cat.*\.env ]] || \
   exit 2
 fi
 
-# Warn about raw commands (should use ./tools/contract)
-if [[ "$COMMAND" =~ ^(pnpm|npm|yarn|bun)\ (test|lint|build|format) ]] && \
+# Block raw commands (MUST use ./tools/contract)
+if [[ "$COMMAND" =~ ^(pnpm|npm|yarn|bun)\ (test|lint|build|format|typecheck) ]] && \
    [[ ! "$COMMAND" =~ ^pnpm\ (audit|outdated) ]]; then
-  echo "WARNING: Use './tools/contract' instead of raw package manager commands."
+  echo "BLOCKED: Use './tools/contract' instead of raw package manager commands."
   echo "Command: $COMMAND"
+  echo ""
+  echo "Correct commands:"
+  echo "  ./tools/contract test      # Instead of: pnpm test"
+  echo "  ./tools/contract lint      # Instead of: pnpm lint"
+  echo "  ./tools/contract build     # Instead of: pnpm build"
+  echo "  ./tools/contract format    # Instead of: pnpm format"
+  echo "  ./tools/contract typecheck # Instead of: pnpm typecheck"
+  echo ""
   echo "Reason: AGENTS.md Non-negotiable #3"
-  # Exit 1 = warning, continues execution
-  exit 1
+  # Exit 2 = block execution (changed from exit 1 which was warning only)
+  exit 2
 fi
 
 # All checks passed
