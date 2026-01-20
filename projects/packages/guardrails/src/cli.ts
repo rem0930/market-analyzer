@@ -134,9 +134,7 @@ async function main() {
   console.log('');
 
   // 実行するガードレールをフィルタ
-  const guardsToRun = guardFilter
-    ? GUARDS.filter((g) => g.id === guardFilter)
-    : GUARDS;
+  const guardsToRun = guardFilter ? GUARDS.filter((g) => g.id === guardFilter) : GUARDS;
 
   if (guardsToRun.length === 0) {
     console.error(`❌ Guard not found: ${guardFilter}`);

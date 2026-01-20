@@ -10,9 +10,7 @@ export const createUserSchema = z.object({
     .string({ error: 'Name is required' })
     .min(1, 'Name must be at least 1 character')
     .max(100, 'Name must be at most 100 characters'),
-  email: z
-    .string({ error: 'Email is required' })
-    .email('Invalid email format'),
+  email: z.string({ error: 'Email is required' }).email('Invalid email format'),
 });
 
 export type CreateUserInput = z.infer<typeof createUserSchema>;

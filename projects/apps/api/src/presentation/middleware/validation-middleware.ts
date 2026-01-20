@@ -66,18 +66,22 @@ export class ValidationMiddleware {
     }));
 
     res.writeHead(400, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({
-      code: 'VALIDATION_ERROR',
-      message: 'Validation failed',
-      errors,
-    }));
+    res.end(
+      JSON.stringify({
+        code: 'VALIDATION_ERROR',
+        message: 'Validation failed',
+        errors,
+      })
+    );
   }
 
   private sendParseError(res: ServerResponse): void {
     res.writeHead(400, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({
-      code: 'PARSE_ERROR',
-      message: 'Invalid JSON body',
-    }));
+    res.end(
+      JSON.stringify({
+        code: 'PARSE_ERROR',
+        message: 'Invalid JSON body',
+      })
+    );
   }
 }

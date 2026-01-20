@@ -9,18 +9,9 @@ export {
   type RegisterError,
 } from './register.js';
 
-export {
-  LoginUseCase,
-  type LoginInput,
-  type LoginOutput,
-  type LoginError,
-} from './login.js';
+export { LoginUseCase, type LoginInput, type LoginOutput, type LoginError } from './login.js';
 
-export {
-  LogoutUseCase,
-  type LogoutInput,
-  type LogoutError,
-} from './logout.js';
+export { LogoutUseCase, type LogoutInput, type LogoutError } from './logout.js';
 
 export {
   RefreshTokenUseCase,

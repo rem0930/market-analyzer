@@ -6,7 +6,10 @@
 import { Result } from '@monorepo/shared';
 import type { RepositoryError } from '@monorepo/shared';
 import type { PasswordResetTokenRepository } from '../../domain/auth/password-reset-token-repository.js';
-import { PasswordResetToken, PasswordResetTokenId } from '../../domain/auth/password-reset-token.js';
+import {
+  PasswordResetToken,
+  PasswordResetTokenId,
+} from '../../domain/auth/password-reset-token.js';
 import { TokenHash } from '../../domain/auth/refresh-token.js';
 import type { AuthUserId } from '../../domain/auth/auth-user.js';
 
@@ -26,12 +29,16 @@ export class InMemoryPasswordResetTokenRepository implements PasswordResetTokenR
     return Result.ok(undefined);
   }
 
-  async findById(id: PasswordResetTokenId): Promise<Result<PasswordResetToken | null, RepositoryError>> {
+  async findById(
+    id: PasswordResetTokenId
+  ): Promise<Result<PasswordResetToken | null, RepositoryError>> {
     const token = this.tokens.get(id.value);
     return Result.ok(token ?? null);
   }
 
-  async findByTokenHash(tokenHash: TokenHash): Promise<Result<PasswordResetToken | null, RepositoryError>> {
+  async findByTokenHash(
+    tokenHash: TokenHash
+  ): Promise<Result<PasswordResetToken | null, RepositoryError>> {
     for (const token of this.tokens.values()) {
       if (token.tokenHash.equals(tokenHash)) {
         return Result.ok(token);

@@ -49,14 +49,8 @@ export class CorsMiddleware {
     }
 
     if (req.method === 'OPTIONS') {
-      res.setHeader(
-        'Access-Control-Allow-Methods',
-        this.config.allowedMethods.join(', ')
-      );
-      res.setHeader(
-        'Access-Control-Allow-Headers',
-        this.config.allowedHeaders.join(', ')
-      );
+      res.setHeader('Access-Control-Allow-Methods', this.config.allowedMethods.join(', '));
+      res.setHeader('Access-Control-Allow-Headers', this.config.allowedHeaders.join(', '));
       res.setHeader('Access-Control-Max-Age', String(this.config.maxAge));
 
       res.writeHead(204);

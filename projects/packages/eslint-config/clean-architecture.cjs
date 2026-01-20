@@ -53,13 +53,7 @@ module.exports = {
           // composition: 全レイヤーをimport可能
           {
             from: ['composition'],
-            allow: [
-              'composition',
-              'domain',
-              'usecase',
-              'presentation',
-              'infrastructure',
-            ],
+            allow: ['composition', 'domain', 'usecase', 'presentation', 'infrastructure'],
           },
         ],
       },
@@ -71,8 +65,7 @@ module.exports = {
           // domain層でインフラ固有のモジュールを禁止
           {
             group: ['pg', 'mysql*', 'mongodb', 'redis', 'axios', 'node-fetch'],
-            message:
-              'Infrastructure dependencies should not be imported in domain/usecase layers',
+            message: 'Infrastructure dependencies should not be imported in domain/usecase layers',
           },
         ],
       },

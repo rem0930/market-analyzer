@@ -30,7 +30,9 @@ export class InMemoryRefreshTokenRepository implements RefreshTokenRepository {
     return Result.ok(token ?? null);
   }
 
-  async findByTokenHash(tokenHash: TokenHash): Promise<Result<RefreshToken | null, RepositoryError>> {
+  async findByTokenHash(
+    tokenHash: TokenHash
+  ): Promise<Result<RefreshToken | null, RepositoryError>> {
     for (const token of this.tokens.values()) {
       if (token.tokenHash.equals(tokenHash)) {
         return Result.ok(token);

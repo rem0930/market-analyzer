@@ -30,9 +30,7 @@ export function LoginForm() {
   if (isAuthenticated) {
     return (
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
-        <p className="text-lg text-center text-green-600 mb-4">
-          ログインしました
-        </p>
+        <p className="text-lg text-center text-green-600 mb-4">ログインしました</p>
         <Button onClick={logout} variant="danger" className="w-full">
           ログアウト
         </Button>
@@ -45,9 +43,7 @@ export function LoginForm() {
       onSubmit={handleSubmit(onSubmit)}
       className="w-full max-w-md p-6 bg-white rounded-lg shadow-md space-y-4"
     >
-      <h2 className="text-2xl font-semibold text-center text-gray-800">
-        ログイン
-      </h2>
+      <h2 className="text-2xl font-semibold text-center text-gray-800">ログイン</h2>
 
       {error && (
         <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md" role="alert">

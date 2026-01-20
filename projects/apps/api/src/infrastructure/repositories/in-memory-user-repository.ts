@@ -9,12 +9,7 @@
  */
 
 import { Result, Email, type RepositoryError } from '@monorepo/shared';
-import {
-  User,
-  UserId,
-  type UserRepository,
-  type UserRepositoryError,
-} from '../../domain/index.js';
+import { User, UserId, type UserRepository, type UserRepositoryError } from '../../domain/index.js';
 
 /**
  * インメモリユーザーリポジトリ

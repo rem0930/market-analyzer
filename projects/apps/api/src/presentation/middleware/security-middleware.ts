@@ -45,10 +45,7 @@ export class SecurityMiddleware {
 
     // HTTPS 強制（本番環境のみ）
     if (this.config.enableHSTS) {
-      res.setHeader(
-        'Strict-Transport-Security',
-        'max-age=31536000; includeSubDomains'
-      );
+      res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
     }
 
     // CSP

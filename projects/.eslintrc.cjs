@@ -42,10 +42,7 @@ module.exports = {
     ],
   },
   plugins: [...baseConfig.plugins, 'boundaries'],
-  extends: [
-    ...baseConfig.extends,
-    'plugin:boundaries/recommended',
-  ],
+  extends: [...baseConfig.extends, 'plugin:boundaries/recommended'],
   rules: {
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     '@typescript-eslint/explicit-function-return-type': 'off',
@@ -84,14 +81,7 @@ module.exports = {
           // composition: 全レイヤーをimport可能
           {
             from: ['composition'],
-            allow: [
-              'composition',
-              'domain',
-              'usecase',
-              'presentation',
-              'infrastructure',
-              'shared',
-            ],
+            allow: ['composition', 'domain', 'usecase', 'presentation', 'infrastructure', 'shared'],
           },
           // shared: 自身のみ
           {
@@ -123,8 +113,7 @@ module.exports = {
           // domain層でインフラ固有のモジュールを禁止
           {
             group: ['pg', 'mysql*', 'mongodb', 'redis', 'axios', 'node-fetch'],
-            message:
-              'Infrastructure dependencies should not be imported in domain/usecase layers',
+            message: 'Infrastructure dependencies should not be imported in domain/usecase layers',
           },
         ],
       },

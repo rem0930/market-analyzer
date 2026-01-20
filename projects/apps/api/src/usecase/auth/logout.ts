@@ -13,9 +13,7 @@ export interface LogoutInput {
 export type LogoutError = 'internal_error';
 
 export class LogoutUseCase {
-  constructor(
-    private readonly refreshTokenRepository: RefreshTokenRepository
-  ) {}
+  constructor(private readonly refreshTokenRepository: RefreshTokenRepository) {}
 
   async execute(input: LogoutInput): Promise<Result<void, LogoutError>> {
     const userId = new AuthUserId(input.userId);

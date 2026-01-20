@@ -10,12 +10,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
 }
 
-export function Button({
-  variant = 'primary',
-  children,
-  className = '',
-  ...props
-}: ButtonProps) {
+export function Button({ variant = 'primary', children, className = '', ...props }: ButtonProps) {
   const baseStyles = 'px-4 py-2 rounded font-medium transition-colors';
   const variantStyles = {
     primary: 'bg-blue-600 text-white hover:bg-blue-700',
@@ -24,10 +19,7 @@ export function Button({
   };
 
   return (
-    <button
-      className={`${baseStyles} ${variantStyles[variant]} ${className}`}
-      {...props}
-    >
+    <button className={`${baseStyles} ${variantStyles[variant]} ${className}`} {...props}>
       {children}
     </button>
   );

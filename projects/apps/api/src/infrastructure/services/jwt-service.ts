@@ -9,12 +9,7 @@
 
 import jwt from 'jsonwebtoken';
 import { Result } from '@monorepo/shared';
-import type {
-  JwtService,
-  JwtPayload,
-  TokenPair,
-  JwtServiceError,
-} from '../../domain/index.js';
+import type { JwtService, JwtPayload, TokenPair, JwtServiceError } from '../../domain/index.js';
 
 // Re-export types from domain for convenience
 export type { JwtService, JwtPayload, TokenPair, JwtServiceError };

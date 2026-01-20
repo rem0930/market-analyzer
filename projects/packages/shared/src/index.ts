@@ -17,12 +17,7 @@ export {
 } from './domain-event.js';
 
 // エンティティ・集約
-export {
-  Identifier,
-  UUIDIdentifier,
-  Entity,
-  AggregateRoot,
-} from './entity.js';
+export { Identifier, UUIDIdentifier, Entity, AggregateRoot } from './entity.js';
 
 // Value Object
 export { ValueObject, Email, DateRange, Money } from './value-object.js';

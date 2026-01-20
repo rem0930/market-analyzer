@@ -46,7 +46,9 @@ export async function checkDomainEventCausation(rootDir: string): Promise<GuardR
       // 必須プロパティが存在するか確認
       const missingProps = REQUIRED_PROPERTIES.filter((prop) => {
         // コンストラクタ引数またはプロパティ定義に含まれているか
-        const propPattern = new RegExp(`(public|private|protected)?\\s*(readonly)?\\s*${prop}\\s*[:\\)]`);
+        const propPattern = new RegExp(
+          `(public|private|protected)?\\s*(readonly)?\\s*${prop}\\s*[:\\)]`
+        );
         return !propPattern.test(classBody);
       });
 

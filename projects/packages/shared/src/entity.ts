@@ -48,7 +48,7 @@ export class UUIDIdentifier extends Identifier<string> {
  * 識別子による同一性を持つ
  */
 export abstract class Entity<TId extends Identifier> {
-  constructor(protected readonly _id: TId) { }
+  constructor(protected readonly _id: TId) {}
 
   get id(): TId {
     return this._id;

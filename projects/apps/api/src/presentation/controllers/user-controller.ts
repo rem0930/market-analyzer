@@ -18,7 +18,7 @@ export class UserController {
   constructor(
     private readonly createUserUseCase: CreateUserUseCase,
     private readonly getUserUseCase: GetUserUseCase
-  ) { }
+  ) {}
 
   /**
    * POST /users - ユーザー作成
@@ -72,11 +72,7 @@ export class UserController {
   /**
    * GET /users/:id - ユーザー取得
    */
-  async getUser(
-    req: IncomingMessage,
-    res: ServerResponse,
-    userId: string
-  ): Promise<void> {
+  async getUser(req: IncomingMessage, res: ServerResponse, userId: string): Promise<void> {
     try {
       const result = await this.getUserUseCase.execute({ userId });
 
