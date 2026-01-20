@@ -11,6 +11,8 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { ChangeNameUseCase, ChangePasswordUseCase } from '../../usecase/index.js';
 import type { ValidationMiddleware } from '../middleware/validation-middleware.js';
 import { updateNameSchema, updatePasswordSchema } from '../schemas/index.js';
+import { AppError } from '@monorepo/shared';
+import { withErrorHandler, sendJson } from '../middleware/error-handler.js';
 
 export class ProfileController {
   constructor(
@@ -22,96 +24,98 @@ export class ProfileController {
   /**
    * PATCH /users/me/name
    */
-  async updateName(req: IncomingMessage, res: ServerResponse, userId: string): Promise<void> {
-    const validation = await this.validationMiddleware.validate(req, res, updateNameSchema);
-    if (!validation.success) return;
+  async updateName(
+    req: IncomingMessage,
+    res: ServerResponse,
+    userId: string,
+    requestId: string
+  ): Promise<void> {
+    await withErrorHandler(res, requestId, async () => {
+      const validation = await this.validationMiddleware.validate(req, res, updateNameSchema);
+      if (!validation.success) return;
 
-    const { name } = validation.data;
-    const requestId = crypto.randomUUID();
+      const { name } = validation.data;
 
-    const result = await this.changeNameUseCase.execute({
-      userId,
-      name,
-      causationId: requestId,
-      correlationId: requestId,
-    });
+      const result = await this.changeNameUseCase.execute({
+        userId,
+        name,
+        causationId: requestId,
+        correlationId: requestId,
+      });
 
-    if (result.isFailure()) {
-      switch (result.error) {
-        case 'user_not_found':
-          this.sendError(res, 404, 'USER_NOT_FOUND', 'User not found');
-          return;
-        case 'invalid_name':
-          this.sendError(res, 400, 'INVALID_NAME', 'Name must be 1-100 characters');
-          return;
-        case 'same_name':
-          this.sendError(res, 400, 'SAME_NAME', 'Name is the same as current name');
-          return;
-        default:
-          this.sendError(res, 500, 'INTERNAL_ERROR', 'Internal server error');
-          return;
+      if (result.isFailure()) {
+        switch (result.error) {
+          case 'user_not_found':
+            throw AppError.notFound('USER_NOT_FOUND');
+          case 'invalid_name':
+            throw AppError.validation([{ field: 'name', code: 'INVALID_FORMAT' }], {
+              reason: 'INVALID_VALUE',
+            });
+          case 'same_name':
+            throw AppError.validation([{ field: 'name', code: 'INVALID_VALUE' }], {
+              reason: 'INVALID_VALUE',
+            });
+          default:
+            throw AppError.fromUnknown(new Error(result.error));
+        }
       }
-    }
 
-    this.sendJson(res, 200, {
-      id: result.value.id,
-      name: result.value.name,
-      email: result.value.email,
-      createdAt: result.value.createdAt.toISOString(),
-      updatedAt: result.value.updatedAt.toISOString(),
+      sendJson(
+        res,
+        200,
+        {
+          id: result.value.id,
+          name: result.value.name,
+          email: result.value.email,
+          createdAt: result.value.createdAt.toISOString(),
+          updatedAt: result.value.updatedAt.toISOString(),
+        },
+        requestId
+      );
     });
   }
 
   /**
    * PATCH /users/me/password
    */
-  async updatePassword(req: IncomingMessage, res: ServerResponse, userId: string): Promise<void> {
-    const validation = await this.validationMiddleware.validate(req, res, updatePasswordSchema);
-    if (!validation.success) return;
+  async updatePassword(
+    req: IncomingMessage,
+    res: ServerResponse,
+    userId: string,
+    requestId: string
+  ): Promise<void> {
+    await withErrorHandler(res, requestId, async () => {
+      const validation = await this.validationMiddleware.validate(req, res, updatePasswordSchema);
+      if (!validation.success) return;
 
-    const { currentPassword, newPassword } = validation.data;
-    const requestId = crypto.randomUUID();
+      const { currentPassword, newPassword } = validation.data;
 
-    const result = await this.changePasswordUseCase.execute({
-      userId,
-      currentPassword,
-      newPassword,
-      causationId: requestId,
-      correlationId: requestId,
-    });
+      const result = await this.changePasswordUseCase.execute({
+        userId,
+        currentPassword,
+        newPassword,
+        causationId: requestId,
+        correlationId: requestId,
+      });
 
-    if (result.isFailure()) {
-      switch (result.error) {
-        case 'user_not_found':
-          this.sendError(res, 404, 'USER_NOT_FOUND', 'User not found');
-          return;
-        case 'incorrect_password':
-          this.sendError(res, 400, 'INCORRECT_PASSWORD', 'Current password is incorrect');
-          return;
-        case 'weak_password':
-          this.sendError(
-            res,
-            400,
-            'WEAK_PASSWORD',
-            'Password must be at least 8 characters with letters and numbers'
-          );
-          return;
-        default:
-          this.sendError(res, 500, 'INTERNAL_ERROR', 'Internal server error');
-          return;
+      if (result.isFailure()) {
+        switch (result.error) {
+          case 'user_not_found':
+            throw AppError.notFound('USER_NOT_FOUND');
+          case 'incorrect_password':
+            throw AppError.validation([{ field: 'currentPassword', code: 'INVALID_VALUE' }], {
+              reason: 'INVALID_CREDENTIALS',
+            });
+          case 'weak_password':
+            throw AppError.validation([{ field: 'newPassword', code: 'WEAK_PASSWORD' }], {
+              reason: 'WEAK_PASSWORD',
+            });
+          default:
+            throw AppError.fromUnknown(new Error(result.error));
+        }
       }
-    }
 
-    this.sendJson(res, 200, { message: result.value.message });
-  }
-
-  private sendJson(res: ServerResponse, status: number, data: unknown): void {
-    res.writeHead(status, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(data));
-  }
-
-  private sendError(res: ServerResponse, status: number, code: string, message: string): void {
-    res.writeHead(status, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ code, message }));
+      sendJson(res, 200, { message: result.value.message }, requestId);
+    });
   }
 }

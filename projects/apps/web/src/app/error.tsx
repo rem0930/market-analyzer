@@ -19,9 +19,12 @@ export default function Error({ error, reset }: ErrorProps) {
   const config = getConfig();
 
   useEffect(() => {
-    // TODO: エラーログサービスに送信
-    console.error('Application error:', error);
-  }, [error]);
+    // 開発環境のみコンソール出力、本番はエラーログサービスに送信予定
+    if (config.isDevelopment) {
+      console.error('Application error:', error);
+    }
+    // TODO: 本番環境ではエラーログサービス（Sentry等）に送信
+  }, [error, config.isDevelopment]);
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-8">

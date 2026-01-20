@@ -10,6 +10,8 @@
 
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { CreateUserUseCase, GetUserUseCase } from '../../usecase/index.js';
+import { AppError } from '@monorepo/shared';
+import { withErrorHandler, sendJson } from '../middleware/error-handler.js';
 
 /**
  * ユーザーコントローラー
@@ -23,8 +25,8 @@ export class UserController {
   /**
    * POST /users - ユーザー作成
    */
-  async createUser(req: IncomingMessage, res: ServerResponse): Promise<void> {
-    try {
+  async createUser(req: IncomingMessage, res: ServerResponse, requestId: string): Promise<void> {
+    await withErrorHandler(res, requestId, async () => {
       // リクエストボディをパース
       const body = await this.parseJsonBody(req);
 
@@ -32,12 +34,11 @@ export class UserController {
       const name = body.name;
 
       if (typeof email !== 'string' || typeof name !== 'string') {
-        this.sendError(res, 400, 'Missing required fields: email, name');
-        return;
+        throw AppError.validation([
+          { field: 'email', code: 'REQUIRED_FIELD' },
+          { field: 'name', code: 'REQUIRED_FIELD' },
+        ]);
       }
-
-      // リクエストIDを生成（因果追跡用）
-      const requestId = crypto.randomUUID();
 
       // ユースケースを実行
       const result = await this.createUserUseCase.execute({
@@ -49,51 +50,49 @@ export class UserController {
       if (result.isFailure()) {
         switch (result.error) {
           case 'invalid_email':
-            this.sendError(res, 400, 'Invalid email format');
-            return;
+            throw AppError.validation([{ field: 'email', code: 'INVALID_FORMAT' }], {
+              reason: 'INVALID_EMAIL',
+            });
           case 'invalid_name':
-            this.sendError(res, 400, 'Invalid name (1-100 characters)');
-            return;
+            throw AppError.validation([{ field: 'name', code: 'INVALID_FORMAT' }], {
+              reason: 'INVALID_VALUE',
+            });
           case 'email_already_exists':
-            this.sendError(res, 409, 'Email already exists');
-            return;
+            throw AppError.conflict('EMAIL_EXISTS');
           default:
-            this.sendError(res, 500, 'Internal server error');
-            return;
+            throw AppError.fromUnknown(new Error(result.error));
         }
       }
 
-      this.sendJson(res, 201, result.value);
-    } catch (_error) {
-      this.sendError(res, 500, 'Internal server error');
-    }
+      sendJson(res, 201, result.value, requestId);
+    });
   }
 
   /**
    * GET /users/:id - ユーザー取得
    */
-  async getUser(req: IncomingMessage, res: ServerResponse, userId: string): Promise<void> {
-    try {
+  async getUser(
+    _req: IncomingMessage,
+    res: ServerResponse,
+    userId: string,
+    requestId: string
+  ): Promise<void> {
+    await withErrorHandler(res, requestId, async () => {
       const result = await this.getUserUseCase.execute({ userId });
 
       if (result.isFailure()) {
         switch (result.error) {
           case 'invalid_id':
-            this.sendError(res, 400, 'Invalid user ID format');
-            return;
+            throw AppError.validation([{ field: 'id', code: 'INVALID_FORMAT' }]);
           case 'user_not_found':
-            this.sendError(res, 404, 'User not found');
-            return;
+            throw AppError.notFound('USER_NOT_FOUND');
           default:
-            this.sendError(res, 500, 'Internal server error');
-            return;
+            throw AppError.fromUnknown(new Error(result.error));
         }
       }
 
-      this.sendJson(res, 200, result.value);
-    } catch (_error) {
-      this.sendError(res, 500, 'Internal server error');
-    }
+      sendJson(res, 200, result.value, requestId);
+    });
   }
 
   private async parseJsonBody(req: IncomingMessage): Promise<Record<string, unknown>> {
@@ -109,15 +108,5 @@ export class UserController {
       });
       req.on('error', reject);
     });
-  }
-
-  private sendJson(res: ServerResponse, status: number, data: unknown): void {
-    res.writeHead(status, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(data));
-  }
-
-  private sendError(res: ServerResponse, status: number, message: string): void {
-    res.writeHead(status, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: message }));
   }
 }

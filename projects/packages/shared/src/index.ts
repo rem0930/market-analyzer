@@ -30,3 +30,19 @@ export type {
   Repository,
   UnitOfWork,
 } from './repository.js';
+
+// エラーハンドリング
+export {
+  ERROR_CODES,
+  ERROR_REASONS,
+  ERROR_CODE_STATUS_MAP,
+  ERROR_CODE_TITLE_MAP,
+  getStatusForErrorCode,
+  getTitleForErrorCode,
+  AppError,
+  type ErrorCode,
+  type ErrorReason,
+  type ApiError,
+  type ErrorItem,
+  type AppErrorOptions,
+} from './errors/index.js';

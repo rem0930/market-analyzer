@@ -1,0 +1,383 @@
+openapi: 3.0.3
+info:
+  title: Common API Components
+  description: |
+    共通 API コンポーネント定義。
+    エラーレスポンス、共通スキーマ、セキュリティ定義を含む。
+  version: 1.0.0
+
+paths: {}
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT アクセストークン
+
+  schemas:
+    # ==========================================================================
+    # Error Code Enumeration
+    # ==========================================================================
+    ErrorCode:
+      type: string
+      description: |
+        アプリケーション共通エラーコード。
+        UI でのエラー分岐の主キーとして使用する。
+      enum:
+        - VALIDATION_ERROR
+        - UNAUTHORIZED
+        - FORBIDDEN
+        - NOT_FOUND
+        - CONFLICT
+        - RATE_LIMIT
+        - EXTERNAL_SERVICE_ERROR
+        - INTERNAL_ERROR
+      example: VALIDATION_ERROR
+
+    # ==========================================================================
+    # Error Reason (Optional detail)
+    # ==========================================================================
+    ErrorReason:
+      type: string
+      description: |
+        エラーコードの下位理由。列挙型で安定運用する。
+        code が VALIDATION_ERROR の場合の具体的な検証エラー種別など。
+      enum:
+        # Validation reasons
+        - INVALID_FORMAT
+        - REQUIRED_FIELD
+        - TOO_SHORT
+        - TOO_LONG
+        - INVALID_EMAIL
+        - WEAK_PASSWORD
+        - INVALID_VALUE
+        # Auth reasons
+        - INVALID_CREDENTIALS
+        - TOKEN_EXPIRED
+        - INVALID_TOKEN
+        - SESSION_EXPIRED
+        # Resource reasons
+        - RESOURCE_NOT_FOUND
+        - USER_NOT_FOUND
+        - EMAIL_EXISTS
+        - ALREADY_EXISTS
+        # Rate limit reasons
+        - TOO_MANY_REQUESTS
+        # External service reasons
+        - SERVICE_UNAVAILABLE
+        - TIMEOUT
+      example: INVALID_EMAIL
+
+    # ==========================================================================
+    # Error Item (for validation errors)
+    # ==========================================================================
+    ErrorItem:
+      type: object
+      description: |
+        バリデーションエラーの詳細項目。
+        VALIDATION_ERROR 時に errors[] として複数返却可能。
+      required:
+        - field
+        - code
+      properties:
+        field:
+          type: string
+          description: エラーが発生したフィールド名
+          example: email
+        code:
+          type: string
+          description: フィールド固有のエラーコード
+          example: INVALID_FORMAT
+        messageKey:
+          type: string
+          description: i18n メッセージキー（任意）
+          example: errors.email.invalidFormat
+
+    # ==========================================================================
+    # API Error Response (RFC 7807 Problem Details compatible)
+    # ==========================================================================
+    ApiError:
+      type: object
+      description: |
+        統一エラーレスポンス形式。
+        RFC 7807 (Problem Details for HTTP APIs) 互換の拡張形式。
+        Content-Type: application/problem+json で返却する。
+      required:
+        - type
+        - title
+        - status
+        - code
+        - requestId
+      properties:
+        type:
+          type: string
+          format: uri
+          description: |
+            エラー種別を識別する URI。
+            汎用エラーの場合は "about:blank" を使用。
+          default: "about:blank"
+          example: "about:blank"
+        title:
+          type: string
+          description: |
+            エラーの大分類タイトル。
+            人間が読める短い説明。
+          example: Validation Error
+        status:
+          type: integer
+          description: HTTP ステータスコード
+          minimum: 400
+          maximum: 599
+          example: 400
+        code:
+          $ref: '#/components/schemas/ErrorCode'
+        requestId:
+          type: string
+          format: uuid
+          description: |
+            リクエスト追跡用 ID。
+            レスポンスヘッダー x-request-id と同値。
+            サーバーログとの突合に使用。
+          example: 550e8400-e29b-41d4-a716-446655440000
+        reason:
+          $ref: '#/components/schemas/ErrorReason'
+        messageKey:
+          type: string
+          description: |
+            i18n メッセージキー。
+            フロントエンドでの多言語対応に使用。
+          example: errors.validation.invalidEmail
+        messageParams:
+          type: object
+          description: |
+            i18n メッセージパラメータ。
+            messageKey と組み合わせて使用。
+          additionalProperties: true
+          example:
+            field: email
+            maxLength: 255
+        errors:
+          type: array
+          description: |
+            バリデーションエラーの詳細リスト。
+            code が VALIDATION_ERROR の場合に使用。
+          items:
+            $ref: '#/components/schemas/ErrorItem'
+          example:
+            - field: email
+              code: INVALID_FORMAT
+              messageKey: errors.email.invalidFormat
+            - field: password
+              code: TOO_SHORT
+              messageKey: errors.password.tooShort
+
+  # ============================================================================
+  # Common Error Responses
+  # ============================================================================
+  responses:
+    BadRequest:
+      description: |
+        400 Bad Request - バリデーションエラー
+        リクエストの形式が不正、または必須フィールドが不足。
+      headers:
+        x-request-id:
+          schema:
+            type: string
+            format: uuid
+          description: リクエスト追跡用 ID
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          examples:
+            validationError:
+              summary: バリデーションエラー
+              value:
+                type: "about:blank"
+                title: Validation Error
+                status: 400
+                code: VALIDATION_ERROR
+                requestId: 550e8400-e29b-41d4-a716-446655440000
+                errors:
+                  - field: email
+                    code: INVALID_FORMAT
+                    messageKey: errors.email.invalidFormat
+
+    Unauthorized:
+      description: |
+        401 Unauthorized - 認証エラー
+        認証が必要、またはトークンが無効/期限切れ。
+      headers:
+        x-request-id:
+          schema:
+            type: string
+            format: uuid
+          description: リクエスト追跡用 ID
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          examples:
+            unauthorized:
+              summary: 未認証
+              value:
+                type: "about:blank"
+                title: Unauthorized
+                status: 401
+                code: UNAUTHORIZED
+                requestId: 550e8400-e29b-41d4-a716-446655440000
+                reason: INVALID_TOKEN
+
+    Forbidden:
+      description: |
+        403 Forbidden - 権限エラー
+        認証済みだがリソースへのアクセス権がない。
+      headers:
+        x-request-id:
+          schema:
+            type: string
+            format: uuid
+          description: リクエスト追跡用 ID
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          examples:
+            forbidden:
+              summary: アクセス拒否
+              value:
+                type: "about:blank"
+                title: Forbidden
+                status: 403
+                code: FORBIDDEN
+                requestId: 550e8400-e29b-41d4-a716-446655440000
+
+    NotFound:
+      description: |
+        404 Not Found - リソース未発見
+        指定されたリソースが存在しない。
+      headers:
+        x-request-id:
+          schema:
+            type: string
+            format: uuid
+          description: リクエスト追跡用 ID
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          examples:
+            notFound:
+              summary: リソース未発見
+              value:
+                type: "about:blank"
+                title: Not Found
+                status: 404
+                code: NOT_FOUND
+                requestId: 550e8400-e29b-41d4-a716-446655440000
+                reason: USER_NOT_FOUND
+
+    Conflict:
+      description: |
+        409 Conflict - リソース競合
+        リソースが既に存在する、または競合が発生。
+      headers:
+        x-request-id:
+          schema:
+            type: string
+            format: uuid
+          description: リクエスト追跡用 ID
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          examples:
+            conflict:
+              summary: リソース競合
+              value:
+                type: "about:blank"
+                title: Conflict
+                status: 409
+                code: CONFLICT
+                requestId: 550e8400-e29b-41d4-a716-446655440000
+                reason: EMAIL_EXISTS
+
+    TooManyRequests:
+      description: |
+        429 Too Many Requests - レート制限超過
+        リクエスト頻度が制限を超過。
+      headers:
+        x-request-id:
+          schema:
+            type: string
+            format: uuid
+          description: リクエスト追跡用 ID
+        Retry-After:
+          schema:
+            type: integer
+          description: 再試行までの秒数
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          examples:
+            rateLimited:
+              summary: レート制限
+              value:
+                type: "about:blank"
+                title: Too Many Requests
+                status: 429
+                code: RATE_LIMIT
+                requestId: 550e8400-e29b-41d4-a716-446655440000
+                reason: TOO_MANY_REQUESTS
+
+    InternalServerError:
+      description: |
+        500 Internal Server Error - 内部エラー
+        想定外のサーバーエラー。詳細はログで確認。
+      headers:
+        x-request-id:
+          schema:
+            type: string
+            format: uuid
+          description: リクエスト追跡用 ID
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          examples:
+            internalError:
+              summary: 内部エラー
+              value:
+                type: "about:blank"
+                title: Internal Server Error
+                status: 500
+                code: INTERNAL_ERROR
+                requestId: 550e8400-e29b-41d4-a716-446655440000
+
+    BadGateway:
+      description: |
+        502 Bad Gateway - 外部サービスエラー
+        外部サービスからの応答が不正。
+      headers:
+        x-request-id:
+          schema:
+            type: string
+            format: uuid
+          description: リクエスト追跡用 ID
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          examples:
+            externalError:
+              summary: 外部サービスエラー
+              value:
+                type: "about:blank"
+                title: Bad Gateway
+                status: 502
+                code: EXTERNAL_SERVICE_ERROR
+                requestId: 550e8400-e29b-41d4-a716-446655440000
+                reason: SERVICE_UNAVAILABLE

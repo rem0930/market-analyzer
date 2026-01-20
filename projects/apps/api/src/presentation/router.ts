@@ -17,6 +17,25 @@ import type { SecurityMiddleware } from './middleware/security-middleware.js';
 import type { CorsMiddleware } from './middleware/cors-middleware.js';
 import type { RateLimitMiddleware } from './middleware/rate-limit-middleware.js';
 import type { CsrfMiddleware } from './middleware/csrf-middleware.js';
+import { AppError } from '@monorepo/shared';
+import { getRequestId, setRequestIdHeader } from './middleware/request-id-middleware.js';
+import { sendErrorResponse, sendJson } from './middleware/error-handler.js';
+
+/**
+ * 認証エラーを AppError に変換
+ */
+function mapAuthErrorToAppError(
+  error: 'missing_token' | 'invalid_token' | 'token_expired'
+): AppError {
+  switch (error) {
+    case 'missing_token':
+      return AppError.unauthorized('INVALID_TOKEN');
+    case 'invalid_token':
+      return AppError.unauthorized('INVALID_TOKEN');
+    case 'token_expired':
+      return AppError.unauthorized('TOKEN_EXPIRED');
+  }
+}
 
 export interface RouteContext {
   userController: UserController;
@@ -50,6 +69,10 @@ export async function handleRoutes(
     csrfMiddleware,
   } = context;
 
+  // リクエストIDを取得・設定（全レスポンスに付与）
+  const requestId = getRequestId(req);
+  setRequestIdHeader(res, requestId);
+
   // セキュリティヘッダーを全レスポンスに付与
   securityMiddleware.applyHeaders(res);
 
@@ -69,8 +92,7 @@ export async function handleRoutes(
 
   // Health check
   if (pathname === '/health' && method === 'GET') {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ status: 'ok', timestamp: new Date().toISOString() }));
+    sendJson(res, 200, { status: 'ok', timestamp: new Date().toISOString() }, requestId);
     return;
   }
 
@@ -82,8 +104,7 @@ export async function handleRoutes(
 
   // Root
   if (pathname === '/' && method === 'GET') {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ name: '@monorepo/api', version: '0.0.1' }));
+    sendJson(res, 200, { name: '@monorepo/api', version: '0.0.1' }, requestId);
     return;
   }
 
@@ -94,34 +115,34 @@ export async function handleRoutes(
   // POST /auth/register
   if (pathname === '/auth/register' && method === 'POST') {
     if (rateLimitMiddleware.check(req, res)) return;
-    await authController.register(req, res);
+    await authController.register(req, res, requestId);
     return;
   }
 
   // POST /auth/login
   if (pathname === '/auth/login' && method === 'POST') {
     if (rateLimitMiddleware.check(req, res)) return;
-    await authController.login(req, res);
+    await authController.login(req, res, requestId);
     return;
   }
 
   // POST /auth/refresh
   if (pathname === '/auth/refresh' && method === 'POST') {
-    await authController.refresh(req, res);
+    await authController.refresh(req, res, requestId);
     return;
   }
 
   // POST /auth/forgot-password
   if (pathname === '/auth/forgot-password' && method === 'POST') {
     if (rateLimitMiddleware.check(req, res)) return;
-    await authController.forgotPassword(req, res);
+    await authController.forgotPassword(req, res, requestId);
     return;
   }
 
   // POST /auth/reset-password
   if (pathname === '/auth/reset-password' && method === 'POST') {
     if (rateLimitMiddleware.check(req, res)) return;
-    await authController.resetPassword(req, res);
+    await authController.resetPassword(req, res, requestId);
     return;
   }
 
@@ -133,10 +154,10 @@ export async function handleRoutes(
   if (pathname === '/auth/logout' && method === 'POST') {
     const authResult = authMiddleware.authenticate(req);
     if (!authResult.authenticated) {
-      authMiddleware.sendUnauthorized(res, authResult.error);
+      sendErrorResponse(res, requestId, mapAuthErrorToAppError(authResult.error));
       return;
     }
-    await authController.logout(req, res, authResult.user.userId);
+    await authController.logout(req, res, authResult.user.userId, requestId);
     return;
   }
 
@@ -144,10 +165,10 @@ export async function handleRoutes(
   if (pathname === '/auth/me' && method === 'GET') {
     const authResult = authMiddleware.authenticate(req);
     if (!authResult.authenticated) {
-      authMiddleware.sendUnauthorized(res, authResult.error);
+      sendErrorResponse(res, requestId, mapAuthErrorToAppError(authResult.error));
       return;
     }
-    await authController.getCurrentUser(req, res, authResult.user.userId);
+    await authController.getCurrentUser(req, res, authResult.user.userId, requestId);
     return;
   }
 
@@ -159,10 +180,10 @@ export async function handleRoutes(
   if (pathname === '/users/me/name' && method === 'PATCH') {
     const authResult = authMiddleware.authenticate(req);
     if (!authResult.authenticated) {
-      authMiddleware.sendUnauthorized(res, authResult.error);
+      sendErrorResponse(res, requestId, mapAuthErrorToAppError(authResult.error));
       return;
     }
-    await profileController.updateName(req, res, authResult.user.userId);
+    await profileController.updateName(req, res, authResult.user.userId, requestId);
     return;
   }
 
@@ -171,10 +192,10 @@ export async function handleRoutes(
     if (rateLimitMiddleware.check(req, res)) return;
     const authResult = authMiddleware.authenticate(req);
     if (!authResult.authenticated) {
-      authMiddleware.sendUnauthorized(res, authResult.error);
+      sendErrorResponse(res, requestId, mapAuthErrorToAppError(authResult.error));
       return;
     }
-    await profileController.updatePassword(req, res, authResult.user.userId);
+    await profileController.updatePassword(req, res, authResult.user.userId, requestId);
     return;
   }
 
@@ -184,18 +205,17 @@ export async function handleRoutes(
 
   // POST /users - Create user
   if (pathname === '/users' && method === 'POST') {
-    await userController.createUser(req, res);
+    await userController.createUser(req, res, requestId);
     return;
   }
 
   // GET /users/:id - Get user
   const userMatch = pathname.match(/^\/users\/([^/]+)$/);
   if (userMatch && method === 'GET') {
-    await userController.getUser(req, res, userMatch[1]);
+    await userController.getUser(req, res, userMatch[1], requestId);
     return;
   }
 
-  // 404
-  res.writeHead(404, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify({ code: 'NOT_FOUND', message: 'Not Found' }));
+  // 404 - 統一エラー形式で返却
+  sendErrorResponse(res, requestId, AppError.notFound('RESOURCE_NOT_FOUND'));
 }
