@@ -351,10 +351,113 @@ main() {
     if [[ "$no_devcontainer" == false ]]; then
         log_info "Starting DevContainer..."
 
+        # Pre-flight check: Ensure Docker is available
+        if ! docker info >/dev/null 2>&1; then
+            log_error "Docker daemon is not running or not accessible"
+            log_error "Please start Docker Desktop or check docker permissions"
+            exit 1
+        fi
+
         # Check if devcontainer CLI is available
         if ! command -v devcontainer &> /dev/null; then
-            log_warn "devcontainer CLI not found. Install with: npm install -g @devcontainers/cli"
-            log_warn "Skipping DevContainer startup"
+            log_warn "devcontainer CLI not found. Using docker compose fallback..."
+
+            # Docker compose fallback (works without devcontainer CLI)
+            local worktree_name
+            worktree_name=$(basename "$worktree_path")
+
+            # Ensure traefik network exists
+            log_info "Ensuring traefik network..."
+            if [[ -f "${REPO_ROOT}/scripts/ensure-traefik.sh" ]]; then
+                bash "${REPO_ROOT}/scripts/ensure-traefik.sh" || {
+                    log_warn "Failed to setup traefik network. Services may not be accessible via hostname."
+                }
+            fi
+
+            # Prepare environment variables
+            log_info "Preparing environment for docker compose..."
+            cat > "${worktree_path}/.env" << EOF
+WORKTREE=${worktree_name}
+COMPOSE_PROJECT_NAME=${worktree_name}
+HOST_WORKSPACE_PATH=${worktree_path}
+EOF
+
+            # Start containers with docker compose
+            log_info "Starting containers with docker compose..."
+            (
+                cd "$worktree_path"
+                echo "STARTING" > .setup-status
+                if docker compose -p "${worktree_name}" -f docker-compose.worktree.yml up -d --build 2>&1 | tee .devcontainer-startup.log; then
+                    echo "READY" > .setup-status
+                else
+                    echo "FAILED" > .setup-status
+                    exit 1
+                fi
+            ) &
+            local bg_pid=$!
+
+            # Wait for dev container to appear
+            log_info "Waiting for container to start..."
+            local container_id=""
+            # Try to find the dev container by compose project label
+            local max_wait=60
+            local start_time=$(date +%s)
+            while true; do
+                container_id=$(docker ps -q --filter "label=com.docker.compose.project=${worktree_name}" --filter "label=com.docker.compose.service=dev" 2>/dev/null | head -1)
+                if [[ -n "$container_id" ]]; then
+                    break
+                fi
+
+                local now=$(date +%s)
+                local elapsed=$((now - start_time))
+                if [[ $elapsed -ge $max_wait ]]; then
+                    log_error "Container failed to start within ${max_wait} seconds"
+                    log_error "Check logs at: ${worktree_path}/.devcontainer-startup.log"
+                    wait $bg_pid || true
+                    exit 1
+                fi
+                sleep 2
+            done
+
+            log_success "Container started: $container_id"
+
+            # Update state file with container ID
+            local container_name_actual
+            container_name_actual=$(docker inspect --format '{{.Name}}' "$container_id" 2>/dev/null | sed 's/^\///' || echo "")
+
+            if [[ -n "$container_id" ]]; then
+                sed -i.bak "s|^container_id: \".*\"|container_id: \"${container_id}\"|" "$state_file"
+            fi
+            if [[ -n "$container_name_actual" ]]; then
+                sed -i.bak "s|^container_name: \".*\"|container_name: \"${container_name_actual}\"|" "$state_file"
+            fi
+            rm -f "${state_file}.bak"
+
+            # Wait for container to be healthy
+            log_info "Waiting for container to be ready (up to 5 minutes)..."
+            if check_container_health "$container_id" 300; then
+                log_success "Container is healthy!"
+            else
+                local exit_code=$?
+                if [[ $exit_code -eq 2 ]]; then
+                    log_error "Container health check timed out after 5 minutes"
+                    log_error "Check logs with: docker logs ${container_id}"
+                else
+                    log_error "Container is not healthy"
+                    log_error "Check logs with: docker logs ${container_id}"
+                fi
+                exit 1
+            fi
+
+            # Wait for background process to complete
+            wait $bg_pid || {
+                log_error "Docker compose startup process failed"
+                exit 1
+            }
+
+            log_success "DevContainer (docker compose fallback) fully initialized"
+            log_info "Frontend: http://fe.${worktree_name}.localhost"
+            log_info "Backend: http://be.${worktree_name}.localhost"
         else
             # Generate unique container name
             local container_name="worktree-${worktree_id}-${agent_type}"
