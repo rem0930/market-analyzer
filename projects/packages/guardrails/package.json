@@ -14,7 +14,7 @@
     "guardrail": "tsx src/cli.ts"
   },
   "dependencies": {
-    "glob": "^10.3.0",
+    "glob": "^13.0.0",
     "yaml": "^2.3.0"
   },
   "devDependencies": {
