@@ -139,7 +139,7 @@ jobs:
           if [ -f .repo/active-stack ]; then
             stack_id=$(cat .repo/active-stack | tr -d '[:space:]')
             if [[ -n "${stack_id}" && "${stack_id}" != "# Stack"* ]]; then
-              chmod +x tools/contract/contract
+              chmod +x tools/contract
               ./tools/contract lint || exit 1
               ./tools/contract test || exit 1
               ./tools/contract build || exit 1

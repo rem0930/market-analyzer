@@ -1,5 +1,5 @@
 {
-  "$schema": "https://claude.ai/schemas/settings.json",
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "_comment": "Layer B (Defense): Security guardrails - DO NOT MODIFY deny rules without security review",
   "_rules_comment": "Rules in .claude/rules/ are always auto-applied (01-core, 02-backend, 03-frontend, 04-security, 05-quality)",
 
@@ -107,8 +107,8 @@
       "Bash(curl * | node*)",
       "Bash(wget * | node*)",
       "Bash(eval *)",
-      "Bash(source <(curl*)",
-      "Bash(bash <(curl*)",
+      "Bash(source *curl*)",
+      "Bash(bash -c *curl*)",
       "Bash(npm install -g *://)",
       "Bash(pip install *://)",
 

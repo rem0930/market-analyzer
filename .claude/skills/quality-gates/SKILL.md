@@ -2,7 +2,7 @@
 name: quality-gates
 description: Standard quality checks and fix order. Apply before commits, after code changes, or when CI fails. Triggers on "lint", "test", "typecheck", "CI", "build", "format", "quality".
 globs:
-  - "tools/contract/**"
+  - "tools/_contract/**"
   - ".github/workflows/**"
 alwaysApply: false
 ---

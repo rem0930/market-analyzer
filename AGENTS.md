@@ -84,7 +84,7 @@
 - **Package Manager**: pnpm (workspace)
 - **Backend**: Express / Fastify
 - **Frontend**: React
-- **Contract Scripts**: `tools/contract/stack/` に配置
+- **Contract Scripts**: `tools/_contract/stack/` に配置
 - **Application Code**: `projects/` に配置
   - `projects/apps/` - アプリケーション（api, web 等）
   - `projects/packages/` - 共有パッケージ
@@ -172,7 +172,10 @@
 ├── prompts/
 │   └── skills/               # 再利用可能スキル（詳細ワークフロー）
 └── tools/
-    ├── contract/             # Golden Commands エントリポイント
+    ├── contract              # Golden Commands ラッパー
+    ├── _contract/            # Golden Commands 実装
+    │   ├── contract          # メインスクリプト
+    │   ├── lib/              # ヘルパースクリプト
     │   └── stack/            # 各コマンドの実装
     ├── orchestrate/          # Agent Orchestration
     ├── policy/               # ポリシーチェック

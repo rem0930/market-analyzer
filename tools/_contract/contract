@@ -9,7 +9,7 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-LIB_DIR="${REPO_ROOT}/tools/contract/lib"
+LIB_DIR="${REPO_ROOT}/tools/_contract/lib"
 
 # DevContainer 実行ヘルパーを読み込み
 # shellcheck source=lib/devcontainer-exec.sh
@@ -44,12 +44,12 @@ fi
 
 cd "${REPO_ROOT}"
 
-script="tools/contract/stack/${cmd}"
+script="tools/_contract/stack/${cmd}"
 
 if [[ ! -f "${script}" ]]; then
   echo "ERROR: Contract script not found for command '${cmd}'"
   echo "Available commands:"
-  ls -1 tools/contract/stack 2>/dev/null || echo "  (none found)"
+  ls -1 tools/_contract/stack 2>/dev/null || echo "  (none found)"
   exit 2
 fi
 
