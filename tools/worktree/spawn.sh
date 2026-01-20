@@ -85,12 +85,23 @@ get_next_worktree_id() {
     local lock_file="${STATE_DIR}/.id-lock"
     mkdir -p "${STATE_DIR}"
 
-    # Acquire exclusive lock with timeout
-    exec 200>"$lock_file"
-    if ! flock -x -w 10 200; then
-        log_error "Failed to acquire lock for ID allocation"
-        exit 1
-    fi
+    # Acquire exclusive lock with timeout (cross-platform)
+    # Use mkdir for atomic lock (works on macOS and Linux)
+    local lock_dir="${STATE_DIR}/.id-lock.d"
+    local retries=0
+    local max_retries=100  # 10 seconds with 0.1s sleep
+
+    while ! mkdir "$lock_dir" 2>/dev/null; do
+        retries=$((retries + 1))
+        if [[ $retries -ge $max_retries ]]; then
+            log_error "Failed to acquire lock for ID allocation (timeout)"
+            exit 1
+        fi
+        sleep 0.1
+    done
+
+    # Ensure lock is released on exit
+    trap 'rmdir "$lock_dir" 2>/dev/null || true' EXIT
 
     local max_id=0
     if [[ -d "${STATE_DIR}" ]]; then
@@ -108,8 +119,8 @@ get_next_worktree_id() {
     local new_id=$((max_id + 1))
 
     # Release lock
-    flock -u 200
-    exec 200>&-
+    rmdir "$lock_dir" 2>/dev/null || true
+    trap - EXIT
 
     echo "$new_id"
 }
