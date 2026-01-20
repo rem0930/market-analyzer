@@ -82,6 +82,9 @@ services:
       - PORT=8080
       - CORS_ALLOWED_ORIGINS=http://fe.${WORKTREE}.localhost,http://localhost:3000
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/app
+      - LOG_FILE_ENABLED=true
+      - LOG_DIR=/workspace/logs/api
+      - LOG_LEVEL=debug
     networks:
       - internal
       - traefik-public
