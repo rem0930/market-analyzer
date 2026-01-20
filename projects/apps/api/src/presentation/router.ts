@@ -4,7 +4,7 @@
  *
  * presentation層のルール:
  * - usecase層のみimport可能
- * - domain層、infrastructure層を直接importしない
+ * - domain層、infrastructure層を直接importしない（loggerは例外的に許可）
  */
 
 import type { IncomingMessage, ServerResponse } from 'node:http';
@@ -17,6 +17,15 @@ import type { SecurityMiddleware } from './middleware/security-middleware.js';
 import type { CorsMiddleware } from './middleware/cors-middleware.js';
 import type { RateLimitMiddleware } from './middleware/rate-limit-middleware.js';
 import type { CsrfMiddleware } from './middleware/csrf-middleware.js';
+import {
+  compileRoutes,
+  matchRoute,
+  type CompiledRoute,
+  type RouteFactoryContext,
+} from './route-factory.js';
+import { createAuthRoutes } from './routes/auth.js';
+import { createUserRoutes } from './routes/users.js';
+import { createHealthRoutes } from './routes/health.js';
 
 export interface RouteContext {
   userController: UserController;
@@ -31,6 +40,37 @@ export interface RouteContext {
 }
 
 /**
+ * コンパイル済みルートをキャッシュ
+ * ルートは起動時に一度だけコンパイルされる
+ */
+let cachedRoutes: CompiledRoute[] | null = null;
+
+/**
+ * 全ルートを取得・コンパイル
+ */
+function getCompiledRoutes(context: RouteContext): CompiledRoute[] {
+  if (cachedRoutes) {
+    return cachedRoutes;
+  }
+
+  const factoryContext: RouteFactoryContext = {
+    authMiddleware: context.authMiddleware,
+    rateLimitMiddleware: context.rateLimitMiddleware,
+  };
+
+  // 全ルートモジュールからルート定義を収集
+  const allRouteDefinitions = [
+    ...createHealthRoutes(context.deepPingController),
+    ...createAuthRoutes(context.authController),
+    ...createUserRoutes(context.userController, context.profileController),
+  ];
+
+  // ルートをコンパイルしてキャッシュ
+  cachedRoutes = compileRoutes(allRouteDefinitions, factoryContext);
+  return cachedRoutes;
+}
+
+/**
  * ルートハンドラー
  */
 export async function handleRoutes(
@@ -38,17 +78,7 @@ export async function handleRoutes(
   res: ServerResponse,
   context: RouteContext
 ): Promise<void> {
-  const {
-    userController,
-    authController,
-    profileController,
-    deepPingController,
-    authMiddleware,
-    securityMiddleware,
-    corsMiddleware,
-    rateLimitMiddleware,
-    csrfMiddleware,
-  } = context;
+  const { securityMiddleware, corsMiddleware, csrfMiddleware } = context;
 
   // セキュリティヘッダーを全レスポンスに付与
   securityMiddleware.applyHeaders(res);
@@ -67,131 +97,13 @@ export async function handleRoutes(
   const method = req.method ?? 'GET';
   const pathname = url.pathname;
 
-  // Health check
-  if (pathname === '/health' && method === 'GET') {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ status: 'ok', timestamp: new Date().toISOString() }));
-    return;
-  }
+  // コンパイル済みルートを取得
+  const routes = getCompiledRoutes(context);
 
-  // Deep Ping - detailed health check including dependencies
-  if (pathname === '/ping/deep' && method === 'GET') {
-    await deepPingController.deepPing(res);
-    return;
-  }
-
-  // Root
-  if (pathname === '/' && method === 'GET') {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ name: '@monorepo/api', version: '0.0.1' }));
-    return;
-  }
-
-  // ============================================
-  // Auth Routes (Public) - Rate Limited
-  // ============================================
-
-  // POST /auth/register
-  if (pathname === '/auth/register' && method === 'POST') {
-    if (rateLimitMiddleware.check(req, res)) return;
-    await authController.register(req, res);
-    return;
-  }
-
-  // POST /auth/login
-  if (pathname === '/auth/login' && method === 'POST') {
-    if (rateLimitMiddleware.check(req, res)) return;
-    await authController.login(req, res);
-    return;
-  }
-
-  // POST /auth/refresh
-  if (pathname === '/auth/refresh' && method === 'POST') {
-    await authController.refresh(req, res);
-    return;
-  }
-
-  // POST /auth/forgot-password
-  if (pathname === '/auth/forgot-password' && method === 'POST') {
-    if (rateLimitMiddleware.check(req, res)) return;
-    await authController.forgotPassword(req, res);
-    return;
-  }
-
-  // POST /auth/reset-password
-  if (pathname === '/auth/reset-password' && method === 'POST') {
-    if (rateLimitMiddleware.check(req, res)) return;
-    await authController.resetPassword(req, res);
-    return;
-  }
-
-  // ============================================
-  // Auth Routes (Protected)
-  // ============================================
-
-  // POST /auth/logout
-  if (pathname === '/auth/logout' && method === 'POST') {
-    const authResult = authMiddleware.authenticate(req);
-    if (!authResult.authenticated) {
-      authMiddleware.sendUnauthorized(res, authResult.error);
-      return;
-    }
-    await authController.logout(req, res, authResult.user.userId);
-    return;
-  }
-
-  // GET /auth/me
-  if (pathname === '/auth/me' && method === 'GET') {
-    const authResult = authMiddleware.authenticate(req);
-    if (!authResult.authenticated) {
-      authMiddleware.sendUnauthorized(res, authResult.error);
-      return;
-    }
-    await authController.getCurrentUser(req, res, authResult.user.userId);
-    return;
-  }
-
-  // ============================================
-  // Profile Routes (Protected)
-  // ============================================
-
-  // PATCH /users/me/name - Update name
-  if (pathname === '/users/me/name' && method === 'PATCH') {
-    const authResult = authMiddleware.authenticate(req);
-    if (!authResult.authenticated) {
-      authMiddleware.sendUnauthorized(res, authResult.error);
-      return;
-    }
-    await profileController.updateName(req, res, authResult.user.userId);
-    return;
-  }
-
-  // PATCH /users/me/password - Update password (Rate Limited)
-  if (pathname === '/users/me/password' && method === 'PATCH') {
-    if (rateLimitMiddleware.check(req, res)) return;
-    const authResult = authMiddleware.authenticate(req);
-    if (!authResult.authenticated) {
-      authMiddleware.sendUnauthorized(res, authResult.error);
-      return;
-    }
-    await profileController.updatePassword(req, res, authResult.user.userId);
-    return;
-  }
-
-  // ============================================
-  // User Routes
-  // ============================================
-
-  // POST /users - Create user
-  if (pathname === '/users' && method === 'POST') {
-    await userController.createUser(req, res);
-    return;
-  }
-
-  // GET /users/:id - Get user
-  const userMatch = pathname.match(/^\/users\/([^/]+)$/);
-  if (userMatch && method === 'GET') {
-    await userController.getUser(req, res, userMatch[1]);
+  // マッチするルートを検索
+  const matched = matchRoute(routes, method, pathname);
+  if (matched) {
+    await matched.route.handler(req, res, matched.params);
     return;
   }
 

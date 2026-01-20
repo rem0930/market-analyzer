@@ -18,3 +18,17 @@ export { RateLimitMiddleware, type RateLimitConfig } from './middleware/rate-lim
 export { ValidationMiddleware } from './middleware/validation-middleware.js';
 export { CsrfMiddleware, type CsrfConfig } from './middleware/csrf-middleware.js';
 export { handleRoutes, type RouteContext } from './router.js';
+export {
+  type RouteDefinition,
+  type RouteHandler,
+  type AuthenticatedRouteHandler,
+  type RouteOptions,
+  type RouteFactoryContext,
+  createRouteHandler,
+  compileRoute,
+  compileRoutes,
+  matchRoute,
+} from './route-factory.js';
+export { createAuthRoutes } from './routes/auth.js';
+export { createUserRoutes } from './routes/users.js';
+export { createHealthRoutes } from './routes/health.js';
