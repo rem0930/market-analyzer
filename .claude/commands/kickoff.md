@@ -86,6 +86,30 @@ While agents run, read `AGENTS.md` to understand:
 - Required artifacts for this change type
 - Golden Commands to use
 
+### Step 2.5: Check Existing Specs (for change/enhancement tasks)
+
+**If the task involves modifying existing functionality:**
+
+1. Check if related specs exist:
+```bash
+ls -la .specify/specs/
+```
+
+2. If a related spec exists, execute **Skill.Read_Master_Spec**:
+   - Read the existing spec to understand current FR/NFR/AC
+   - Identify what changes are needed
+   - Plan spec updates before implementation
+
+3. Execute **Skill.Impact_Analysis**:
+   - Identify affected systems (Frontend/Backend/Database/API)
+   - Check for breaking changes
+   - Plan required document updates
+
+**If creating a new feature:**
+1. Check for related/parent specs
+2. Set up parent-child relationships if applicable
+3. Use `.specify/templates/spec.md` as the template
+
 ### Step 3: Synthesize Results
 
 When all agents complete:

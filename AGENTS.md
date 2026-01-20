@@ -273,6 +273,8 @@ Claude Code の Task ツールで並列実行が可能。手動オーケスト�
 |----|---------|---------|
 | `Skill.Kickoff` | 開発開始時 | Worktree/DevContainer確認、Contract読み込み、DocDD成果物特定 |
 | `Skill.Read_Contract_First` | 新タスク開始時 | AGENTS.md と process.md を読み、制約を把握 |
+| `Skill.Read_Master_Spec` | 既存機能変更時 | 既存 Spec を読み、仕様を把握してから変更 |
+| `Skill.Impact_Analysis` | Spec作成/更新前 | 変更の影響範囲を体系的に分析 |
 | `Skill.DocDD_Spec_First` | 機能/アーキ変更時 | Spec/Plan/Tasks を先に作成してから実装 |
 | `Skill.Minimize_Diff` | CI失敗/レビュー指摘時 | 原因を1つに絞り最小差分に収束 |
 | `Skill.Fix_CI_Fast` | contract failing | 依存→設定→環境の順で切り分け、3ループで止める |
@@ -281,6 +283,8 @@ Claude Code の Task ツールで並列実行が可能。手動オーケスト�
 | `Skill.DevContainer_Safe_Mode` | firewall/permission問題時 | allowlist確認、safeプロファイル維持 |
 | `Skill.OpenAPI_Contract_First` | HTTP API設計/実装時 | OpenAPI仕様を先に定義、コード生成活用 |
 | `Skill.Horizontal_Guardrails` | 実装/レビュー時 | 横のガードレールでアーキテクチャ維持 |
+
+**Templates**: `.specify/templates/` に Spec/Plan/Tasks のテンプレートあり
 
 ---
 

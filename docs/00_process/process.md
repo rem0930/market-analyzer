@@ -153,6 +153,75 @@
 
 ---
 
+## DocDD ワークフロー（詳細手順）
+
+再現性を高めるための詳細なワークフロー手順。
+
+### Step 0: マスタードキュメント確認
+
+新規タスク・変更要求を受けたら、**まず以下を読む**:
+
+1. `docs/01_product/prd.md` - 関連する FR/US を特定
+2. `docs/01_product/identity.md` - プロダクト原則との整合性確認
+3. 既存 Spec（変更の場合）- `.specify/specs/<id>/spec.md`
+
+**変更タスクの場合は `Skill.Read_Master_Spec` を実行**
+
+### Step 1: 影響分析
+
+`Skill.Impact_Analysis` を参考に:
+
+1. 影響を受けるシステムを列挙（Frontend / Backend / Database / API）
+2. 破壊的変更の有無を判定
+3. 下流の依存関係を特定
+
+### Step 2: Spec 作成/更新
+
+`.specify/templates/spec.md` テンプレートに従って:
+
+1. **Metadata** を記入（ID, Status, 日付）
+2. **Parent Documents** をリンク（PRD, Identity, ADR）
+3. **Impact Analysis** を記入（影響範囲、破壊的変更）
+4. **FR/NFR/AC** を定義（BDD形式: Given/When/Then）
+5. **Code Map** を予測記入（実装予定ファイルとテスト）
+
+### Step 3: Plan & Tasks 作成
+
+`.specify/templates/` のテンプレートに従って:
+
+1. `plan.md` - アーキテクチャと実装方針
+2. `tasks.md` - タスク分解（テストファースト、1タスク=1PR）
+
+### Step 4: マスタードキュメント更新
+
+変更が PRD レベルの場合:
+
+1. `docs/01_product/prd.md` の FR/US を更新
+2. ADR が必要なら `docs/02_architecture/adr/` に追加
+
+**コードを変更する前にドキュメントを更新する**
+
+### Step 5: 実装
+
+テストファースト原則に従い:
+
+1. **テストを先に書く**（AC と対応）
+2. 最小限の実装でテストを通す
+3. リファクタリング
+4. `./tools/contract` で品質チェック
+
+---
+
+## Templates
+
+Spec / Plan / Tasks のテンプレートは以下を参照:
+
+- `.specify/templates/spec.md` - Spec テンプレート
+- `.specify/templates/plan.md` - Plan テンプレート
+- `.specify/templates/tasks.md` - Tasks テンプレート
+
+---
+
 ## Links
 
 - [AGENTS.md](../../AGENTS.md) - Canonical Instructions
