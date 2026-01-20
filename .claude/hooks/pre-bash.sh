@@ -3,7 +3,7 @@
 # Exit codes: 0 = allow, 2 = block, other = warning
 #
 # Input: JSON from stdin with tool_input.command
-# Output: stdout message (shown to user if blocked/warned)
+# Output: stderr message (shown to user if blocked/warned)
 
 set -euo pipefail
 
@@ -46,23 +46,24 @@ fi
 # Block main branch operations
 if [[ "$COMMAND" =~ git\ (push|checkout|switch).*main ]] || \
    [[ "$COMMAND" =~ git\ (push|checkout|switch).*master ]]; then
-  echo "BLOCKED: Direct operations on main/master branch are forbidden."
-  echo "Use worktree and PR workflow instead."
-  echo "Reason: AGENTS.md Non-negotiable #1"
+  echo "BLOCKED: Direct operations on main/master branch are forbidden." >&2
+  echo "Use worktree and PR workflow instead." >&2
+  echo "Reason: AGENTS.md Non-negotiable #1" >&2
   exit 2
 fi
 
 # Block force push (all variants)
-if [[ "$COMMAND" =~ git\ push.*(-f|--force|--force-with-lease) ]]; then
-  echo "BLOCKED: Force push is forbidden."
-  echo "Reason: AGENTS.md Autonomy Configuration - safe mode"
+# Match -f or --force only as standalone flags (space or end of string after)
+if [[ "$COMMAND" =~ git\ push.*\ (-f|--force|--force-with-lease)(\ |$) ]]; then
+  echo "BLOCKED: Force push is forbidden." >&2
+  echo "Reason: AGENTS.md Autonomy Configuration - safe mode" >&2
   exit 2
 fi
 
 # Block hard reset (destructive)
 if [[ "$COMMAND" =~ git\ reset\ --hard ]]; then
-  echo "BLOCKED: git reset --hard is forbidden."
-  echo "Use git stash or git checkout -- instead."
+  echo "BLOCKED: git reset --hard is forbidden." >&2
+  echo "Use git stash or git checkout -- instead." >&2
   exit 2
 fi
 
@@ -70,22 +71,22 @@ fi
 if [[ "$COMMAND" =~ rm\ -rf\ [./]*$ ]] || \
    [[ "$COMMAND" =~ rm\ -rf\ /[^\ ]* ]] || \
    [[ "$COMMAND" =~ rm\ -rf\ \~ ]]; then
-  echo "BLOCKED: Recursive delete of root, current, or home directory."
+  echo "BLOCKED: Recursive delete of root, current, or home directory." >&2
   exit 2
 fi
 
 # Block sudo (no privilege escalation)
 PIPE_SUDO_PATTERN='[|][ ]*sudo'
 if [[ "$COMMAND" =~ ^sudo\  ]] || [[ "$COMMAND" =~ $PIPE_SUDO_PATTERN ]]; then
-  echo "BLOCKED: sudo is not allowed."
+  echo "BLOCKED: sudo is not allowed." >&2
   exit 2
 fi
 
 # Block pipe to shell execution (RCE prevention)
 if [[ "$COMMAND" =~ curl.*\|.*(bash|sh|zsh|python|node) ]] || \
    [[ "$COMMAND" =~ wget.*\|.*(bash|sh|zsh|python|node) ]]; then
-  echo "BLOCKED: Piping download to shell execution is forbidden."
-  echo "Reason: Supply chain security"
+  echo "BLOCKED: Piping download to shell execution is forbidden." >&2
+  echo "Reason: Supply chain security" >&2
   exit 2
 fi
 
@@ -96,7 +97,7 @@ if [[ "$COMMAND" =~ echo.*\$[A-Z_]*KEY ]] || \
    [[ "$COMMAND" =~ printenv.*SECRET ]] || \
    [[ "$COMMAND" =~ printenv.*KEY ]] || \
    [[ "$COMMAND" =~ printenv.*TOKEN ]]; then
-  echo "BLOCKED: Potential secret exfiltration detected."
+  echo "BLOCKED: Potential secret exfiltration detected." >&2
   exit 2
 fi
 
@@ -105,25 +106,24 @@ if [[ "$COMMAND" =~ cat.*\.env ]] || \
    [[ "$COMMAND" =~ cat.*\.pem ]] || \
    [[ "$COMMAND" =~ cat.*\.key ]] || \
    [[ "$COMMAND" =~ cat.*/secrets/ ]]; then
-  echo "BLOCKED: Reading sensitive files is not allowed."
+  echo "BLOCKED: Reading sensitive files is not allowed." >&2
   exit 2
 fi
 
 # Block raw commands (MUST use ./tools/contract)
 if [[ "$COMMAND" =~ ^(pnpm|npm|yarn|bun)\ (test|lint|build|format|typecheck) ]] && \
    [[ ! "$COMMAND" =~ ^pnpm\ (audit|outdated) ]]; then
-  echo "BLOCKED: Use './tools/contract' instead of raw package manager commands."
-  echo "Command: $COMMAND"
-  echo ""
-  echo "Correct commands:"
-  echo "  ./tools/contract test      # Instead of: pnpm test"
-  echo "  ./tools/contract lint      # Instead of: pnpm lint"
-  echo "  ./tools/contract build     # Instead of: pnpm build"
-  echo "  ./tools/contract format    # Instead of: pnpm format"
-  echo "  ./tools/contract typecheck # Instead of: pnpm typecheck"
-  echo ""
-  echo "Reason: AGENTS.md Non-negotiable #3"
-  # Exit 2 = block execution (changed from exit 1 which was warning only)
+  echo "BLOCKED: Use './tools/contract' instead of raw package manager commands." >&2
+  echo "Command: $COMMAND" >&2
+  echo "" >&2
+  echo "Correct commands:" >&2
+  echo "  ./tools/contract test      # Instead of: pnpm test" >&2
+  echo "  ./tools/contract lint      # Instead of: pnpm lint" >&2
+  echo "  ./tools/contract build     # Instead of: pnpm build" >&2
+  echo "  ./tools/contract format    # Instead of: pnpm format" >&2
+  echo "  ./tools/contract typecheck # Instead of: pnpm typecheck" >&2
+  echo "" >&2
+  echo "Reason: AGENTS.md Non-negotiable #3" >&2
   exit 2
 fi
 
