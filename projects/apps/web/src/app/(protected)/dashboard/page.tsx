@@ -5,6 +5,7 @@
  * @what ダッシュボードページ
  */
 
+import Link from 'next/link';
 import { useCurrentUser, useLogout } from '@/features/auth';
 import { Button } from '@/shared/ui';
 
@@ -39,13 +40,19 @@ export default function DashboardPage() {
         )}
       </div>
 
-      <Button
-        onClick={() => logoutMutation.mutate()}
-        variant="danger"
-        disabled={logoutMutation.isPending}
-      >
-        {logoutMutation.isPending ? 'Logging out...' : 'Logout'}
-      </Button>
+      <div className="flex gap-4">
+        <Link href="/profile">
+          <Button variant="secondary">プロフィール編集</Button>
+        </Link>
+
+        <Button
+          onClick={() => logoutMutation.mutate()}
+          variant="danger"
+          disabled={logoutMutation.isPending}
+        >
+          {logoutMutation.isPending ? 'Logging out...' : 'Logout'}
+        </Button>
+      </div>
     </div>
   );
 }

@@ -166,8 +166,9 @@ export async function handleRoutes(
     return;
   }
 
-  // PATCH /users/me/password - Update password
+  // PATCH /users/me/password - Update password (Rate Limited)
   if (pathname === '/users/me/password' && method === 'PATCH') {
+    if (rateLimitMiddleware.check(req, res)) return;
     const authResult = authMiddleware.authenticate(req);
     if (!authResult.authenticated) {
       authMiddleware.sendUnauthorized(res, authResult.error);
