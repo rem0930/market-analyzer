@@ -10,7 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useRegister } from '../api';
-import { typedRegisterSchema, type RegisterFormData } from '@/shared/lib/validation';
+import { registerSchema, type RegisterFormData } from '@/shared/lib/validation';
 import { Button, FormField } from '@/shared/ui';
 
 export function RegisterForm() {
@@ -22,7 +22,7 @@ export function RegisterForm() {
     handleSubmit,
     formState: { errors },
   } = useForm<RegisterFormData>({
-    resolver: zodResolver(typedRegisterSchema),
+    resolver: zodResolver(registerSchema) as any,
   });
 
   const onSubmit = (data: RegisterFormData) => {

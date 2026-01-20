@@ -6,7 +6,6 @@
  */
 
 import { z } from 'zod';
-import type { ZodType } from 'zod';
 
 export const updateNameSchema = z.object({
   name: z
@@ -38,5 +37,5 @@ export type UpdateNameFormData = z.infer<typeof updateNameSchema>;
 export type UpdatePasswordFormData = z.infer<typeof updatePasswordSchema>;
 
 // Type-safe schema exports for @hookform/resolvers compatibility
-export const typedUpdateNameSchema: ZodType<UpdateNameFormData> = updateNameSchema;
-export const typedUpdatePasswordSchema: ZodType<UpdatePasswordFormData> = updatePasswordSchema;
+export const typedUpdateNameSchema = updateNameSchema;
+export const typedUpdatePasswordSchema = updatePasswordSchema;

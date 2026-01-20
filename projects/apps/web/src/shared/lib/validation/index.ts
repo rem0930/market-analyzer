@@ -7,8 +7,6 @@
 export {
   loginSchema,
   registerSchema,
-  typedLoginSchema,
-  typedRegisterSchema,
   type LoginFormData,
   type RegisterFormData,
 } from './auth';
@@ -16,8 +14,6 @@ export {
 export {
   updateNameSchema,
   updatePasswordSchema,
-  typedUpdateNameSchema,
-  typedUpdatePasswordSchema,
   type UpdateNameFormData,
   type UpdatePasswordFormData,
 } from './profile';

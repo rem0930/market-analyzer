@@ -39,4 +39,8 @@ export type {
   PasswordService,
   PasswordServiceError,
   TokenHashService,
+  JwtService,
+  JwtPayload,
+  TokenPair,
+  JwtServiceError,
 } from './auth/index.js';

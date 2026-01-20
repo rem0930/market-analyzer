@@ -59,6 +59,7 @@ describe('LoginUseCase', () => {
       findById: vi.fn(),
       findByTokenHash: vi.fn(),
       save: vi.fn(),
+      update: vi.fn(),
       delete: vi.fn(),
       revokeAllByUserId: vi.fn(),
     };

@@ -8,7 +8,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useUpdateName } from '../api';
-import { typedUpdateNameSchema, type UpdateNameFormData } from '@/shared/lib/validation';
+import { updateNameSchema, type UpdateNameFormData } from '@/shared/lib/validation';
 import { Button, FormField } from '@/shared/ui';
 
 interface NameChangeFormProps {
@@ -24,7 +24,7 @@ export function NameChangeForm({ currentName = '', onSuccess }: NameChangeFormPr
     handleSubmit,
     formState: { errors },
   } = useForm<UpdateNameFormData>({
-    resolver: zodResolver(typedUpdateNameSchema),
+    resolver: zodResolver(updateNameSchema) as any,
     defaultValues: {
       name: currentName,
     },
