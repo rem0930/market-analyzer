@@ -20,10 +20,10 @@ describe('CsrfMiddleware', () => {
       headers: {},
     };
     mockRes = {
-      writeHead: vi.fn(),
-      end: vi.fn(),
-      setHeader: vi.fn(),
-    };
+      writeHead: vi.fn().mockReturnThis(),
+      end: vi.fn().mockReturnThis(),
+      setHeader: vi.fn().mockReturnThis(),
+    } as unknown as ServerResponse;
   });
 
   describe('generateToken', () => {

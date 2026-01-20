@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useUpdatePassword } from '../api';
-import { typedUpdatePasswordSchema, type UpdatePasswordFormData } from '@/shared/lib/validation';
+import { updatePasswordSchema, type UpdatePasswordFormData } from '@/shared/lib/validation';
 import { Button, FormField } from '@/shared/ui';
 
 export function PasswordChangeForm() {
@@ -22,7 +22,7 @@ export function PasswordChangeForm() {
     formState: { errors },
     reset,
   } = useForm<UpdatePasswordFormData>({
-    resolver: zodResolver(typedUpdatePasswordSchema),
+    resolver: zodResolver(updatePasswordSchema) as any,
   });
 
   const onSubmit = (data: UpdatePasswordFormData) => {

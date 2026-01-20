@@ -1,11 +1,11 @@
 # Worktree Context
-# Generated: 2026-01-19T23:32:51+09:00
+# Generated: 2026-01-20T11:33:02+09:00
 
 task_id: "unknown"
 parent_agent: "orchestrator"
 assigned_agent: "implementer"
-branch: "feat/api-db-push-and-seed"
-worktree_path: "/Users/matsuoka/ghq/github.com/matsuokah/vibecoding-repository-template/worktrees/feat-api-db-push-and-seed"
+branch: "fix/ci-failures"
+worktree_path: "/Users/matsuoka/ghq/github.com/nahato-products/vibecoding-template-node-next/worktrees/fix-ci-failures"
 
 # Context references (to be filled by agent)
 context:

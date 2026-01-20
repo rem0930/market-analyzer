@@ -12,6 +12,7 @@ import { useAuthStore } from '../model/store';
 interface CurrentUser {
   id: string;
   email: string;
+  name?: string;
   createdAt: string;
   updatedAt: string;
 }

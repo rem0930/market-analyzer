@@ -49,6 +49,7 @@ describe('ForgotPasswordUseCase', () => {
       findById: vi.fn(),
       findByTokenHash: vi.fn(),
       save: vi.fn(),
+      update: vi.fn(),
       delete: vi.fn(),
       invalidateAllByUserId: vi.fn(),
     };
