@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# logs:tail - Follow logs in real-time
+# ==============================================================================
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
+
+LOG_DIR="${PROJECT_ROOT}/logs/api"
+COMBINED_LOG="${LOG_DIR}/combined.log"
+
+# Ensure log directory exists
+mkdir -p "${LOG_DIR}"
+
+# Create empty log file if it doesn't exist
+if [[ ! -f "${COMBINED_LOG}" ]]; then
+    touch "${COMBINED_LOG}"
+fi
+
+echo "=== Following logs (Ctrl+C to stop) ==="
+echo "Location: ${COMBINED_LOG}"
+echo "========================================"
+tail -f "${COMBINED_LOG}"

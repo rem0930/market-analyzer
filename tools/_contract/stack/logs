@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# logs - Display application logs for troubleshooting
+#
+# Usage:
+#   ./tools/contract logs          # Show last 100 lines of combined log
+#   ./tools/contract logs:error    # Show last 100 lines of error log
+#   ./tools/contract logs:tail     # Follow combined log in real-time
+#   ./tools/contract logs:clear    # Clear all log files
+# ==============================================================================
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
+
+LOG_DIR="${PROJECT_ROOT}/logs/api"
+COMBINED_LOG="${LOG_DIR}/combined.log"
+ERROR_LOG="${LOG_DIR}/error.log"
+
+# Ensure log directory exists
+mkdir -p "${LOG_DIR}"
+
+# Default: show last 100 lines of combined log
+if [[ ! -f "${COMBINED_LOG}" ]]; then
+    echo "[INFO] No logs found yet. Logs will appear in:"
+    echo "  - Combined: ${COMBINED_LOG}"
+    echo "  - Errors:   ${ERROR_LOG}"
+    echo ""
+    echo "Make sure LOG_FILE_ENABLED=true is set in your environment."
+    exit 0
+fi
+
+tail -n 100 "${COMBINED_LOG}"

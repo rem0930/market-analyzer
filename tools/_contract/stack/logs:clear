@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# logs:clear - Clear all log files
+# ==============================================================================
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
+
+LOG_DIR="${PROJECT_ROOT}/logs/api"
+
+if [[ -d "${LOG_DIR}" ]]; then
+    # Truncate all log files instead of deleting
+    find "${LOG_DIR}" -name "*.log" -type f -exec truncate -s 0 {} \;
+    # Also remove rotated logs
+    find "${LOG_DIR}" -name "*.log.*" -type f -delete
+    echo "[OK] Cleared all logs in ${LOG_DIR}"
+else
+    echo "[INFO] Log directory does not exist: ${LOG_DIR}"
+fi

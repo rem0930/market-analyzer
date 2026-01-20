@@ -174,7 +174,72 @@ Auto-approved:
 # Worktree
 ./tools/worktree/spawn.sh <branch>
 ./tools/worktree/cleanup.sh
+
+# Log Commands (for troubleshooting)
+./tools/contract logs         # Show last 100 lines
+./tools/contract logs:error   # Show error logs only
+./tools/contract logs:tail    # Follow logs in real-time
+./tools/contract logs:clear   # Clear all logs
 ```
+
+---
+
+## Error Log Troubleshooting
+
+サーバーエラーのトラブルシュート用にログファイルが永続化されています。
+
+### Log Locations
+
+| Log File | Purpose | Command |
+|----------|---------|---------|
+| `logs/api/combined.log` | 全ログ（debug/info/warn/error） | `./tools/contract logs` |
+| `logs/api/error.log` | エラーログのみ | `./tools/contract logs:error` |
+
+### Quick Troubleshooting
+
+```bash
+# 1. 最新のエラーを確認
+./tools/contract logs:error
+
+# 2. リアルタイムでログを監視
+./tools/contract logs:tail
+
+# 3. 特定のエラーを検索
+grep "INTERNAL_ERROR" logs/api/error.log
+
+# 4. 相関IDでトレース
+grep "correlationId.*abc123" logs/api/combined.log
+```
+
+### Log Format
+
+ログは JSON 形式で出力されます：
+
+```json
+{
+  "timestamp": "2026-01-20T12:34:56.789Z",
+  "level": "error",
+  "message": "Login failed",
+  "context": {
+    "error": "invalid_credentials",
+    "email": "u***@e***.com"
+  }
+}
+```
+
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `LOG_LEVEL` | `info` | 最小ログレベル（debug/info/warn/error） |
+| `LOG_FILE_ENABLED` | `false` | ファイル出力を有効化（`true` で有効） |
+| `LOG_DIR` | `./logs/api` | ログディレクトリのパス |
+
+### Security Notes
+
+- パスワード、トークン、API キーは自動的に `[REDACTED]` に置換
+- メールアドレスは `u***@e***.com` 形式でマスク
+- スタックトレースは開発環境のみ出力
 
 ---
 

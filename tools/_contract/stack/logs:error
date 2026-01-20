@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# logs:error - Display error logs for troubleshooting
+# ==============================================================================
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
+
+LOG_DIR="${PROJECT_ROOT}/logs/api"
+ERROR_LOG="${LOG_DIR}/error.log"
+
+# Ensure log directory exists
+mkdir -p "${LOG_DIR}"
+
+if [[ ! -f "${ERROR_LOG}" ]]; then
+    echo "[INFO] No error logs found yet."
+    echo "  Location: ${ERROR_LOG}"
+    echo ""
+    echo "This is good news - no errors have been logged!"
+    exit 0
+fi
+
+echo "=== Error Log (last 100 lines) ==="
+echo "Location: ${ERROR_LOG}"
+echo "=================================="
+tail -n 100 "${ERROR_LOG}"
