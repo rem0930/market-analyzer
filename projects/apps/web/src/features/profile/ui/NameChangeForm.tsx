@@ -24,7 +24,7 @@ export function NameChangeForm({ currentName = '', onSuccess }: NameChangeFormPr
     handleSubmit,
     formState: { errors },
   } = useForm<UpdateNameFormData>({
-    resolver: zodResolver(updateNameSchema) as any,
+    resolver: zodResolver(updateNameSchema as any),
     defaultValues: {
       name: currentName,
     },
