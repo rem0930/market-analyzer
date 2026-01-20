@@ -3,6 +3,9 @@ const nextConfig = {
   // Strict mode for development
   reactStrictMode: true,
 
+  // Allow dev origins for worktree subdomains
+  allowedDevOrigins: ['*.localhost'],
+
   // Enable transpile packages from workspace
   transpilePackages: ['@monorepo/api-contract'],
 
