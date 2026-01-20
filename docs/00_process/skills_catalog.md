@@ -278,11 +278,75 @@ presentation → usecase → domain ← infrastructure
 
 ---
 
+## Skill.Read_Master_Spec
+
+### Trigger
+- 既存機能の変更・拡張リクエスト
+- 「〜を修正して」「〜を追加して」などの変更要求
+- バグ修正（仕様確認が必要な場合）
+
+### Purpose
+変更を加える前に、既存の Spec を読み、現在の仕様を正確に把握する。
+
+### Steps
+1. 関連 Spec を特定（`.specify/specs/` を検索）
+2. 現在の FR/NFR/AC を読み、把握
+3. 親ドキュメント（PRD, ADR）を確認
+4. 変更の影響を評価
+5. Spec 更新計画を策定
+
+### Guardrails
+- Spec を読まずにコード変更しない
+- 変更は必ず Spec に反映
+
+### Output
+- 既存仕様の理解
+- 変更影響の可視化
+- Spec 更新準備
+
+### Prompt Reference
+`prompts/skills/read_master_spec.md`
+
+---
+
+## Skill.Impact_Analysis
+
+### Trigger
+- Spec 作成/更新の前
+- アーキテクチャ変更の前
+- 破壊的変更の可能性がある場合
+
+### Purpose
+変更の影響範囲を体系的に分析し、漏れなく記録する。
+
+### Steps
+1. 変更種別を分類（feature/enhancement/fix/refactor/breaking）
+2. 直接影響を特定（Frontend/Backend/Database/API）
+3. 間接影響を特定（依存 Spec、共有コンポーネント）
+4. 破壊的変更を判定
+5. 下流依存を特定
+6. ドキュメント更新計画を策定
+
+### Guardrails
+- 影響分析なしで実装しない
+- 破壊的変更は明示的に宣言
+- Migration Plan は破壊的変更と同時に作成
+
+### Output
+Spec の Impact Analysis セクションに記入する内容
+
+### Prompt Reference
+`prompts/skills/impact_analysis.md`
+
+---
+
 ## Quick Reference Table
 
 | ID | Trigger | Purpose |
 |----|---------|---------|
 | `Skill.Read_Contract_First` | 新タスク開始時 | AGENTS.md と process.md を読み、制約を把握 |
+| `Skill.Read_Master_Spec` | 既存機能変更時 | 既存 Spec を読み、仕様を把握してから変更 |
+| `Skill.Impact_Analysis` | Spec作成/更新前 | 変更の影響範囲を体系的に分析 |
 | `Skill.DocDD_Spec_First` | 機能/アーキ変更時 | Spec/Plan/Tasks を先に作成してから実装 |
 | `Skill.Minimize_Diff` | CI失敗/レビュー指摘時 | 原因を1つに絞り最小差分に収束 |
 | `Skill.Fix_CI_Fast` | contract failing | 依存→設定→環境の順で切り分け、3ループで止める |
