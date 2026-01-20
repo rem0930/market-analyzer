@@ -23,7 +23,7 @@ export class DeepPingController {
     try {
       const result = await this.deepPingUseCase.execute();
       this.sendJson(res, 200, result);
-    } catch (error) {
+    } catch (_error) {
       this.sendError(res, 500, 'INTERNAL_ERROR', 'Internal server error');
     }
   }
