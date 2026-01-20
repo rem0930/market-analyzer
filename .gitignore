@@ -145,10 +145,19 @@ temp/
 *.pem
 *.key
 *.crt
+*.cer
+*.csr
 *.p12
 *.pfx
+*-key.json
 secrets/
 .secrets/
+
+# Cloud Provider Credentials
+.gcloud/
+.azure/
+.aws/
+.kube/config
 
 # ==============================================================================
 # Claude Code
