@@ -64,7 +64,7 @@ export class UserController {
       }
 
       this.sendJson(res, 201, result.value);
-    } catch (error) {
+    } catch (_error) {
       this.sendError(res, 500, 'Internal server error');
     }
   }
@@ -91,7 +91,7 @@ export class UserController {
       }
 
       this.sendJson(res, 200, result.value);
-    } catch (error) {
+    } catch (_error) {
       this.sendError(res, 500, 'Internal server error');
     }
   }
