@@ -10,7 +10,8 @@
   "postCreateCommand": {
     "deps": "cd /workspace/projects && pnpm install",
     "husky": "cd /workspace/projects && pnpm prepare",
-    "git-config": "git config --global --add safe.directory /workspace"
+    "git-config": "git config --global --add safe.directory /workspace",
+    "db-init": "cd /workspace/projects && pnpm --filter @monorepo/api db:generate && pnpm --filter @monorepo/api db:push && pnpm --filter @monorepo/api db:seed"
   },
   "customizations": {
     "vscode": {
