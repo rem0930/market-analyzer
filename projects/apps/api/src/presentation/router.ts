@@ -17,6 +17,9 @@ import type { SecurityMiddleware } from './middleware/security-middleware.js';
 import type { CorsMiddleware } from './middleware/cors-middleware.js';
 import type { RateLimitMiddleware } from './middleware/rate-limit-middleware.js';
 import type { CsrfMiddleware } from './middleware/csrf-middleware.js';
+import { AppError } from '@monorepo/shared';
+import { getRequestId, setRequestIdHeader } from './middleware/request-id-middleware.js';
+import { sendErrorResponse, sendJson } from './middleware/error-handler.js';
 import {
   compileRoutes,
   matchRoute,
@@ -80,6 +83,10 @@ export async function handleRoutes(
 ): Promise<void> {
   const { securityMiddleware, corsMiddleware, csrfMiddleware } = context;
 
+  // リクエストIDを取得・設定（全レスポンスに付与）
+  const requestId = getRequestId(req);
+  setRequestIdHeader(res, requestId);
+
   // セキュリティヘッダーを全レスポンスに付与
   securityMiddleware.applyHeaders(res);
 
@@ -103,11 +110,12 @@ export async function handleRoutes(
   // マッチするルートを検索
   const matched = matchRoute(routes, method, pathname);
   if (matched) {
-    await matched.route.handler(req, res, matched.params);
+    // requestId を params に注入してハンドラに渡す
+    const paramsWithRequestId = { ...matched.params, _requestId: requestId };
+    await matched.route.handler(req, res, paramsWithRequestId);
     return;
   }
 
-  // 404
-  res.writeHead(404, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify({ code: 'NOT_FOUND', message: 'Not Found' }));
+  // 404 - 統一エラー形式で返却
+  sendErrorResponse(res, requestId, AppError.notFound('RESOURCE_NOT_FOUND'));
 }

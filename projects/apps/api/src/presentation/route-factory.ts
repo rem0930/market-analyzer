@@ -10,6 +10,8 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { AuthMiddleware, AuthenticatedRequest } from './middleware/auth-middleware.js';
 import type { RateLimitMiddleware } from './middleware/rate-limit-middleware.js';
+import { AppError } from '@monorepo/shared';
+import { sendErrorResponse } from './middleware/error-handler.js';
 import { logger } from '../infrastructure/logger/index.js';
 
 /**
@@ -74,12 +76,18 @@ export interface RouteFactoryContext {
 }
 
 /**
- * 内部エラーレスポンスを送信
+ * 認証エラーを AppError に変換
  */
-function sendInternalError(res: ServerResponse): void {
-  if (!res.headersSent) {
-    res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ code: 'INTERNAL_ERROR', message: 'Internal Server Error' }));
+function mapAuthErrorToAppError(
+  error: 'missing_token' | 'invalid_token' | 'token_expired'
+): AppError {
+  switch (error) {
+    case 'missing_token':
+      return AppError.unauthorized('INVALID_TOKEN');
+    case 'invalid_token':
+      return AppError.unauthorized('INVALID_TOKEN');
+    case 'token_expired':
+      return AppError.unauthorized('TOKEN_EXPIRED');
   }
 }
 
@@ -91,6 +99,9 @@ export function createRouteHandler(
   context: RouteFactoryContext
 ): (req: IncomingMessage, res: ServerResponse, params: Record<string, string>) => Promise<void> {
   return async (req, res, params) => {
+    // requestId は router.ts から params._requestId として注入される
+    const requestId = params._requestId ?? crypto.randomUUID();
+
     try {
       // レート制限チェック
       if (definition.options?.rateLimit) {
@@ -103,7 +114,7 @@ export function createRouteHandler(
       if (definition.options?.auth) {
         const authResult = context.authMiddleware.authenticate(req);
         if (!authResult.authenticated) {
-          context.authMiddleware.sendUnauthorized(res, authResult.error);
+          sendErrorResponse(res, requestId, mapAuthErrorToAppError(authResult.error));
           return;
         }
         await (definition.handler as AuthenticatedRouteHandler)(req, res, params, authResult.user);
@@ -113,12 +124,21 @@ export function createRouteHandler(
       // 認証不要ルート
       await (definition.handler as RouteHandler)(req, res, params);
     } catch (error) {
+      // AppError の場合はそのまま返却
+      if (error instanceof AppError) {
+        sendErrorResponse(res, requestId, error);
+        return;
+      }
+
+      // 想定外エラーはログに記録し、INTERNAL_ERROR として返却
       logger.error('Unhandled error in route handler', {
+        requestId,
         error: error instanceof Error ? { message: error.message, stack: error.stack } : error,
         method: req.method,
         path: req.url,
       });
-      sendInternalError(res);
+
+      sendErrorResponse(res, requestId, AppError.fromUnknown(error));
     }
   };
 }

@@ -6,6 +6,7 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { RouteDefinition } from '../route-factory.js';
 import type { DeepPingController } from '../controllers/deep-ping-controller.js';
+import { sendJson } from '../middleware/error-handler.js';
 
 /**
  * ヘルスチェック関連ルートを作成
@@ -16,18 +17,29 @@ export function createHealthRoutes(deepPingController: DeepPingController): Rout
     {
       method: 'GET',
       path: '/',
-      handler: async (_req: IncomingMessage, res: ServerResponse) => {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ name: '@monorepo/api', version: '0.0.1' }));
+      handler: async (
+        _req: IncomingMessage,
+        res: ServerResponse,
+        params: Record<string, string>
+      ) => {
+        sendJson(res, 200, { name: '@monorepo/api', version: '0.0.1' }, params._requestId);
       },
     },
     // Health check endpoint
     {
       method: 'GET',
       path: '/health',
-      handler: async (_req: IncomingMessage, res: ServerResponse) => {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ status: 'ok', timestamp: new Date().toISOString() }));
+      handler: async (
+        _req: IncomingMessage,
+        res: ServerResponse,
+        params: Record<string, string>
+      ) => {
+        sendJson(
+          res,
+          200,
+          { status: 'ok', timestamp: new Date().toISOString() },
+          params._requestId
+        );
       },
     },
     // Deep ping endpoint (checks database connectivity)

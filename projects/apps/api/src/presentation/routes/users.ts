@@ -21,8 +21,12 @@ export function createUserRoutes(
     {
       method: 'POST',
       path: '/users',
-      handler: async (req: IncomingMessage, res: ServerResponse) => {
-        await userController.createUser(req, res);
+      handler: async (
+        req: IncomingMessage,
+        res: ServerResponse,
+        params: Record<string, string>
+      ) => {
+        await userController.createUser(req, res, params._requestId);
       },
     },
     {
@@ -33,7 +37,7 @@ export function createUserRoutes(
         res: ServerResponse,
         params: Record<string, string>
       ) => {
-        await userController.getUser(req, res, params.id);
+        await userController.getUser(req, res, params.id, params._requestId);
       },
     },
     // Protected routes (profile editing)
@@ -43,10 +47,10 @@ export function createUserRoutes(
       handler: async (
         req: IncomingMessage,
         res: ServerResponse,
-        _params: Record<string, string>,
+        params: Record<string, string>,
         user: AuthenticatedRequest
       ) => {
-        await profileController.updateName(req, res, user.userId);
+        await profileController.updateName(req, res, user.userId, params._requestId);
       },
       options: { auth: true },
     },
@@ -56,10 +60,10 @@ export function createUserRoutes(
       handler: async (
         req: IncomingMessage,
         res: ServerResponse,
-        _params: Record<string, string>,
+        params: Record<string, string>,
         user: AuthenticatedRequest
       ) => {
-        await profileController.updatePassword(req, res, user.userId);
+        await profileController.updatePassword(req, res, user.userId, params._requestId);
       },
       options: { auth: true, rateLimit: true },
     },

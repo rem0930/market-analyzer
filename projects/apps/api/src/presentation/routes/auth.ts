@@ -17,39 +17,59 @@ export function createAuthRoutes(controller: AuthController): RouteDefinition[] 
     {
       method: 'POST',
       path: '/auth/register',
-      handler: async (req: IncomingMessage, res: ServerResponse) => {
-        await controller.register(req, res);
+      handler: async (
+        req: IncomingMessage,
+        res: ServerResponse,
+        params: Record<string, string>
+      ) => {
+        await controller.register(req, res, params._requestId);
       },
       options: { rateLimit: true },
     },
     {
       method: 'POST',
       path: '/auth/login',
-      handler: async (req: IncomingMessage, res: ServerResponse) => {
-        await controller.login(req, res);
+      handler: async (
+        req: IncomingMessage,
+        res: ServerResponse,
+        params: Record<string, string>
+      ) => {
+        await controller.login(req, res, params._requestId);
       },
       options: { rateLimit: true },
     },
     {
       method: 'POST',
       path: '/auth/refresh',
-      handler: async (req: IncomingMessage, res: ServerResponse) => {
-        await controller.refresh(req, res);
+      handler: async (
+        req: IncomingMessage,
+        res: ServerResponse,
+        params: Record<string, string>
+      ) => {
+        await controller.refresh(req, res, params._requestId);
       },
     },
     {
       method: 'POST',
       path: '/auth/forgot-password',
-      handler: async (req: IncomingMessage, res: ServerResponse) => {
-        await controller.forgotPassword(req, res);
+      handler: async (
+        req: IncomingMessage,
+        res: ServerResponse,
+        params: Record<string, string>
+      ) => {
+        await controller.forgotPassword(req, res, params._requestId);
       },
       options: { rateLimit: true },
     },
     {
       method: 'POST',
       path: '/auth/reset-password',
-      handler: async (req: IncomingMessage, res: ServerResponse) => {
-        await controller.resetPassword(req, res);
+      handler: async (
+        req: IncomingMessage,
+        res: ServerResponse,
+        params: Record<string, string>
+      ) => {
+        await controller.resetPassword(req, res, params._requestId);
       },
       options: { rateLimit: true },
     },
@@ -60,10 +80,10 @@ export function createAuthRoutes(controller: AuthController): RouteDefinition[] 
       handler: async (
         req: IncomingMessage,
         res: ServerResponse,
-        _params: Record<string, string>,
+        params: Record<string, string>,
         user: AuthenticatedRequest
       ) => {
-        await controller.logout(req, res, user.userId);
+        await controller.logout(req, res, user.userId, params._requestId);
       },
       options: { auth: true },
     },
@@ -73,10 +93,10 @@ export function createAuthRoutes(controller: AuthController): RouteDefinition[] 
       handler: async (
         req: IncomingMessage,
         res: ServerResponse,
-        _params: Record<string, string>,
+        params: Record<string, string>,
         user: AuthenticatedRequest
       ) => {
-        await controller.getCurrentUser(req, res, user.userId);
+        await controller.getCurrentUser(req, res, user.userId, params._requestId);
       },
       options: { auth: true },
     },
