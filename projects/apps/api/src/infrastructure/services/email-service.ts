@@ -13,9 +13,12 @@ import { logger } from '../logger/index.js';
  */
 export class LoggerEmailService implements EmailService {
   async sendPasswordResetEmail(email: string, token: string): Promise<Result<void, 'send_failed'>> {
+    // Security: Never log full tokens, even in development
+    const maskedToken = `${token.slice(0, 4)}...${token.slice(-4)}`;
     logger.info('Password reset email would be sent', {
       email,
-      token,
+      tokenPreview: maskedToken,
+      tokenLength: token.length,
       note: 'Development mode - no actual email sent',
     });
     return Result.ok(undefined);

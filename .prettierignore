@@ -1,0 +1,47 @@
+# ==============================================================================
+# .prettierignore - Prettier Ignore Patterns
+# ==============================================================================
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+.vercel/
+.vite/
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Generated files
+**/prisma/generated/
+**/generated/
+*.min.js
+*.min.css
+
+# Cache
+.turbo/
+.eslintcache
+.prettiercache
+.cache/
+*.tsbuildinfo
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Logs
+logs/
+*.log
+
+# Lock files (formatted by package managers)
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Markdown in node_modules (performance)
+**/node_modules/**/*.md
+
+# Git worktrees
+worktrees/

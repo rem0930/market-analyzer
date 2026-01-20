@@ -1,0 +1,36 @@
+# ==============================================================================
+# .eslintignore - ESLint Ignore Patterns
+# ==============================================================================
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+.vercel/
+.vite/
+
+# Dependencies
+node_modules/
+
+# Generated files
+**/prisma/generated/
+**/generated/
+next-env.d.ts
+
+# Cache
+.turbo/
+.eslintcache
+*.tsbuildinfo
+
+# Coverage
+coverage/
+
+# Config files (CommonJS in ESM project)
+*.config.js
+*.config.cjs
+.eslintrc.cjs
+commitlint.config.js
+
+# Git worktrees
+worktrees/
