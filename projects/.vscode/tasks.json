@@ -7,9 +7,7 @@
       "label": "docker-compose-up",
       "type": "shell",
       "command": "./tools/contract",
-      "args": [
-        "dev"
-      ],
+      "args": ["dev"],
       "options": {
         "cwd": "${workspaceFolder}"
       },
@@ -23,9 +21,7 @@
       "label": "docker-compose-down",
       "type": "shell",
       "command": "./tools/contract",
-      "args": [
-        "dev:stop"
-      ],
+      "args": ["dev:stop"],
       "options": {
         "cwd": "${workspaceFolder}"
       },
@@ -38,9 +34,7 @@
       "label": "docker-compose-logs",
       "type": "shell",
       "command": "./tools/contract",
-      "args": [
-        "dev:logs"
-      ],
+      "args": ["dev:logs"],
       "options": {
         "cwd": "${workspaceFolder}"
       },
@@ -55,9 +49,7 @@
       "label": "pnpm install",
       "type": "shell",
       "command": "pnpm",
-      "args": [
-        "install"
-      ],
+      "args": ["install"],
       "options": {
         "cwd": "${workspaceFolder}/projects"
       },
@@ -67,9 +59,7 @@
       "label": "pnpm test",
       "type": "shell",
       "command": "./tools/contract",
-      "args": [
-        "test"
-      ],
+      "args": ["test"],
       "options": {
         "cwd": "${workspaceFolder}"
       },

@@ -41,9 +41,7 @@ export function RegisterForm() {
       onSubmit={handleSubmit(onSubmit)}
       className="w-full max-w-md p-6 bg-white rounded-lg shadow-md space-y-4"
     >
-      <h2 className="text-2xl font-semibold text-center text-gray-800">
-        新規登録
-      </h2>
+      <h2 className="text-2xl font-semibold text-center text-gray-800">新規登録</h2>
 
       {registerMutation.error && (
         <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md" role="alert">

@@ -70,7 +70,8 @@ export async function checkOpenapiRouteCoverage(rootDir: string): Promise<GuardR
   // 例: if (pathname === '/users' && method === 'POST')
   // 例: /^\/users\/([^/]+)$/ - GET /users/:id
   const ROUTE_PATTERN = /pathname\s*===\s*['"]([^'"]+)['"]\s*&&\s*method\s*===\s*['"](\w+)['"]/g;
-  const PARAM_ROUTE_PATTERN = /pathname\.match\(\/\^([^$]+)\$\/\)\s*&&\s*method\s*===\s*['"](\w+)['"]/g;
+  const PARAM_ROUTE_PATTERN =
+    /pathname\.match\(\/\^([^$]+)\$\/\)\s*&&\s*method\s*===\s*['"](\w+)['"]/g;
 
   for (const routerFile of routerFiles) {
     const content = fs.readFileSync(routerFile, 'utf-8');

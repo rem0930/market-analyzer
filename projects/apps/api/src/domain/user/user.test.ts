@@ -5,7 +5,13 @@
 
 import { describe, it, expect } from 'vitest';
 import { Email } from '@monorepo/shared';
-import { User, UserId, UserCreatedEvent, UserEmailChangedEvent, UserNameChangedEvent } from './user.js';
+import {
+  User,
+  UserId,
+  UserCreatedEvent,
+  UserEmailChangedEvent,
+  UserNameChangedEvent,
+} from './user.js';
 
 describe('User', () => {
   const createValidParams = () => ({

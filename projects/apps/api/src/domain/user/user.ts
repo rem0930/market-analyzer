@@ -8,13 +8,7 @@
  * - Result<T>を使ったエラーハンドリング
  */
 
-import {
-  AggregateRoot,
-  UUIDIdentifier,
-  Email,
-  Result,
-  DomainEvent,
-} from '@monorepo/shared';
+import { AggregateRoot, UUIDIdentifier, Email, Result, DomainEvent } from '@monorepo/shared';
 
 /**
  * ユーザーID
@@ -146,12 +140,7 @@ export class User extends AggregateRoot<UserId> {
   /**
    * 永続化データからリストア
    */
-  static restore(
-    id: UserId,
-    email: Email,
-    name: string,
-    version: number
-  ): User {
+  static restore(id: UserId, email: Email, name: string, version: number): User {
     const user = new User(id, email, name);
     user.setVersion(version);
     return user;

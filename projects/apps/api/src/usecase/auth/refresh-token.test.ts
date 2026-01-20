@@ -106,7 +106,12 @@ describe('RefreshTokenUseCase', () => {
   describe('successful token refresh', () => {
     it('should return new token pair', async () => {
       vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(
-        Result.ok({ sub: '550e8400-e29b-41d4-a716-446655440000', email: 'test@example.com', iat: 1000, exp: 2000 })
+        Result.ok({
+          sub: '550e8400-e29b-41d4-a716-446655440000',
+          email: 'test@example.com',
+          iat: 1000,
+          exp: 2000,
+        })
       );
       vi.mocked(mockTokenHashService.hashToken).mockReturnValue(TokenHash.create('hashed-token'));
       vi.mocked(mockRefreshTokenRepository.findByTokenHash).mockResolvedValue(
@@ -128,7 +133,12 @@ describe('RefreshTokenUseCase', () => {
     it('should revoke old refresh token', async () => {
       const storedToken = createMockRefreshToken();
       vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(
-        Result.ok({ sub: '550e8400-e29b-41d4-a716-446655440000', email: 'test@example.com', iat: 1000, exp: 2000 })
+        Result.ok({
+          sub: '550e8400-e29b-41d4-a716-446655440000',
+          email: 'test@example.com',
+          iat: 1000,
+          exp: 2000,
+        })
       );
       vi.mocked(mockTokenHashService.hashToken).mockReturnValue(TokenHash.create('hashed-token'));
       vi.mocked(mockRefreshTokenRepository.findByTokenHash).mockResolvedValue(
@@ -148,7 +158,12 @@ describe('RefreshTokenUseCase', () => {
 
     it('should save new refresh token', async () => {
       vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(
-        Result.ok({ sub: '550e8400-e29b-41d4-a716-446655440000', email: 'test@example.com', iat: 1000, exp: 2000 })
+        Result.ok({
+          sub: '550e8400-e29b-41d4-a716-446655440000',
+          email: 'test@example.com',
+          iat: 1000,
+          exp: 2000,
+        })
       );
       vi.mocked(mockTokenHashService.hashToken).mockReturnValue(TokenHash.create('hashed-token'));
       vi.mocked(mockRefreshTokenRepository.findByTokenHash).mockResolvedValue(
@@ -188,7 +203,12 @@ describe('RefreshTokenUseCase', () => {
   describe('stored token validation', () => {
     it('should fail when token not found in database', async () => {
       vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(
-        Result.ok({ sub: '550e8400-e29b-41d4-a716-446655440000', email: 'test@example.com', iat: 1000, exp: 2000 })
+        Result.ok({
+          sub: '550e8400-e29b-41d4-a716-446655440000',
+          email: 'test@example.com',
+          iat: 1000,
+          exp: 2000,
+        })
       );
       vi.mocked(mockTokenHashService.hashToken).mockReturnValue(TokenHash.create('hashed-token'));
       vi.mocked(mockRefreshTokenRepository.findByTokenHash).mockResolvedValue(
@@ -203,7 +223,12 @@ describe('RefreshTokenUseCase', () => {
 
     it('should fail when stored token is revoked', async () => {
       vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(
-        Result.ok({ sub: '550e8400-e29b-41d4-a716-446655440000', email: 'test@example.com', iat: 1000, exp: 2000 })
+        Result.ok({
+          sub: '550e8400-e29b-41d4-a716-446655440000',
+          email: 'test@example.com',
+          iat: 1000,
+          exp: 2000,
+        })
       );
       vi.mocked(mockTokenHashService.hashToken).mockReturnValue(TokenHash.create('hashed-token'));
       vi.mocked(mockRefreshTokenRepository.findByTokenHash).mockResolvedValue(
@@ -218,7 +243,12 @@ describe('RefreshTokenUseCase', () => {
 
     it('should fail when findByTokenHash returns error', async () => {
       vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(
-        Result.ok({ sub: '550e8400-e29b-41d4-a716-446655440000', email: 'test@example.com', iat: 1000, exp: 2000 })
+        Result.ok({
+          sub: '550e8400-e29b-41d4-a716-446655440000',
+          email: 'test@example.com',
+          iat: 1000,
+          exp: 2000,
+        })
       );
       vi.mocked(mockTokenHashService.hashToken).mockReturnValue(TokenHash.create('hashed-token'));
       vi.mocked(mockRefreshTokenRepository.findByTokenHash).mockResolvedValue(
@@ -235,7 +265,12 @@ describe('RefreshTokenUseCase', () => {
   describe('user validation', () => {
     it('should fail when user not found', async () => {
       vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(
-        Result.ok({ sub: '550e8400-e29b-41d4-a716-446655440000', email: 'test@example.com', iat: 1000, exp: 2000 })
+        Result.ok({
+          sub: '550e8400-e29b-41d4-a716-446655440000',
+          email: 'test@example.com',
+          iat: 1000,
+          exp: 2000,
+        })
       );
       vi.mocked(mockTokenHashService.hashToken).mockReturnValue(TokenHash.create('hashed-token'));
       vi.mocked(mockRefreshTokenRepository.findByTokenHash).mockResolvedValue(
@@ -253,7 +288,12 @@ describe('RefreshTokenUseCase', () => {
 
     it('should fail when findById returns error', async () => {
       vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(
-        Result.ok({ sub: '550e8400-e29b-41d4-a716-446655440000', email: 'test@example.com', iat: 1000, exp: 2000 })
+        Result.ok({
+          sub: '550e8400-e29b-41d4-a716-446655440000',
+          email: 'test@example.com',
+          iat: 1000,
+          exp: 2000,
+        })
       );
       vi.mocked(mockTokenHashService.hashToken).mockReturnValue(TokenHash.create('hashed-token'));
       vi.mocked(mockRefreshTokenRepository.findByTokenHash).mockResolvedValue(
@@ -271,7 +311,12 @@ describe('RefreshTokenUseCase', () => {
   describe('token generation', () => {
     it('should fail when token generation fails', async () => {
       vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(
-        Result.ok({ sub: '550e8400-e29b-41d4-a716-446655440000', email: 'test@example.com', iat: 1000, exp: 2000 })
+        Result.ok({
+          sub: '550e8400-e29b-41d4-a716-446655440000',
+          email: 'test@example.com',
+          iat: 1000,
+          exp: 2000,
+        })
       );
       vi.mocked(mockTokenHashService.hashToken).mockReturnValue(TokenHash.create('hashed-token'));
       vi.mocked(mockRefreshTokenRepository.findByTokenHash).mockResolvedValue(
@@ -291,7 +336,12 @@ describe('RefreshTokenUseCase', () => {
   describe('new token persistence', () => {
     it('should fail when save fails for new token', async () => {
       vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(
-        Result.ok({ sub: '550e8400-e29b-41d4-a716-446655440000', email: 'test@example.com', iat: 1000, exp: 2000 })
+        Result.ok({
+          sub: '550e8400-e29b-41d4-a716-446655440000',
+          email: 'test@example.com',
+          iat: 1000,
+          exp: 2000,
+        })
       );
       vi.mocked(mockTokenHashService.hashToken).mockReturnValue(TokenHash.create('hashed-token'));
       vi.mocked(mockRefreshTokenRepository.findByTokenHash).mockResolvedValue(

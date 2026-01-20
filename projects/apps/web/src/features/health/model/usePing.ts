@@ -37,8 +37,7 @@ export function usePing(): UsePingReturn {
       const data = await fetchDeepPing();
       setState({ data, isLoading: false, error: null });
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : 'Failed to ping server';
+      const message = err instanceof Error ? err.message : 'Failed to ping server';
       setState((prev) => ({ ...prev, isLoading: false, error: message }));
     }
   }, []);

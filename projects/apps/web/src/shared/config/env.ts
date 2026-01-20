@@ -18,8 +18,7 @@ export interface AppConfig {
  */
 export function getEnvVar(key: string, fallback?: string): string {
   // Next.js の public env は NEXT_PUBLIC_ プレフィックス
-  const value =
-    (typeof process !== 'undefined' && process.env?.[key]) || fallback;
+  const value = (typeof process !== 'undefined' && process.env?.[key]) || fallback;
 
   if (!value) {
     throw new Error(`Missing required environment variable: ${key}`);

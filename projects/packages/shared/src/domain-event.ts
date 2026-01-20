@@ -48,7 +48,8 @@ export interface EventIdentity {
  * すべてのドメインイベントはこれを継承すること
  */
 export abstract class DomainEvent<TEventType extends string = string>
-  implements CausationMeta, EventIdentity {
+  implements CausationMeta, EventIdentity
+{
   public readonly eventId: string;
   public readonly emittedAt: Date;
 

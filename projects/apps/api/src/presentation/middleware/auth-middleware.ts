@@ -64,9 +64,11 @@ export class AuthMiddleware {
     };
 
     res.writeHead(401, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({
-      code: 'UNAUTHORIZED',
-      message: messages[error],
-    }));
+    res.end(
+      JSON.stringify({
+        code: 'UNAUTHORIZED',
+        message: messages[error],
+      })
+    );
   }
 }

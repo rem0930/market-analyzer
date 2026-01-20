@@ -44,10 +44,7 @@ export function configureApiClient(options: {
 /**
  * Orval の mutator として使用するカスタム fetch
  */
-export async function customFetch<T>(
-  url: string,
-  options: FetchOptions = {}
-): Promise<T> {
+export async function customFetch<T>(url: string, options: FetchOptions = {}): Promise<T> {
   const { body, headers: customHeaders, ...rest } = options;
 
   const fullUrl = url.startsWith('http') ? url : `${_baseUrl}${url}`;
@@ -77,9 +74,7 @@ export async function customFetch<T>(
         : {};
     throw new NormalizedApiError(
       response.status,
-      typeof errorData.message === 'string'
-        ? errorData.message
-        : `HTTP Error: ${response.status}`,
+      typeof errorData.message === 'string' ? errorData.message : `HTTP Error: ${response.status}`,
       typeof errorData.code === 'string' ? errorData.code : undefined,
       errorData.details
     );

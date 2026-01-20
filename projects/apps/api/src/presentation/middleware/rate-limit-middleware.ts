@@ -65,11 +65,13 @@ export class RateLimitMiddleware {
     if (entry.count > this.config.maxRequests) {
       res.setHeader('Retry-After', String(resetSeconds));
       res.writeHead(429, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({
-        code: 'RATE_LIMIT_EXCEEDED',
-        message: this.config.message,
-        retryAfter: resetSeconds,
-      }));
+      res.end(
+        JSON.stringify({
+          code: 'RATE_LIMIT_EXCEEDED',
+          message: this.config.message,
+          retryAfter: resetSeconds,
+        })
+      );
       return true;
     }
 
@@ -87,14 +89,17 @@ export class RateLimitMiddleware {
   }
 
   private startCleanup(): void {
-    this.cleanupInterval = setInterval(() => {
-      const now = Date.now();
-      for (const [key, entry] of this.store.entries()) {
-        if (now > entry.resetTime) {
-          this.store.delete(key);
+    this.cleanupInterval = setInterval(
+      () => {
+        const now = Date.now();
+        for (const [key, entry] of this.store.entries()) {
+          if (now > entry.resetTime) {
+            this.store.delete(key);
+          }
         }
-      }
-    }, 5 * 60 * 1000);
+      },
+      5 * 60 * 1000
+    );
 
     if (this.cleanupInterval.unref) {
       this.cleanupInterval.unref();

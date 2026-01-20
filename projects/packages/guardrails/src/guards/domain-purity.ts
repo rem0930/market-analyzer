@@ -70,13 +70,7 @@ export async function checkDomainPurity(rootDir: string): Promise<GuardResult> {
 
   const files = await glob('**/domain/**/*.ts', {
     cwd: rootDir,
-    ignore: [
-      '**/node_modules/**',
-      '**/dist/**',
-      '**/*.test.ts',
-      '**/*.spec.ts',
-      '**/generated/**',
-    ],
+    ignore: ['**/node_modules/**', '**/dist/**', '**/*.test.ts', '**/*.spec.ts', '**/generated/**'],
     absolute: true,
   });
 

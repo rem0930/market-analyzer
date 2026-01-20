@@ -33,12 +33,7 @@ export class DeepPingController {
     res.end(JSON.stringify(data));
   }
 
-  private sendError(
-    res: ServerResponse,
-    status: number,
-    code: string,
-    message: string
-  ): void {
+  private sendError(res: ServerResponse, status: number, code: string, message: string): void {
     res.writeHead(status, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ code, message }));
   }

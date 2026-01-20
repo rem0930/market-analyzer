@@ -26,10 +26,7 @@ export function FormField({
 
   return (
     <div className="space-y-1">
-      <label
-        htmlFor={inputId}
-        className="block text-sm font-medium text-gray-700"
-      >
+      <label htmlFor={inputId} className="block text-sm font-medium text-gray-700">
         {label}
       </label>
       {children ?? (
@@ -44,11 +41,7 @@ export function FormField({
         />
       )}
       {error && (
-        <p
-          id={`${inputId}-error`}
-          className="text-sm text-red-600"
-          role="alert"
-        >
+        <p id={`${inputId}-error`} className="text-sm text-red-600" role="alert">
           {error.message}
         </p>
       )}

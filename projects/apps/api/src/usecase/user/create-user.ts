@@ -44,7 +44,7 @@ export type CreateUserError =
  * ユーザー作成ユースケース
  */
 export class CreateUserUseCase {
-  constructor(private readonly userRepository: UserRepository) { }
+  constructor(private readonly userRepository: UserRepository) {}
 
   /**
    * ユーザーを作成

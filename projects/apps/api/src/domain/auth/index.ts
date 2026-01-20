@@ -33,9 +33,4 @@ export type { PasswordResetTokenRepository } from './password-reset-token-reposi
 // Service interfaces (implementations in infrastructure layer)
 export type { PasswordService, PasswordServiceError } from './password-service.js';
 export type { TokenHashService } from './token-hash-service.js';
-export type {
-  JwtService,
-  JwtPayload,
-  TokenPair,
-  JwtServiceError,
-} from './jwt-service.js';
+export type { JwtService, JwtPayload, TokenPair, JwtServiceError } from './jwt-service.js';

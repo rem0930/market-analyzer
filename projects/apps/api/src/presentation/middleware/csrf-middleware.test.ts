@@ -251,10 +251,7 @@ describe('CsrfMiddleware', () => {
         'x-my-csrf': token,
       };
 
-      const result = customMiddleware.verify(
-        mockReq as IncomingMessage,
-        mockRes as ServerResponse
-      );
+      const result = customMiddleware.verify(mockReq as IncomingMessage, mockRes as ServerResponse);
 
       expect(result).toBe(true);
     });
@@ -268,10 +265,7 @@ describe('CsrfMiddleware', () => {
       mockReq.url = '/custom-path';
       mockReq.headers = {};
 
-      const result = customMiddleware.verify(
-        mockReq as IncomingMessage,
-        mockRes as ServerResponse
-      );
+      const result = customMiddleware.verify(mockReq as IncomingMessage, mockRes as ServerResponse);
 
       expect(result).toBe(true);
     });

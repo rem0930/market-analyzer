@@ -13,11 +13,7 @@ export const metadata: Metadata = {
   description: 'Next.js + FSD Application',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ja">
       <body className="bg-gray-100">

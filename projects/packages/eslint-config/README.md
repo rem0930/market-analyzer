@@ -4,11 +4,11 @@
 
 ## 提供する設定
 
-| Export | 用途 |
-|--------|------|
-| `@monorepo/eslint-config` | ベース設定（TypeScript） |
-| `@monorepo/eslint-config/fsd` | Feature-Sliced Design 用 |
-| `@monorepo/eslint-config/clean-architecture` | Clean Architecture 用 |
+| Export                                       | 用途                     |
+| -------------------------------------------- | ------------------------ |
+| `@monorepo/eslint-config`                    | ベース設定（TypeScript） |
+| `@monorepo/eslint-config/fsd`                | Feature-Sliced Design 用 |
+| `@monorepo/eslint-config/clean-architecture` | Clean Architecture 用    |
 
 ## 使い方
 
@@ -22,11 +22,7 @@ const fsdConfig = require('@monorepo/eslint-config/fsd');
 module.exports = {
   root: true,
   ...baseConfig,
-  extends: [
-    ...baseConfig.extends,
-    ...fsdConfig.extends,
-    'next/core-web-vitals',
-  ],
+  extends: [...baseConfig.extends, ...fsdConfig.extends, 'next/core-web-vitals'],
   plugins: [...baseConfig.plugins, ...fsdConfig.plugins],
   settings: {
     ...fsdConfig.settings,
@@ -48,10 +44,7 @@ const caConfig = require('@monorepo/eslint-config/clean-architecture');
 module.exports = {
   root: true,
   ...baseConfig,
-  extends: [
-    ...baseConfig.extends,
-    ...caConfig.extends,
-  ],
+  extends: [...baseConfig.extends, ...caConfig.extends],
   plugins: [...baseConfig.plugins, ...caConfig.plugins],
   settings: {
     ...caConfig.settings,
@@ -65,13 +58,13 @@ module.exports = {
 
 ## FSD レイヤールール
 
-| レイヤー | 依存可能 |
-|---------|---------|
-| app | widgets, features, entities, shared |
-| widgets | features, entities, shared |
-| features | entities, shared |
-| entities | shared |
-| shared | (なし) |
+| レイヤー | 依存可能                            |
+| -------- | ----------------------------------- |
+| app      | widgets, features, entities, shared |
+| widgets  | features, entities, shared          |
+| features | entities, shared                    |
+| entities | shared                              |
+| shared   | (なし)                              |
 
 ## 検出する違反
 

@@ -10,19 +10,12 @@ import type { Result } from './result.js';
 /**
  * リポジトリ共通のエラー型
  */
-export type RepositoryError =
-  | 'not_found'
-  | 'conflict'
-  | 'db_error'
-  | 'validation_error';
+export type RepositoryError = 'not_found' | 'conflict' | 'db_error' | 'validation_error';
 
 /**
  * 読み取り専用リポジトリのインターフェース
  */
-export interface ReadRepository<
-  TAggregate extends AggregateRoot<TId>,
-  TId extends Identifier,
-> {
+export interface ReadRepository<TAggregate extends AggregateRoot<TId>, TId extends Identifier> {
   /**
    * IDで集約を取得
    * @returns Result<TAggregate, 'not_found' | 'db_error'>
@@ -38,10 +31,7 @@ export interface ReadRepository<
 /**
  * 書き込み可能リポジトリのインターフェース
  */
-export interface WriteRepository<
-  TAggregate extends AggregateRoot<TId>,
-  TId extends Identifier,
-> {
+export interface WriteRepository<TAggregate extends AggregateRoot<TId>, TId extends Identifier> {
   /**
    * 集約を保存（新規作成）
    * @returns Result<void, 'conflict' | 'db_error'>
@@ -64,11 +54,8 @@ export interface WriteRepository<
 /**
  * CRUD操作を持つ完全なリポジトリ
  */
-export interface Repository<
-  TAggregate extends AggregateRoot<TId>,
-  TId extends Identifier,
-> extends ReadRepository<TAggregate, TId>,
-  WriteRepository<TAggregate, TId> { }
+export interface Repository<TAggregate extends AggregateRoot<TId>, TId extends Identifier>
+  extends ReadRepository<TAggregate, TId>, WriteRepository<TAggregate, TId> {}
 
 /**
  * Unit of Work パターンのインターフェース

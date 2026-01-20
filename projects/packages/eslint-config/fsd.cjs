@@ -217,8 +217,14 @@ module.exports = {
           },
           // 相対パスでのスライス越境禁止
           {
-            group: ['../../features/**', '../../entities/**', '../../widgets/**', '../../shared/**'],
-            message: 'レイヤーをまたぐ相対パス import は禁止です。@/* エイリアスを使用してください。',
+            group: [
+              '../../features/**',
+              '../../entities/**',
+              '../../widgets/**',
+              '../../shared/**',
+            ],
+            message:
+              'レイヤーをまたぐ相対パス import は禁止です。@/* エイリアスを使用してください。',
           },
           {
             group: ['../../../**'],
@@ -227,7 +233,8 @@ module.exports = {
           // HTTP 直叩き禁止
           {
             group: ['axios', 'ky', 'got', 'node-fetch', 'undici'],
-            message: 'HTTP クライアントの直接使用は禁止です。@/shared/api 経由で API を呼び出してください。',
+            message:
+              'HTTP クライアントの直接使用は禁止です。@/shared/api 経由で API を呼び出してください。',
           },
           // Node.js 専用モジュールをクライアント領域で禁止
           {

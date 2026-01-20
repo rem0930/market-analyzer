@@ -4,12 +4,7 @@
  */
 
 // HTTP クライアント設定
-export {
-  configureApiClient,
-  customFetch,
-  NormalizedApiError,
-  type ApiError,
-} from './http-client';
+export { configureApiClient, customFetch, NormalizedApiError, type ApiError } from './http-client';
 
 // 生成物（orval 実行後に有効になる）
 // export * from './generated/api';

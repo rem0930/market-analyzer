@@ -26,7 +26,7 @@ export class Result<T, E = string> {
     private readonly _isSuccess: boolean,
     private readonly _value?: T,
     private readonly _error?: E
-  ) { }
+  ) {}
 
   /**
    * 成功結果を作成

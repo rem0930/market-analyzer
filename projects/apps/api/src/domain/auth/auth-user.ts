@@ -7,13 +7,7 @@
  * - 純粋なビジネスロジックのみ
  */
 
-import {
-  AggregateRoot,
-  UUIDIdentifier,
-  Email,
-  Result,
-  DomainEvent,
-} from '@monorepo/shared';
+import { AggregateRoot, UUIDIdentifier, Email, Result, DomainEvent } from '@monorepo/shared';
 
 /**
  * 認証ユーザーID
@@ -60,12 +54,7 @@ export class AuthUserRegisteredEvent extends DomainEvent<'AuthUserRegistered'> {
  * パスワード変更イベント
  */
 export class PasswordChangedEvent extends DomainEvent<'PasswordChanged'> {
-  constructor(
-    userId: string,
-    version: number,
-    causationId: string,
-    correlationId: string
-  ) {
+  constructor(userId: string, version: number, causationId: string, correlationId: string) {
     super('PasswordChanged', userId, version, causationId, correlationId);
   }
 
@@ -113,13 +102,7 @@ export class AuthUser extends AggregateRoot<AuthUserId> {
    */
   static create(params: CreateAuthUserParams): Result<AuthUser, never> {
     const now = new Date();
-    const user = new AuthUser(
-      params.id,
-      params.email,
-      params.passwordHash,
-      now,
-      now
-    );
+    const user = new AuthUser(params.id, params.email, params.passwordHash, now, now);
 
     user.addDomainEvent(
       new AuthUserRegisteredEvent(
@@ -178,12 +161,7 @@ export class AuthUser extends AggregateRoot<AuthUserId> {
     this.incrementVersion();
 
     this.addDomainEvent(
-      new PasswordChangedEvent(
-        this.id.value,
-        this.version,
-        causationId,
-        correlationId
-      )
+      new PasswordChangedEvent(this.id.value, this.version, causationId, correlationId)
     );
 
     return Result.ok(undefined);

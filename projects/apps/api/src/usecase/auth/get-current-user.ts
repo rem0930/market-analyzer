@@ -22,7 +22,9 @@ export type GetCurrentUserError = 'user_not_found' | 'internal_error';
 export class GetCurrentUserUseCase {
   constructor(private readonly authUserRepository: AuthUserRepository) {}
 
-  async execute(input: GetCurrentUserInput): Promise<Result<GetCurrentUserOutput, GetCurrentUserError>> {
+  async execute(
+    input: GetCurrentUserInput
+  ): Promise<Result<GetCurrentUserOutput, GetCurrentUserError>> {
     const userId = new AuthUserId(input.userId);
 
     const userResult = await this.authUserRepository.findById(userId);

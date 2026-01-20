@@ -35,7 +35,7 @@ export type GetUserError = 'invalid_id' | 'user_not_found' | 'repository_error';
  * ユーザー取得ユースケース
  */
 export class GetUserUseCase {
-  constructor(private readonly userRepository: UserRepository) { }
+  constructor(private readonly userRepository: UserRepository) {}
 
   /**
    * ユーザーを取得

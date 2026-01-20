@@ -61,7 +61,12 @@ export class AuthController {
           this.sendError(res, 400, 'INVALID_EMAIL', 'Invalid email format');
           return;
         case 'weak_password':
-          this.sendError(res, 400, 'WEAK_PASSWORD', 'Password must be at least 8 characters with letters and numbers');
+          this.sendError(
+            res,
+            400,
+            'WEAK_PASSWORD',
+            'Password must be at least 8 characters with letters and numbers'
+          );
           return;
         case 'email_already_exists':
           this.sendError(res, 409, 'EMAIL_EXISTS', 'Email already registered');
@@ -112,11 +117,7 @@ export class AuthController {
   /**
    * POST /auth/logout
    */
-  async logout(
-    _req: IncomingMessage,
-    res: ServerResponse,
-    userId: string
-  ): Promise<void> {
+  async logout(_req: IncomingMessage, res: ServerResponse, userId: string): Promise<void> {
     const result = await this.logoutUseCase.execute({ userId });
 
     if (result.isFailure()) {
@@ -203,7 +204,12 @@ export class AuthController {
           this.sendError(res, 400, 'INVALID_TOKEN', 'Invalid or expired reset token');
           return;
         case 'weak_password':
-          this.sendError(res, 400, 'WEAK_PASSWORD', 'Password must be at least 8 characters with letters and numbers');
+          this.sendError(
+            res,
+            400,
+            'WEAK_PASSWORD',
+            'Password must be at least 8 characters with letters and numbers'
+          );
           return;
         default:
           this.sendError(res, 500, 'INTERNAL_ERROR', 'Internal server error');
@@ -217,11 +223,7 @@ export class AuthController {
   /**
    * GET /auth/me
    */
-  async getCurrentUser(
-    _req: IncomingMessage,
-    res: ServerResponse,
-    userId: string
-  ): Promise<void> {
+  async getCurrentUser(_req: IncomingMessage, res: ServerResponse, userId: string): Promise<void> {
     const result = await this.getCurrentUserUseCase.execute({ userId });
 
     if (result.isFailure()) {
@@ -248,12 +250,7 @@ export class AuthController {
     res.end(JSON.stringify(data));
   }
 
-  private sendError(
-    res: ServerResponse,
-    status: number,
-    code: string,
-    message: string
-  ): void {
+  private sendError(res: ServerResponse, status: number, code: string, message: string): void {
     res.writeHead(status, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ code, message }));
   }

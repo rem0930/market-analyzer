@@ -18,23 +18,25 @@ export const loginSchema = z.object({
     .min(1, 'パスワードを入力してください'),
 });
 
-export const registerSchema = z.object({
-  email: z
-    .string({ required_error: 'メールアドレスを入力してください' })
-    .min(1, 'メールアドレスを入力してください')
-    .email('有効なメールアドレスを入力してください'),
-  password: z
-    .string({ required_error: 'パスワードを入力してください' })
-    .min(8, 'パスワードは8文字以上で入力してください')
-    .regex(/[A-Za-z]/, 'パスワードには英字を含めてください')
-    .regex(/[0-9]/, 'パスワードには数字を含めてください'),
-  confirmPassword: z
-    .string({ required_error: 'パスワード確認を入力してください' })
-    .min(1, 'パスワード確認を入力してください'),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'パスワードが一致しません',
-  path: ['confirmPassword'],
-});
+export const registerSchema = z
+  .object({
+    email: z
+      .string({ required_error: 'メールアドレスを入力してください' })
+      .min(1, 'メールアドレスを入力してください')
+      .email('有効なメールアドレスを入力してください'),
+    password: z
+      .string({ required_error: 'パスワードを入力してください' })
+      .min(8, 'パスワードは8文字以上で入力してください')
+      .regex(/[A-Za-z]/, 'パスワードには英字を含めてください')
+      .regex(/[0-9]/, 'パスワードには数字を含めてください'),
+    confirmPassword: z
+      .string({ required_error: 'パスワード確認を入力してください' })
+      .min(1, 'パスワード確認を入力してください'),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'パスワードが一致しません',
+    path: ['confirmPassword'],
+  });
 
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;

@@ -6,9 +6,7 @@
 import { z } from 'zod';
 
 export const registerSchema = z.object({
-  email: z
-    .string({ error: 'Email is required' })
-    .email('Invalid email format'),
+  email: z.string({ error: 'Email is required' }).email('Invalid email format'),
   password: z
     .string({ error: 'Password is required' })
     .min(8, 'Password must be at least 8 characters')
@@ -17,12 +15,8 @@ export const registerSchema = z.object({
 });
 
 export const loginSchema = z.object({
-  email: z
-    .string({ error: 'Email is required' })
-    .email('Invalid email format'),
-  password: z
-    .string({ error: 'Password is required' })
-    .min(1, 'Password is required'),
+  email: z.string({ error: 'Email is required' }).email('Invalid email format'),
+  password: z.string({ error: 'Password is required' }).min(1, 'Password is required'),
 });
 
 export const refreshSchema = z.object({
@@ -32,15 +26,11 @@ export const refreshSchema = z.object({
 });
 
 export const forgotPasswordSchema = z.object({
-  email: z
-    .string({ error: 'Email is required' })
-    .email('Invalid email format'),
+  email: z.string({ error: 'Email is required' }).email('Invalid email format'),
 });
 
 export const resetPasswordSchema = z.object({
-  token: z
-    .string({ error: 'Token is required' })
-    .min(1, 'Token is required'),
+  token: z.string({ error: 'Token is required' }).min(1, 'Token is required'),
   newPassword: z
     .string({ error: 'New password is required' })
     .min(8, 'Password must be at least 8 characters')

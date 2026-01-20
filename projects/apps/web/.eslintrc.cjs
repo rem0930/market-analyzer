@@ -8,11 +8,7 @@ const fsdConfig = require('@monorepo/eslint-config/fsd');
 module.exports = {
   root: true,
   ...baseConfig,
-  extends: [
-    ...baseConfig.extends,
-    ...fsdConfig.extends,
-    'next/core-web-vitals',
-  ],
+  extends: [...baseConfig.extends, ...fsdConfig.extends, 'next/core-web-vitals'],
   plugins: [...baseConfig.plugins, ...fsdConfig.plugins],
   settings: {
     ...fsdConfig.settings,

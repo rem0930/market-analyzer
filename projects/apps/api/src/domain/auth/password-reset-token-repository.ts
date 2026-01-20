@@ -29,7 +29,9 @@ export interface PasswordResetTokenRepository {
   /**
    * トークンハッシュでトークンを取得
    */
-  findByTokenHash(tokenHash: TokenHash): Promise<Result<PasswordResetToken | null, RepositoryError>>;
+  findByTokenHash(
+    tokenHash: TokenHash
+  ): Promise<Result<PasswordResetToken | null, RepositoryError>>;
 
   /**
    * ユーザーのすべての未使用トークンを無効化
