@@ -14,6 +14,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 STATE_DIR="${REPO_ROOT}/.worktree-state"
 
+# Source container health check library
+source "${SCRIPT_DIR}/lib/container-health.sh"
+
 # Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -56,14 +59,42 @@ stop_devcontainer() {
         return 0
     fi
 
-    # Find container by label
-    local container_id
-    container_id=$(docker ps -q --filter "label=devcontainer.local_folder=${worktree_path}" 2>/dev/null | head -1)
+    # Get worktree_id from state file
+    local state_file="${STATE_DIR}/$(basename "${worktree_path}").yaml"
+    local worktree_id=""
+    if [[ -f "$state_file" ]]; then
+        worktree_id=$(grep "^worktree_id:" "$state_file" 2>/dev/null | awk '{print $2}' | tr -d '"' || echo "")
+    fi
 
-    if [[ -n "$container_id" ]]; then
-        log_info "Stopping DevContainer: $container_id"
-        docker stop "$container_id" >/dev/null 2>&1 || true
-        docker rm "$container_id" >/dev/null 2>&1 || true
+    # Multi-strategy container detection
+    local container_id=""
+    if [[ -n "$worktree_id" ]]; then
+        container_id=$(get_container_id_by_worktree "$worktree_id" "$worktree_path" 2>/dev/null || echo "")
+    fi
+
+    # Fallback: Try state file container_id field
+    if [[ -z "$container_id" && -f "$state_file" ]]; then
+        container_id=$(grep "^container_id:" "$state_file" 2>/dev/null | awk '{print $2}' | tr -d '"' || echo "")
+        # Verify container still exists
+        if [[ -n "$container_id" ]]; then
+            if ! docker ps -a --filter "id=${container_id}" --format "{{.ID}}" 2>/dev/null | grep -q .; then
+                container_id=""
+            fi
+        fi
+    fi
+
+    if [[ -z "$container_id" ]]; then
+        log_info "No container found for ${worktree_path}"
+        return 0
+    fi
+
+    log_info "Stopping container: $container_id"
+
+    # Graceful stop with timeout
+    if stop_container_gracefully "$container_id" 30; then
+        log_success "Container stopped gracefully"
+    else
+        log_warn "Container stop required force kill"
     fi
 }
 
@@ -222,7 +253,8 @@ prune_orphaned() {
 
     # Prune state files
     if [[ -d "${STATE_DIR}" ]]; then
-        for state_file in "${STATE_DIR}"/*.yaml 2>/dev/null; do
+        shopt -s nullglob
+        for state_file in "${STATE_DIR}"/*.yaml; do
             if [[ -f "$state_file" ]]; then
                 local wt_path
                 wt_path=$(grep -E "^worktree_path:" "$state_file" 2>/dev/null | sed 's/^[^:]*:[[:space:]]*//' | sed 's/^"//' | sed 's/"$//')
@@ -238,6 +270,7 @@ prune_orphaned() {
                 fi
             fi
         done
+        shopt -u nullglob
     fi
 
     if [[ $pruned -eq 0 ]]; then

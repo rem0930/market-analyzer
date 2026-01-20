@@ -15,6 +15,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 STATE_DIR="${REPO_ROOT}/.worktree-state"
 
+# Source container health check library
+source "${SCRIPT_DIR}/lib/container-health.sh"
+
 # Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -77,9 +80,18 @@ allocate_ports() {
     echo "$base_port"
 }
 
-# Get next available worktree ID
+# Get next available worktree ID with atomic allocation
 get_next_worktree_id() {
+    local lock_file="${STATE_DIR}/.id-lock"
     mkdir -p "${STATE_DIR}"
+
+    # Acquire exclusive lock with timeout
+    exec 200>"$lock_file"
+    if ! flock -x -w 10 200; then
+        log_error "Failed to acquire lock for ID allocation"
+        exit 1
+    fi
+
     local max_id=0
     if [[ -d "${STATE_DIR}" ]]; then
         for f in "${STATE_DIR}"/*.yaml; do
@@ -92,7 +104,14 @@ get_next_worktree_id() {
             fi
         done
     fi
-    echo $((max_id + 1))
+
+    local new_id=$((max_id + 1))
+
+    # Release lock
+    flock -u 200
+    exec 200>&-
+
+    echo "$new_id"
 }
 
 # Create state file for worktree
@@ -306,6 +325,17 @@ main() {
     state_file=$(create_state_file "$worktree_path" "$branch_name" "$agent_type" "$worktree_id" "$context_file" "$port_base")
     log_success "State file: $state_file"
 
+    # Trap cleanup on error
+    cleanup_on_error() {
+        log_error "Startup failed, cleaning up..."
+        if [[ -n "${container_id:-}" ]]; then
+            docker stop "$container_id" 2>/dev/null || true
+        fi
+        git -C "${REPO_ROOT}" worktree remove --force "$worktree_path" 2>/dev/null || true
+        rm -f "$state_file"
+    }
+    trap cleanup_on_error ERR
+
     # Start DevContainer if requested
     if [[ "$no_devcontainer" == false ]]; then
         log_info "Starting DevContainer..."
@@ -318,22 +348,77 @@ main() {
             # Generate unique container name
             local container_name="worktree-${worktree_id}-${agent_type}"
 
-            # Start devcontainer
-            if devcontainer up \
-                --workspace-folder "$worktree_path" \
-                --config "${worktree_path}/.devcontainer/devcontainer.json" \
-                --id-label "worktree.id=${worktree_id}" \
-                --id-label "worktree.agent=${agent_type}" 2>&1; then
-                log_success "DevContainer started"
+            # Start devcontainer in background
+            log_info "Launching DevContainer..."
+            (
+                cd "$worktree_path"
+                echo "STARTING" > .setup-status
+                if devcontainer up \
+                    --workspace-folder . \
+                    --config .devcontainer/devcontainer.json \
+                    --id-label "worktree.id=${worktree_id}" \
+                    --id-label "worktree.agent=${agent_type}" 2>&1 | tee .devcontainer-startup.log; then
+                    echo "READY" > .setup-status
+                else
+                    echo "FAILED" > .setup-status
+                    exit 1
+                fi
+            ) &
+            local bg_pid=$!
 
-                # Update state file with container info
-                # Note: Getting actual container ID would require parsing devcontainer output
-            else
-                log_error "Failed to start DevContainer"
-                log_warn "You can start it manually: devcontainer up --workspace-folder $worktree_path"
+            # Wait for container to appear (up to 60s)
+            log_info "Waiting for container to start..."
+            local container_id=""
+            container_id=$(wait_for_container "$worktree_id" "$worktree_path" 60) || {
+                log_error "Container failed to start within 60 seconds"
+                log_error "Check logs at: ${worktree_path}/.devcontainer-startup.log"
+                wait $bg_pid || true
+                exit 1
+            }
+
+            log_success "Container started: $container_id"
+
+            # Update state file with container ID
+            local container_name_actual
+            container_name_actual=$(docker inspect --format '{{.Name}}' "$container_id" 2>/dev/null | sed 's/^\///' || echo "")
+
+            # Use portable sed syntax for macOS and Linux
+            if [[ -n "$container_id" ]]; then
+                sed -i.bak "s|^container_id: \".*\"|container_id: \"${container_id}\"|" "$state_file"
             fi
+            if [[ -n "$container_name_actual" ]]; then
+                sed -i.bak "s|^container_name: \".*\"|container_name: \"${container_name_actual}\"|" "$state_file"
+            fi
+            rm -f "${state_file}.bak"
+
+            # Wait for container to be healthy
+            log_info "Waiting for container to be ready (up to 5 minutes)..."
+            if check_container_health "$container_id" 300; then
+                log_success "Container is healthy!"
+            else
+                local exit_code=$?
+                if [[ $exit_code -eq 2 ]]; then
+                    log_error "Container health check timed out after 5 minutes"
+                    log_error "Check logs with: docker logs ${container_id}"
+                else
+                    log_error "Container is not healthy"
+                    log_error "Check logs with: docker logs ${container_id}"
+                fi
+                exit 1
+            fi
+
+            # Wait for background process to complete
+            wait $bg_pid || {
+                log_error "DevContainer startup process failed"
+                exit 1
+            }
+
+            log_success "DevContainer fully initialized"
         fi
     fi
+
+    # Clear error trap on success
+    trap - ERR
 
     # Summary
     echo ""
