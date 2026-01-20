@@ -152,25 +152,25 @@ devcontainer\:allowlist\:check: ## Validate allowlist.domains file
 .PHONY: format lint typecheck test build e2e migrate deploy-dryrun
 
 format: ## Run formatter via contract
-	./tools/contract/contract format
+	./tools/contract format
 
 lint: ## Run linter via contract
-	./tools/contract/contract lint
+	./tools/contract lint
 
 typecheck: ## Run type checker via contract
-	./tools/contract/contract typecheck
+	./tools/contract typecheck
 
 test: ## Run tests via contract
-	./tools/contract/contract test
+	./tools/contract test
 
 build: ## Build project via contract
-	./tools/contract/contract build
+	./tools/contract build
 
 e2e: ## Run E2E tests via contract
-	./tools/contract/contract e2e
+	./tools/contract e2e
 
 migrate: ## Run database migrations via contract
-	./tools/contract/contract migrate
+	./tools/contract migrate
 
 deploy-dryrun: ## Run deployment dry-run via contract
-	./tools/contract/contract deploy-dryrun
+	./tools/contract deploy-dryrun

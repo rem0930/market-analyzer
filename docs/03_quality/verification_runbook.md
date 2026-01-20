@@ -116,11 +116,11 @@ docker system prune -a
 
 ```bash
 # 実行権限を確認
-ls -la tools/contract/contract
+ls -la tools/contract
 
 # 権限を付与
-chmod +x tools/contract/contract
-chmod +x tools/contract/stack/*
+chmod +x tools/contract
+chmod +x tools/_contract/stack/*
 ```
 
 ### 依存関係エラー

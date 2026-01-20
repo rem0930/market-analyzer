@@ -39,7 +39,7 @@ Explore and understand the codebase without making changes. Provide context for 
 - `AGENTS.md` - Repository contract
 - `projects/` - Application code
 - `docs/02_architecture/` - Architecture decisions
-- `tools/contract/` - Build/test commands
+- `tools/_contract/` - Build/test commands (実装)
 
 ## Output Format
 

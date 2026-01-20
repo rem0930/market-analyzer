@@ -174,7 +174,7 @@ docker system prune -a
 
 ```bash
 # スクリプトの実行権限を確認
-ls -la tools/contract/contract
+ls -la tools/contract
 
 # 依存のインストールを確認
 cd projects && pnpm install

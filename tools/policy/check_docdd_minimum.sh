@@ -115,16 +115,16 @@ fi
 
 echo ""
 echo "Checking tools/contract..."
-CONTRACT_SCRIPT="${REPO_ROOT}/tools/contract/contract"
+CONTRACT_SCRIPT="${REPO_ROOT}/tools/contract"
 if [ -f "${CONTRACT_SCRIPT}" ]; then
     if [ -x "${CONTRACT_SCRIPT}" ]; then
-        echo -e "${GREEN}✓${NC} tools/contract/contract is executable"
+        echo -e "${GREEN}✓${NC} tools/contract is executable"
     else
-        echo -e "${YELLOW}⚠${NC} tools/contract/contract exists but is not executable"
+        echo -e "${YELLOW}⚠${NC} tools/contract exists but is not executable"
         warnings=$((warnings + 1))
     fi
 else
-    echo -e "${RED}✗${NC} tools/contract/contract not found"
+    echo -e "${RED}✗${NC} tools/contract not found"
     errors=$((errors + 1))
 fi
 
