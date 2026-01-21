@@ -5,7 +5,6 @@
 
 import { describe, it, expect } from 'vitest';
 import { AppError, type ErrorItem } from './app-error.js';
-import { ERROR_CODES, ERROR_REASONS } from './error-codes.js';
 
 describe('AppError', () => {
   describe('constructor', () => {
