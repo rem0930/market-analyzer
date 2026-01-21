@@ -1,0 +1,26 @@
+# Gitleaks configuration
+# https://github.com/gitleaks/gitleaks
+
+title = "Gitleaks Config"
+
+# Allow list for false positives
+[allowlist]
+  description = "Allow sample tokens in documentation"
+  
+  # Allow sample JWT tokens in documentation comments
+  regexTarget = "match"
+  regexes = [
+    # Sample JWT in sanitizer.ts documentation
+    '''eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.\.\.''',
+  ]
+  
+  # Allow specific commits that contain documentation samples
+  commits = [
+    "f59910c50a0a51081e30922e1a5ff0c9776e1f0e",
+  ]
+  
+  # Allow paths that contain sample/test data
+  paths = [
+    '''.*\.test\.ts$''',
+    '''.*\.spec\.ts$''',
+  ]
