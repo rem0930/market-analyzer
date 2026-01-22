@@ -63,6 +63,11 @@ validate_agent() {
     return 1
 }
 
+# Get repository name from folder
+get_repo_name() {
+    basename "$(pwd)" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g'
+}
+
 # Generate worktree path
 get_worktree_path() {
     local branch="$1"
@@ -376,8 +381,14 @@ main() {
 
             # Prepare environment variables
             log_info "Preparing environment for docker compose..."
+            local repo_name
+            repo_name=$(get_repo_name)
+            log_info "Repository: $repo_name"
+            log_info "Unified domain: ${worktree_name}.${repo_name}.localhost"
+
             cat > "${worktree_path}/.env" << EOF
 WORKTREE=${worktree_name}
+REPO_NAME=${repo_name}
 COMPOSE_PROJECT_NAME=${worktree_name}
 HOST_WORKSPACE_PATH=${worktree_path}
 EOF
@@ -456,8 +467,9 @@ EOF
             }
 
             log_success "DevContainer (docker compose fallback) fully initialized"
-            log_info "Frontend: http://fe.${worktree_name}.localhost"
-            log_info "Backend: http://be.${worktree_name}.localhost"
+            log_success "=== Access your application ==="
+            log_info "URL: http://${worktree_name}.${repo_name}.localhost"
+            log_info "API: http://${worktree_name}.${repo_name}.localhost/api/health"
         else
             # Generate unique container name
             local container_name="worktree-${worktree_id}-${agent_type}"

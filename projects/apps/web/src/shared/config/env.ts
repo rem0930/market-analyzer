@@ -37,16 +37,13 @@ export function getOptionalEnvVar(key: string, fallback = ''): string {
 /**
  * アプリケーション設定を取得
  *
- * Note: Next.js replaces process.env.NEXT_PUBLIC_* at build time,
- * so we must reference them directly (not via dynamic key access).
+ * Note: Same-origin architecture - API is always at /api relative path.
+ * No environment variable needed (frontend and backend share same domain).
  */
 export function getConfig(): AppConfig {
-  // NEXT_PUBLIC_API_URL is set by docker-compose.worktree.yml (Traefik endpoint)
-  // Fall back to NEXT_PUBLIC_API_BASE_URL or localhost for local development
-  const apiUrl =
-    process.env.NEXT_PUBLIC_API_URL ||
-    process.env.NEXT_PUBLIC_API_BASE_URL ||
-    'http://localhost:3001';
+  // Same-origin API calls (always /api)
+  // No environment variable needed
+  const apiUrl = '/api';
 
   return {
     apiBaseUrl: apiUrl,
