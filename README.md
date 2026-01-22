@@ -87,6 +87,26 @@ pnpm install
 
 ---
 
+## 🌐 Same-Origin Architecture
+
+このプロジェクトはフロントエンドとバックエンドで統一ドメインを使用します：
+
+- **Application**: `http://${branch}.vibecoding-template-node-next.localhost`
+- **API**: `http://${branch}.vibecoding-template-node-next.localhost/api/*`
+
+フロントエンドとバックエンドが同じオリジンを共有することで、CORS の複雑さを排除します。
+
+### Why Same-Origin?
+
+- ✅ CORS 設定不要
+- ✅ シンプルなセキュリティ（SameSite=Strict cookies）
+- ✅ 開発・テスト用の単一 URL
+- ✅ マルチリポジトリ対応（フロントエンド/バックエンド分離可能）
+
+詳細は [ADR-0006](docs/02_architecture/adr/0006_same_origin_api_routing.md) を参照してください。
+
+---
+
 ## 📁 Project Structure
 
 ```

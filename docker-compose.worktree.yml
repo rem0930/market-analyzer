@@ -54,15 +54,15 @@ services:
     command: sh -c "pnpm next dev --hostname 0.0.0.0 --port 3000"
     environment:
       - NODE_ENV=development
-      - NEXT_PUBLIC_API_URL=http://be.${WORKTREE}.localhost
     networks:
       - internal
       - traefik-public
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.${WORKTREE}-fe.rule=Host(`fe.${WORKTREE}.localhost`)"
-      - "traefik.http.routers.${WORKTREE}-fe.entrypoints=web"
-      - "traefik.http.services.${WORKTREE}-fe.loadbalancer.server.port=3000"
+      - "traefik.http.routers.${WORKTREE}-web.rule=Host(`${WORKTREE}.${REPO_NAME}.localhost`)"
+      - "traefik.http.routers.${WORKTREE}-web.entrypoints=web"
+      - "traefik.http.routers.${WORKTREE}-web.priority=1"
+      - "traefik.http.services.${WORKTREE}-web.loadbalancer.server.port=3000"
     depends_on:
       dev:
         condition: service_healthy
@@ -80,7 +80,7 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=8080
-      - CORS_ALLOWED_ORIGINS=http://fe.${WORKTREE}.localhost,http://localhost:3000
+      - CORS_ALLOWED_ORIGINS=http://${WORKTREE}.${REPO_NAME}.localhost,http://localhost:3000
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/app
       - LOG_FILE_ENABLED=true
       - LOG_DIR=/workspace/logs/api
@@ -90,9 +90,12 @@ services:
       - traefik-public
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.${WORKTREE}-be.rule=Host(`be.${WORKTREE}.localhost`)"
-      - "traefik.http.routers.${WORKTREE}-be.entrypoints=web"
-      - "traefik.http.services.${WORKTREE}-be.loadbalancer.server.port=8080"
+      - "traefik.http.routers.${WORKTREE}-api.rule=Host(`${WORKTREE}.${REPO_NAME}.localhost`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.${WORKTREE}-api.entrypoints=web"
+      - "traefik.http.routers.${WORKTREE}-api.priority=100"
+      - "traefik.http.routers.${WORKTREE}-api.middlewares=${WORKTREE}-strip-api"
+      - "traefik.http.middlewares.${WORKTREE}-strip-api.stripprefix.prefixes=/api"
+      - "traefik.http.services.${WORKTREE}-api.loadbalancer.server.port=8080"
     depends_on:
       dev:
         condition: service_healthy
