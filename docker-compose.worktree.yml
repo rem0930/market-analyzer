@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: ${WORKTREE}-db
+    container_name: ${WORKTREE}-${REPO_NAME}-db
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -20,7 +20,7 @@ services:
     build:
       context: .
       dockerfile: .devcontainer/Dockerfile.dev
-    container_name: ${WORKTREE}-dev
+    container_name: ${WORKTREE}-${REPO_NAME}-dev
     volumes:
       - .:/workspace:cached
       - pnpm-store:/home/node/.local/share/pnpm
@@ -46,7 +46,7 @@ services:
     build:
       context: .
       dockerfile: .devcontainer/Dockerfile.dev
-    container_name: ${WORKTREE}-web
+    container_name: ${WORKTREE}-${REPO_NAME}-web
     volumes:
       - .:/workspace:cached
       - pnpm-store:/home/node/.local/share/pnpm
@@ -71,7 +71,7 @@ services:
     build:
       context: .
       dockerfile: .devcontainer/Dockerfile.dev
-    container_name: ${WORKTREE}-api
+    container_name: ${WORKTREE}-${REPO_NAME}-api
     volumes:
       - .:/workspace:cached
       - pnpm-store:/home/node/.local/share/pnpm

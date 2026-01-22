@@ -389,7 +389,7 @@ main() {
             cat > "${worktree_path}/.env" << EOF
 WORKTREE=${worktree_name}
 REPO_NAME=${repo_name}
-COMPOSE_PROJECT_NAME=${worktree_name}
+COMPOSE_PROJECT_NAME=${worktree_name}-${repo_name}
 HOST_WORKSPACE_PATH=${worktree_path}
 EOF
 
@@ -398,7 +398,7 @@ EOF
             (
                 cd "$worktree_path"
                 echo "STARTING" > .setup-status
-                if docker compose -p "${worktree_name}" -f docker-compose.worktree.yml up -d --build 2>&1 | tee .devcontainer-startup.log; then
+                if docker compose -p "${worktree_name}-${repo_name}" -f docker-compose.worktree.yml up -d --build 2>&1 | tee .devcontainer-startup.log; then
                     echo "READY" > .setup-status
                 else
                     echo "FAILED" > .setup-status
@@ -414,7 +414,7 @@ EOF
             local max_wait=60
             local start_time=$(date +%s)
             while true; do
-                container_id=$(docker ps -q --filter "label=com.docker.compose.project=${worktree_name}" --filter "label=com.docker.compose.service=dev" 2>/dev/null | head -1)
+                container_id=$(docker ps -q --filter "label=com.docker.compose.project=${worktree_name}-${repo_name}" --filter "label=com.docker.compose.service=dev" 2>/dev/null | head -1)
                 if [[ -n "$container_id" ]]; then
                     break
                 fi

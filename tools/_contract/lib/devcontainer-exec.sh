@@ -27,10 +27,18 @@ get_worktree_name() {
   fi
 }
 
+# リポジトリ名を取得
+get_repo_name() {
+  local repo_root="${1:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
+  basename "$(dirname "${repo_root}")/$(basename "${repo_root}")" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g'
+}
+
 # DevContainer が起動中か確認
 is_devcontainer_running() {
   local worktree_name="${1:-$(get_worktree_name)}"
-  local container_name="${worktree_name}-dev"
+  local repo_name
+  repo_name="$(get_repo_name)"
+  local container_name="${worktree_name}-${repo_name}-dev"
 
   docker ps --format '{{.Names}}' 2>/dev/null | grep -q "^${container_name}$"
 }
@@ -96,7 +104,9 @@ devcontainer_exec() {
 
   local worktree_name
   worktree_name="$(get_worktree_name "${repo_root}")"
-  local container_name="${worktree_name}-dev"
+  local repo_name
+  repo_name="$(get_repo_name "${repo_root}")"
+  local container_name="${worktree_name}-${repo_name}-dev"
 
   # DevContainer が起動していなければ起動
   if ! is_devcontainer_running "${worktree_name}"; then
