@@ -131,7 +131,7 @@ function sanitizeObject(obj: Record<string, unknown>): Record<string, unknown> {
  *   userId: '123',
  *   email: 'user@example.com',
  *   password: 'secret123',
- *   token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+ *   token: 'eyJ<jwt-token-here>...',
  * });
  * // => {
  * //   userId: '123',

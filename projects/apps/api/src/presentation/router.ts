@@ -19,7 +19,7 @@ import type { RateLimitMiddleware } from './middleware/rate-limit-middleware.js'
 import type { CsrfMiddleware } from './middleware/csrf-middleware.js';
 import { AppError } from '@monorepo/shared';
 import { getRequestId, setRequestIdHeader } from './middleware/request-id-middleware.js';
-import { sendErrorResponse, sendJson } from './middleware/error-handler.js';
+import { sendErrorResponse } from './middleware/error-handler.js';
 import {
   compileRoutes,
   matchRoute,
