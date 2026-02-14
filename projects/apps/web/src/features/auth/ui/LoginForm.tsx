@@ -22,7 +22,9 @@ export function LoginForm() {
   useEffect(() => {
     if (isAuthenticated) {
       const from = searchParams.get('from') || '/dashboard';
-      router.replace(from);
+      // Open redirect 防止: 相対パスのみ許可、プロトコル相対URL (//) を拒否
+      const safePath = from.startsWith('/') && !from.startsWith('//') ? from : '/dashboard';
+      router.replace(safePath);
     }
   }, [isAuthenticated, router, searchParams]);
 

@@ -30,7 +30,8 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     if (typeof window !== 'undefined') {
       localStorage.setItem('refreshToken', refreshToken);
       // middleware (server-side) が認証判定に cookie を使うため cookie にも保存
-      document.cookie = `refreshToken=${refreshToken}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict`;
+      const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+      document.cookie = `refreshToken=${encodeURIComponent(refreshToken)}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict${secure}`;
     }
     set({
       accessToken,

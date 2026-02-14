@@ -7,7 +7,7 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { getConfig } from '@/shared/config';
+import { apiClient } from '@/shared/api';
 import { useAuthStore } from '@/features/auth/model/store';
 import type {
   TradeArea,
@@ -16,63 +16,40 @@ import type {
 } from '@/entities/trade-area';
 import { tradeAreaKeys } from './queries';
 
-function getAuthHeaders(): HeadersInit {
+function getAuthHeaders(): Record<string, string> {
   const accessToken = useAuthStore.getState().accessToken;
   if (!accessToken) {
     throw new Error('Not authenticated');
   }
   return {
-    'Content-Type': 'application/json',
     Authorization: `Bearer ${accessToken}`,
   };
 }
 
 async function createTradeAreaApi(data: CreateTradeAreaRequest): Promise<TradeArea> {
-  const config = getConfig();
-  const response = await fetch(`${config.apiBaseUrl}/trade-areas`, {
+  return apiClient<TradeArea>('/trade-areas', {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify(data),
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to create trade area');
-  }
-
-  return response.json();
 }
 
 async function updateTradeAreaApi(params: {
   id: string;
   data: UpdateTradeAreaRequest;
 }): Promise<TradeArea> {
-  const config = getConfig();
-  const response = await fetch(`${config.apiBaseUrl}/trade-areas/${params.id}`, {
+  return apiClient<TradeArea>(`/trade-areas/${params.id}`, {
     method: 'PATCH',
     headers: getAuthHeaders(),
     body: JSON.stringify(params.data),
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to update trade area');
-  }
-
-  return response.json();
 }
 
 async function deleteTradeAreaApi(id: string): Promise<void> {
-  const config = getConfig();
-  const response = await fetch(`${config.apiBaseUrl}/trade-areas/${id}`, {
+  return apiClient<void>(`/trade-areas/${id}`, {
     method: 'DELETE',
     headers: getAuthHeaders(),
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to delete trade area');
-  }
 }
 
 export function useCreateTradeArea() {
