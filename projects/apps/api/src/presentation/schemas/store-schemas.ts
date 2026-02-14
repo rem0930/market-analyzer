@@ -50,6 +50,10 @@ export const updateStoreSchema = z
   .refine(
     (data) => Object.values(data).some((v) => v !== undefined),
     'At least one field must be provided'
+  )
+  .refine(
+    (data) => (data.longitude !== undefined) === (data.latitude !== undefined),
+    'Both longitude and latitude must be provided together'
   );
 
 export type CreateStoreInput = z.infer<typeof createStoreSchema>;
