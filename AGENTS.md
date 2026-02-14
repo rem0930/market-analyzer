@@ -57,6 +57,8 @@
 | `./tools/contract up:stop` | フルスタック環境停止 |
 | `./tools/contract up:logs` | フルスタック環境ログ表示 |
 | `./tools/contract up:status` | コンテナステータス表示 |
+| `./tools/contract openapi-generate` | OpenAPI → TypeScript 型生成（Orval） |
+| `./tools/contract openapi-check` | OpenAPI 仕様の整合性チェック |
 
 ---
 
@@ -72,6 +74,7 @@
 | `docs/02_architecture/adr/*` | Architecture Decision Records |
 | `docs/03_quality/*` | 品質基準・テスト計画 |
 | `docs/04_delivery/*` | リリースプロセス |
+| `docs/05_development/*` | 開発ワークフロー（OAS, API 標準, TDD） |
 
 ---
 
@@ -283,6 +286,7 @@ Claude Code の Task ツールで並列実行が可能。手動オーケスト�
 | `Skill.DevContainer_Safe_Mode` | firewall/permission問題時 | allowlist確認、safeプロファイル維持 |
 | `Skill.OpenAPI_Contract_First` | HTTP API設計/実装時 | OpenAPI仕様を先に定義、コード生成活用 |
 | `Skill.Horizontal_Guardrails` | 実装/レビュー時 | 横のガードレールでアーキテクチャ維持 |
+| `Skill.TDD_Workflow` | テスト作成/実装時 | AC→テスト変換、Red-Green-Refactor、レイヤー別テスト戦略 |
 
 **Templates**: `.specify/templates/` に Spec/Plan/Tasks のテンプレートあり
 
