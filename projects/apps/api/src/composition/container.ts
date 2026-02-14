@@ -15,12 +15,14 @@ import {
   InMemoryRefreshTokenRepository,
   InMemoryPasswordResetTokenRepository,
   InMemoryTradeAreaRepository,
+  InMemoryStoreRepository,
   // Prisma repositories
   PrismaUserRepository,
   PrismaAuthUserRepository,
   PrismaRefreshTokenRepository,
   PrismaPasswordResetTokenRepository,
   PrismaTradeAreaRepository,
+  PrismaStoreRepository,
   // Database
   prisma,
   // Services
@@ -54,6 +56,11 @@ import {
   DeleteTradeAreaUseCase,
   UpdateTradeAreaUseCase,
   GetDemographicsUseCase,
+  CreateStoreUseCase,
+  GetStoreUseCase,
+  ListStoresUseCase,
+  DeleteStoreUseCase,
+  UpdateStoreUseCase,
 } from '../usecase/index.js';
 
 import {
@@ -62,6 +69,7 @@ import {
   ProfileController,
   DeepPingController,
   TradeAreaController,
+  StoreController,
   AuthMiddleware,
   SecurityMiddleware,
   CorsMiddleware,
@@ -142,6 +150,10 @@ export function createAppContext(): RouteContext {
     ? new PrismaTradeAreaRepository(prisma)
     : new InMemoryTradeAreaRepository();
 
+  const storeRepository = config.usePrisma
+    ? new PrismaStoreRepository(prisma)
+    : new InMemoryStoreRepository();
+
   // ============================================
   // Infrastructure - Services
   // ============================================
@@ -205,6 +217,15 @@ export function createAppContext(): RouteContext {
   );
 
   // ============================================
+  // UseCases - Store
+  // ============================================
+  const createStoreUseCase = new CreateStoreUseCase(storeRepository);
+  const getStoreUseCase = new GetStoreUseCase(storeRepository);
+  const listStoresUseCase = new ListStoresUseCase(storeRepository);
+  const deleteStoreUseCase = new DeleteStoreUseCase(storeRepository);
+  const updateStoreUseCase = new UpdateStoreUseCase(storeRepository);
+
+  // ============================================
   // UseCases - Profile
   // ============================================
   const changeNameUseCase = new ChangeNameUseCase(userRepository);
@@ -254,6 +275,14 @@ export function createAppContext(): RouteContext {
     getDemographicsUseCase,
     validationMiddleware
   );
+  const storeController = new StoreController(
+    createStoreUseCase,
+    getStoreUseCase,
+    listStoresUseCase,
+    deleteStoreUseCase,
+    updateStoreUseCase,
+    validationMiddleware
+  );
 
   // ============================================
   // Middleware
@@ -273,6 +302,7 @@ export function createAppContext(): RouteContext {
     profileController,
     deepPingController,
     tradeAreaController,
+    storeController,
     authMiddleware,
     securityMiddleware,
     corsMiddleware,

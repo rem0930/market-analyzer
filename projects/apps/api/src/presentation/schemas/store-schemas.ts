@@ -1,0 +1,56 @@
+/**
+ * @what 店舗関連のバリデーションスキーマ
+ * @why リクエストボディの型安全なバリデーションを提供
+ */
+
+import { z } from 'zod';
+
+export const createStoreSchema = z.object({
+  name: z
+    .string({ error: 'Name is required' })
+    .min(1, 'Name must be at least 1 character')
+    .max(100, 'Name must be at most 100 characters'),
+  address: z
+    .string({ error: 'Address is required' })
+    .min(1, 'Address must be at least 1 character')
+    .max(500, 'Address must be at most 500 characters'),
+  longitude: z
+    .number({ error: 'Longitude is required' })
+    .min(-180, 'Longitude must be between -180 and 180')
+    .max(180, 'Longitude must be between -180 and 180'),
+  latitude: z
+    .number({ error: 'Latitude is required' })
+    .min(-90, 'Latitude must be between -90 and 90')
+    .max(90, 'Latitude must be between -90 and 90'),
+});
+
+export const updateStoreSchema = z
+  .object({
+    name: z
+      .string()
+      .min(1, 'Name must be at least 1 character')
+      .max(100, 'Name must be at most 100 characters')
+      .optional(),
+    address: z
+      .string()
+      .min(1, 'Address must be at least 1 character')
+      .max(500, 'Address must be at most 500 characters')
+      .optional(),
+    longitude: z
+      .number()
+      .min(-180, 'Longitude must be between -180 and 180')
+      .max(180, 'Longitude must be between -180 and 180')
+      .optional(),
+    latitude: z
+      .number()
+      .min(-90, 'Latitude must be between -90 and 90')
+      .max(90, 'Latitude must be between -90 and 90')
+      .optional(),
+  })
+  .refine(
+    (data) => Object.values(data).some((v) => v !== undefined),
+    'At least one field must be provided'
+  );
+
+export type CreateStoreInput = z.infer<typeof createStoreSchema>;
+export type UpdateStoreInput = z.infer<typeof updateStoreSchema>;

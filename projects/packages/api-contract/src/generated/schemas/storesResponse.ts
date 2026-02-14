@@ -7,10 +7,10 @@ This is the single source of truth for API types.
 
  * OpenAPI spec version: 0.0.1
  */
+import type { StoreResponse } from './storeResponse';
 
-export type TokenResponseTokenType =
-  (typeof TokenResponseTokenType)[keyof typeof TokenResponseTokenType];
-
-export const TokenResponseTokenType = {
-  Bearer: 'Bearer',
-} as const;
+export interface StoresResponse {
+  stores: StoreResponse[];
+  /** @minimum 0 */
+  total: number;
+}

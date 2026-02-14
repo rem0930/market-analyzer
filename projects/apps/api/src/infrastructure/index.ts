@@ -39,6 +39,10 @@ export { PrismaTradeAreaRepository } from './repositories/prisma-trade-area-repo
 // Trade Area services
 export { MockDemographicDataProvider } from './services/mock-demographic-data-provider.js';
 
+// Store repositories
+export { InMemoryStoreRepository } from './repositories/in-memory-store-repository.js';
+export { PrismaStoreRepository } from './repositories/prisma-store-repository.js';
+
 // Health checkers
 export { PrismaDatabaseHealthChecker } from './health/index.js';
 

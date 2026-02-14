@@ -8,9 +8,13 @@ This is the single source of truth for API types.
  * OpenAPI spec version: 0.0.1
  */
 
-export type TokenResponseTokenType =
-  (typeof TokenResponseTokenType)[keyof typeof TokenResponseTokenType];
-
-export const TokenResponseTokenType = {
-  Bearer: 'Bearer',
-} as const;
+export interface StoreResponse {
+  id: string;
+  userId: string;
+  name: string;
+  address: string;
+  longitude: number;
+  latitude: number;
+  createdAt: string;
+  updatedAt?: string;
+}
