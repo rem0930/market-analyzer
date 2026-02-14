@@ -7,7 +7,9 @@ This is the single source of truth for API types.
 
  * OpenAPI spec version: 0.0.1
  */
-import type { HealthResponse } from '.././schemas';
+import type {
+  HealthResponse
+} from '.././schemas';
 
 import { customFetch } from '../../http-client';
 
@@ -15,22 +17,34 @@ import { customFetch } from '../../http-client';
  * @summary Health check endpoint
  */
 export type getHealthResponse200 = {
-  data: HealthResponse;
-  status: 200;
-};
-
-export type getHealthResponseSuccess = getHealthResponse200 & {
+  data: HealthResponse
+  status: 200
+}
+    
+export type getHealthResponseSuccess = (getHealthResponse200) & {
   headers: Headers;
 };
-export type getHealthResponse = getHealthResponseSuccess;
+;
+
+export type getHealthResponse = (getHealthResponseSuccess)
 
 export const getGetHealthUrl = () => {
-  return `/health`;
-};
 
-export const getHealth = async (options?: RequestInit): Promise<getHealthResponse> => {
-  return customFetch<getHealthResponse>(getGetHealthUrl(), {
+
+  
+
+  return `/health`
+}
+
+export const getHealth = async ( options?: RequestInit): Promise<getHealthResponse> => {
+  
+  return customFetch<getHealthResponse>(getGetHealthUrl(),
+  {      
     ...options,
-    method: 'GET',
-  });
-};
+    method: 'GET'
+    
+    
+  }
+);}
+
+

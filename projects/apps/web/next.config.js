@@ -1,5 +1,3 @@
-const path = require('path');
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Strict mode for development
@@ -7,7 +5,7 @@ const nextConfig = {
 
   // Turbopack root for monorepo resolution in DevContainer
   turbopack: {
-    root: path.resolve(__dirname, '../../..'),
+    root: `${__dirname}/../../..`,
   },
 
   // Allow dev origins for worktree subdomains

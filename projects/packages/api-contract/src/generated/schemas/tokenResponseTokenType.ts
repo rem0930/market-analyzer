@@ -8,8 +8,8 @@ This is the single source of truth for API types.
  * OpenAPI spec version: 0.0.1
  */
 
-export type TokenResponseTokenType =
-  (typeof TokenResponseTokenType)[keyof typeof TokenResponseTokenType];
+export type TokenResponseTokenType = typeof TokenResponseTokenType[keyof typeof TokenResponseTokenType];
+
 
 export const TokenResponseTokenType = {
   Bearer: 'Bearer',

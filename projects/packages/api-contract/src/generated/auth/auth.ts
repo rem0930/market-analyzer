@@ -16,7 +16,7 @@ import type {
   RefreshTokenRequest,
   RegisterRequest,
   ResetPasswordRequest,
-  TokenResponse,
+  TokenResponse
 } from '.././schemas';
 
 import { customFetch } from '../../http-client';
@@ -25,255 +25,301 @@ import { customFetch } from '../../http-client';
  * @summary Register a new user
  */
 export type registerResponse201 = {
-  data: AuthUser;
-  status: 201;
-};
+  data: AuthUser
+  status: 201
+}
 
 export type registerResponse400 = {
-  data: ErrorResponse;
-  status: 400;
-};
+  data: ErrorResponse
+  status: 400
+}
 
 export type registerResponse409 = {
-  data: ErrorResponse;
-  status: 409;
-};
-
-export type registerResponseSuccess = registerResponse201 & {
+  data: ErrorResponse
+  status: 409
+}
+    
+export type registerResponseSuccess = (registerResponse201) & {
   headers: Headers;
 };
 export type registerResponseError = (registerResponse400 | registerResponse409) & {
   headers: Headers;
 };
 
-export type registerResponse = registerResponseSuccess | registerResponseError;
+export type registerResponse = (registerResponseSuccess | registerResponseError)
 
 export const getRegisterUrl = () => {
-  return `/auth/register`;
-};
 
-export const register = async (
-  registerRequest: RegisterRequest,
-  options?: RequestInit
-): Promise<registerResponse> => {
-  return customFetch<registerResponse>(getRegisterUrl(), {
+
+  
+
+  return `/auth/register`
+}
+
+export const register = async (registerRequest: RegisterRequest, options?: RequestInit): Promise<registerResponse> => {
+  
+  return customFetch<registerResponse>(getRegisterUrl(),
+  {      
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(registerRequest),
-  });
-};
+    body: JSON.stringify(
+      registerRequest,)
+  }
+);}
+
 
 /**
  * @summary Login with email and password
  */
 export type loginResponse200 = {
-  data: TokenResponse;
-  status: 200;
-};
+  data: TokenResponse
+  status: 200
+}
 
 export type loginResponse401 = {
-  data: ErrorResponse;
-  status: 401;
-};
+  data: ErrorResponse
+  status: 401
+}
 
 export type loginResponse429 = {
-  data: ErrorResponse;
-  status: 429;
-};
-
-export type loginResponseSuccess = loginResponse200 & {
+  data: ErrorResponse
+  status: 429
+}
+    
+export type loginResponseSuccess = (loginResponse200) & {
   headers: Headers;
 };
 export type loginResponseError = (loginResponse401 | loginResponse429) & {
   headers: Headers;
 };
 
-export type loginResponse = loginResponseSuccess | loginResponseError;
+export type loginResponse = (loginResponseSuccess | loginResponseError)
 
 export const getLoginUrl = () => {
-  return `/auth/login`;
-};
 
-export const login = async (
-  loginRequest: LoginRequest,
-  options?: RequestInit
-): Promise<loginResponse> => {
-  return customFetch<loginResponse>(getLoginUrl(), {
+
+  
+
+  return `/auth/login`
+}
+
+export const login = async (loginRequest: LoginRequest, options?: RequestInit): Promise<loginResponse> => {
+  
+  return customFetch<loginResponse>(getLoginUrl(),
+  {      
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(loginRequest),
-  });
-};
+    body: JSON.stringify(
+      loginRequest,)
+  }
+);}
+
 
 /**
  * @summary Logout and invalidate refresh token
  */
 export type logoutResponse204 = {
-  data: void;
-  status: 204;
-};
+  data: void
+  status: 204
+}
 
 export type logoutResponse401 = {
-  data: ErrorResponse;
-  status: 401;
-};
-
-export type logoutResponseSuccess = logoutResponse204 & {
+  data: ErrorResponse
+  status: 401
+}
+    
+export type logoutResponseSuccess = (logoutResponse204) & {
   headers: Headers;
 };
-export type logoutResponseError = logoutResponse401 & {
+export type logoutResponseError = (logoutResponse401) & {
   headers: Headers;
 };
 
-export type logoutResponse = logoutResponseSuccess | logoutResponseError;
+export type logoutResponse = (logoutResponseSuccess | logoutResponseError)
 
 export const getLogoutUrl = () => {
-  return `/auth/logout`;
-};
 
-export const logout = async (options?: RequestInit): Promise<logoutResponse> => {
-  return customFetch<logoutResponse>(getLogoutUrl(), {
+
+  
+
+  return `/auth/logout`
+}
+
+export const logout = async ( options?: RequestInit): Promise<logoutResponse> => {
+  
+  return customFetch<logoutResponse>(getLogoutUrl(),
+  {      
     ...options,
-    method: 'POST',
-  });
-};
+    method: 'POST'
+    
+    
+  }
+);}
+
 
 /**
  * @summary Refresh access token
  */
 export type refreshTokenResponse200 = {
-  data: TokenResponse;
-  status: 200;
-};
+  data: TokenResponse
+  status: 200
+}
 
 export type refreshTokenResponse401 = {
-  data: ErrorResponse;
-  status: 401;
-};
-
-export type refreshTokenResponseSuccess = refreshTokenResponse200 & {
+  data: ErrorResponse
+  status: 401
+}
+    
+export type refreshTokenResponseSuccess = (refreshTokenResponse200) & {
   headers: Headers;
 };
-export type refreshTokenResponseError = refreshTokenResponse401 & {
+export type refreshTokenResponseError = (refreshTokenResponse401) & {
   headers: Headers;
 };
 
-export type refreshTokenResponse = refreshTokenResponseSuccess | refreshTokenResponseError;
+export type refreshTokenResponse = (refreshTokenResponseSuccess | refreshTokenResponseError)
 
 export const getRefreshTokenUrl = () => {
-  return `/auth/refresh`;
-};
 
-export const refreshToken = async (
-  refreshTokenRequest: RefreshTokenRequest,
-  options?: RequestInit
-): Promise<refreshTokenResponse> => {
-  return customFetch<refreshTokenResponse>(getRefreshTokenUrl(), {
+
+  
+
+  return `/auth/refresh`
+}
+
+export const refreshToken = async (refreshTokenRequest: RefreshTokenRequest, options?: RequestInit): Promise<refreshTokenResponse> => {
+  
+  return customFetch<refreshTokenResponse>(getRefreshTokenUrl(),
+  {      
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(refreshTokenRequest),
-  });
-};
+    body: JSON.stringify(
+      refreshTokenRequest,)
+  }
+);}
+
 
 /**
  * @summary Request password reset email
  */
 export type forgotPasswordResponse200 = {
-  data: MessageResponse;
-  status: 200;
-};
-
-export type forgotPasswordResponseSuccess = forgotPasswordResponse200 & {
+  data: MessageResponse
+  status: 200
+}
+    
+export type forgotPasswordResponseSuccess = (forgotPasswordResponse200) & {
   headers: Headers;
 };
-export type forgotPasswordResponse = forgotPasswordResponseSuccess;
+;
+
+export type forgotPasswordResponse = (forgotPasswordResponseSuccess)
 
 export const getForgotPasswordUrl = () => {
-  return `/auth/forgot-password`;
-};
 
-export const forgotPassword = async (
-  forgotPasswordRequest: ForgotPasswordRequest,
-  options?: RequestInit
-): Promise<forgotPasswordResponse> => {
-  return customFetch<forgotPasswordResponse>(getForgotPasswordUrl(), {
+
+  
+
+  return `/auth/forgot-password`
+}
+
+export const forgotPassword = async (forgotPasswordRequest: ForgotPasswordRequest, options?: RequestInit): Promise<forgotPasswordResponse> => {
+  
+  return customFetch<forgotPasswordResponse>(getForgotPasswordUrl(),
+  {      
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(forgotPasswordRequest),
-  });
-};
+    body: JSON.stringify(
+      forgotPasswordRequest,)
+  }
+);}
+
 
 /**
  * @summary Reset password with token
  */
 export type resetPasswordResponse200 = {
-  data: MessageResponse;
-  status: 200;
-};
+  data: MessageResponse
+  status: 200
+}
 
 export type resetPasswordResponse400 = {
-  data: ErrorResponse;
-  status: 400;
-};
-
-export type resetPasswordResponseSuccess = resetPasswordResponse200 & {
+  data: ErrorResponse
+  status: 400
+}
+    
+export type resetPasswordResponseSuccess = (resetPasswordResponse200) & {
   headers: Headers;
 };
-export type resetPasswordResponseError = resetPasswordResponse400 & {
+export type resetPasswordResponseError = (resetPasswordResponse400) & {
   headers: Headers;
 };
 
-export type resetPasswordResponse = resetPasswordResponseSuccess | resetPasswordResponseError;
+export type resetPasswordResponse = (resetPasswordResponseSuccess | resetPasswordResponseError)
 
 export const getResetPasswordUrl = () => {
-  return `/auth/reset-password`;
-};
 
-export const resetPassword = async (
-  resetPasswordRequest: ResetPasswordRequest,
-  options?: RequestInit
-): Promise<resetPasswordResponse> => {
-  return customFetch<resetPasswordResponse>(getResetPasswordUrl(), {
+
+  
+
+  return `/auth/reset-password`
+}
+
+export const resetPassword = async (resetPasswordRequest: ResetPasswordRequest, options?: RequestInit): Promise<resetPasswordResponse> => {
+  
+  return customFetch<resetPasswordResponse>(getResetPasswordUrl(),
+  {      
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(resetPasswordRequest),
-  });
-};
+    body: JSON.stringify(
+      resetPasswordRequest,)
+  }
+);}
+
 
 /**
  * @summary Get current authenticated user
  */
 export type getCurrentUserResponse200 = {
-  data: AuthUser;
-  status: 200;
-};
+  data: AuthUser
+  status: 200
+}
 
 export type getCurrentUserResponse401 = {
-  data: ErrorResponse;
-  status: 401;
-};
-
-export type getCurrentUserResponseSuccess = getCurrentUserResponse200 & {
+  data: ErrorResponse
+  status: 401
+}
+    
+export type getCurrentUserResponseSuccess = (getCurrentUserResponse200) & {
   headers: Headers;
 };
-export type getCurrentUserResponseError = getCurrentUserResponse401 & {
+export type getCurrentUserResponseError = (getCurrentUserResponse401) & {
   headers: Headers;
 };
 
-export type getCurrentUserResponse = getCurrentUserResponseSuccess | getCurrentUserResponseError;
+export type getCurrentUserResponse = (getCurrentUserResponseSuccess | getCurrentUserResponseError)
 
 export const getGetCurrentUserUrl = () => {
-  return `/auth/me`;
-};
 
-export const getCurrentUser = async (options?: RequestInit): Promise<getCurrentUserResponse> => {
-  return customFetch<getCurrentUserResponse>(getGetCurrentUserUrl(), {
+
+  
+
+  return `/auth/me`
+}
+
+export const getCurrentUser = async ( options?: RequestInit): Promise<getCurrentUserResponse> => {
+  
+  return customFetch<getCurrentUserResponse>(getGetCurrentUserUrl(),
+  {      
     ...options,
-    method: 'GET',
-  });
-};
+    method: 'GET'
+    
+    
+  }
+);}
+
+
