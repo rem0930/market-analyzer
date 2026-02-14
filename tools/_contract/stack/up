@@ -6,9 +6,15 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 cd "${REPO_ROOT}"
 
-# Determine worktree name: use directory name (works for both main repo and worktrees)
+# Determine worktree name: "main" for root repo, directory name for worktrees
 get_worktree_name() {
-    basename "$(pwd)"
+    if [[ -f "${REPO_ROOT}/.git" ]]; then
+        # .git がファイル → worktree
+        basename "${REPO_ROOT}"
+    else
+        # .git がディレクトリ → メインリポジトリ
+        echo "main"
+    fi
 }
 
 # Load existing .env or create new one
@@ -20,16 +26,19 @@ fi
 # Always use directory name as worktree identifier
 WORKTREE="$(get_worktree_name)"
 COMPOSE_PROJECT_NAME="${WORKTREE}"
+REPO_NAME="$(basename "${REPO_ROOT}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g')"
 
 # Update .env with current values
 cat > .env << EOF
 WORKTREE=${WORKTREE}
+REPO_NAME=${REPO_NAME}
 COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
 HOST_WORKSPACE_PATH=${REPO_ROOT}
 EOF
 
 export WORKTREE
 export COMPOSE_PROJECT_NAME
+export REPO_NAME
 
 echo "🚀 Starting development environment with DevContainer..."
 echo "   Worktree: ${WORKTREE}"
@@ -60,7 +69,7 @@ ${COMPOSE_CMD} -f docker-compose.worktree.yml up --build -d
 
 # Wait for dev container to be healthy (dependencies installed)
 echo "⏳ Waiting for DevContainer to install dependencies..."
-DEV_CONTAINER="${WORKTREE}-dev"
+DEV_CONTAINER="${WORKTREE}-${REPO_NAME}-dev"
 for i in {1..120}; do
   STATUS=$(docker inspect --format='{{.State.Health.Status}}' "${DEV_CONTAINER}" 2>/dev/null || echo "unknown")
   if [[ "${STATUS}" == "healthy" ]]; then

@@ -56,8 +56,11 @@ start_devcontainer() {
     (cd "${repo_root}" && bash scripts/init-environment.sh)
   else
     # フォールバック: 直接 docker compose
+    local repo_name
+    repo_name="$(get_repo_name "${repo_root}")"
     (cd "${repo_root}" && \
       export WORKTREE="${worktree_name}" && \
+      export REPO_NAME="${repo_name}" && \
       export COMPOSE_PROJECT_NAME="${worktree_name}" && \
       docker compose -p "${worktree_name}" -f docker-compose.worktree.yml up -d --build)
   fi
