@@ -71,6 +71,7 @@ User: "認証機能を追加して"
 | `fsd-frontend` | Feature-Sliced Design、Next.js配置 |
 | `quality-gates` | lint/test/typecheck の実行順序 |
 | `repo-conventions` | リポジトリ固有のルール（DocDD, ブランチ命名） |
+| `tdd-workflow` | AC→テスト変換、Red-Green-Refactor、レイヤー別テスト戦略 |
 
 ---
 
@@ -105,7 +106,8 @@ User: "認証機能を追加して"
 │   ├── ddd-clean-architecture/
 │   ├── fsd-frontend/
 │   ├── quality-gates/
-│   └── repo-conventions/
+│   ├── repo-conventions/
+│   └── tdd-workflow/
 ├── commands/         # Slash commands
 │   ├── kickoff.md
 │   ├── pr-check.md
@@ -170,6 +172,8 @@ Auto-approved:
 ./tools/contract test
 ./tools/contract build
 ./tools/contract guardrail
+./tools/contract openapi-generate
+./tools/contract openapi-check
 
 # Worktree
 ./tools/worktree/spawn.sh <branch>

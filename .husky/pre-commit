@@ -65,6 +65,18 @@ if [ $FOUND_SECRETS -eq 1 ]; then
   exit 1
 fi
 
+# Auto-regenerate OpenAPI types if openapi.yaml is staged
+STAGED_OPENAPI=$(git diff --cached --name-only --diff-filter=ACM | grep 'openapi\.yaml$' || true)
+if [ -n "$STAGED_OPENAPI" ]; then
+  echo "OpenAPI spec changed — regenerating types..."
+  if [ -f "projects/packages/api-contract/openapi.yaml" ]; then
+    if command -v pnpm >/dev/null 2>&1; then
+      pnpm --filter @monorepo/api-contract run generate 2>/dev/null || true
+      git add projects/packages/api-contract/src/generated/ 2>/dev/null || true
+    fi
+  fi
+fi
+
 # Run lint-staged for code quality (only if npx is available and in projects directory context)
 if command -v npx >/dev/null 2>&1 && [ -d "projects" ] && [ -f "projects/package.json" ]; then
   cd projects && npx --yes lint-staged
