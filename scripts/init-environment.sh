@@ -19,15 +19,23 @@ ensure_traefik() {
     bash "$SCRIPT_DIR/ensure-traefik.sh"
 }
 
+get_repo_name() {
+    basename "$ROOT_DIR" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g'
+}
+
 prepare_env() {
     local worktree_name="$1"
+    local repo_name
+    repo_name="$(get_repo_name)"
     # Always regenerate .env to ensure correct values for current worktree/branch
     cat > .env << EOF
 WORKTREE=$worktree_name
+REPO_NAME=$repo_name
 COMPOSE_PROJECT_NAME=$worktree_name
 HOST_WORKSPACE_PATH=$ROOT_DIR
 EOF
     export WORKTREE="$worktree_name"
+    export REPO_NAME="$repo_name"
 }
 
 main() {

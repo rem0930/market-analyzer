@@ -5,13 +5,13 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 cd "${REPO_ROOT}"
 
-# Load .env if exists, then derive WORKTREE from directory name
+# Load .env (contains WORKTREE and REPO_NAME)
 if [[ -f .env ]]; then
     # shellcheck source=/dev/null
     source .env
 fi
-WORKTREE="$(basename "$(pwd)")"
-export WORKTREE
+export WORKTREE="${WORKTREE:-main}"
+export REPO_NAME="${REPO_NAME:-}"
 
 if docker compose version &>/dev/null; then
   COMPOSE_CMD="docker compose"
