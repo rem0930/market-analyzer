@@ -6,3 +6,4 @@
 export { createAuthRoutes } from './auth.js';
 export { createUserRoutes } from './users.js';
 export { createHealthRoutes } from './health.js';
+export { createTradeAreaRoutes } from './trade-areas.js';

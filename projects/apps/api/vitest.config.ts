@@ -21,11 +21,6 @@ export default defineConfig({
         'vitest.setup.ts',
       ],
     },
-    exclude: [
-      'prisma/**',
-      'dist/**',
-      'node_modules/**',
-      'src/generated/**',
-    ],
+    exclude: ['prisma/**', 'dist/**', 'node_modules/**', 'src/generated/**'],
   },
 });

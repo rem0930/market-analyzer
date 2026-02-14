@@ -19,6 +19,7 @@ model AuthUser {
 
   refreshTokens       RefreshToken[]
   passwordResetTokens PasswordResetToken[]
+  tradeAreas          TradeArea[]
 
   @@map("auth_users")
 }
@@ -61,4 +62,20 @@ model User {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("users")
+}
+
+model TradeArea {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  name      String
+  longitude Float
+  latitude  Float
+  radiusKm  Float    @map("radius_km")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user AuthUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("trade_areas")
 }

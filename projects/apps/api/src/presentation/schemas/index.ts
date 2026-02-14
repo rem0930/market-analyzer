@@ -21,6 +21,13 @@ export {
 export { createUserSchema, type CreateUserInput } from './user-schemas.js';
 
 export {
+  createTradeAreaSchema,
+  updateTradeAreaSchema,
+  type CreateTradeAreaInput,
+  type UpdateTradeAreaInput,
+} from './trade-area-schemas.js';
+
+export {
   updateNameSchema,
   updatePasswordSchema,
   type UpdateNameInput,

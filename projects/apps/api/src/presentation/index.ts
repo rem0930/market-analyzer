@@ -7,6 +7,7 @@ export { UserController } from './controllers/user-controller.js';
 export { AuthController } from './controllers/auth-controller.js';
 export { ProfileController } from './controllers/profile-controller.js';
 export { DeepPingController } from './controllers/deep-ping-controller.js';
+export { TradeAreaController } from './controllers/trade-area-controller.js';
 export {
   AuthMiddleware,
   type AuthenticatedRequest,
@@ -32,3 +33,4 @@ export {
 export { createAuthRoutes } from './routes/auth.js';
 export { createUserRoutes } from './routes/users.js';
 export { createHealthRoutes } from './routes/health.js';
+export { createTradeAreaRoutes } from './routes/trade-areas.js';

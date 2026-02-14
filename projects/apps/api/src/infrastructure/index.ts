@@ -32,6 +32,13 @@ export {
   type JwtServiceError,
 } from './services/jwt-service.js';
 
+// Trade Area repositories
+export { InMemoryTradeAreaRepository } from './repositories/in-memory-trade-area-repository.js';
+export { PrismaTradeAreaRepository } from './repositories/prisma-trade-area-repository.js';
+
+// Trade Area services
+export { MockDemographicDataProvider } from './services/mock-demographic-data-provider.js';
+
 // Health checkers
 export { PrismaDatabaseHealthChecker } from './health/index.js';
 
