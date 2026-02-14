@@ -96,8 +96,11 @@ export class PrismaTradeAreaRepository implements TradeAreaRepository {
       });
       aggregate.clearDomainEvents();
       return Result.ok(undefined);
-    } catch {
-      return Result.fail('not_found');
+    } catch (error) {
+      if (this.isRecordNotFoundError(error)) {
+        return Result.fail('not_found');
+      }
+      return Result.fail('db_error');
     }
   }
 
@@ -107,8 +110,11 @@ export class PrismaTradeAreaRepository implements TradeAreaRepository {
         where: { id: id.value },
       });
       return Result.ok(undefined);
-    } catch {
-      return Result.fail('not_found');
+    } catch (error) {
+      if (this.isRecordNotFoundError(error)) {
+        return Result.fail('not_found');
+      }
+      return Result.fail('db_error');
     }
   }
 
@@ -136,5 +142,9 @@ export class PrismaTradeAreaRepository implements TradeAreaRepository {
 
   private isUniqueConstraintError(error: unknown): boolean {
     return typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002';
+  }
+
+  private isRecordNotFoundError(error: unknown): boolean {
+    return typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2025';
   }
 }

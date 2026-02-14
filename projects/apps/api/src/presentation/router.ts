@@ -99,13 +99,19 @@ export async function handleRoutes(
     return;
   }
 
+  // CSRF トークン: GETリクエストでトークンをcookieに設定
+  const method = req.method ?? 'GET';
+  if (method === 'GET' || method === 'HEAD' || method === 'OPTIONS') {
+    const token = csrfMiddleware.generateToken();
+    csrfMiddleware.setTokenCookie(res, token);
+  }
+
   // CSRF 検証（GETリクエストと除外パスはスキップ）
   if (!csrfMiddleware.verify(req, res)) {
     return;
   }
 
   const url = new URL(req.url ?? '/', `http://localhost`);
-  const method = req.method ?? 'GET';
   const pathname = url.pathname;
 
   // コンパイル済みルートを取得

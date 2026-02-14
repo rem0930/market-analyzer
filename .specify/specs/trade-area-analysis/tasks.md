@@ -88,7 +88,7 @@
 | 8.1 | `./tools/contract typecheck` 通過 | - | S | ✅ | - |
 | 8.2 | `./tools/contract lint` エラー 0 | - | S | ✅ | - |
 | 8.3 | `./tools/contract test`（API: 193 tests pass） | - | S | ✅ | - |
-| 8.4 | DevContainer 内での E2E 検証 | AC-001-009 | M | ⬜ | - |
+| 8.4 | DevContainer 内での E2E 検証 | AC-001-009 | M | ✅ | - |
 
 ---
 
