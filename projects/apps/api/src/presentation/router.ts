@@ -12,6 +12,7 @@ import type { UserController } from './controllers/user-controller.js';
 import type { AuthController } from './controllers/auth-controller.js';
 import type { ProfileController } from './controllers/profile-controller.js';
 import type { DeepPingController } from './controllers/deep-ping-controller.js';
+import type { TradeAreaController } from './controllers/trade-area-controller.js';
 import type { AuthMiddleware } from './middleware/auth-middleware.js';
 import type { SecurityMiddleware } from './middleware/security-middleware.js';
 import type { CorsMiddleware } from './middleware/cors-middleware.js';
@@ -29,12 +30,14 @@ import {
 import { createAuthRoutes } from './routes/auth.js';
 import { createUserRoutes } from './routes/users.js';
 import { createHealthRoutes } from './routes/health.js';
+import { createTradeAreaRoutes } from './routes/trade-areas.js';
 
 export interface RouteContext {
   userController: UserController;
   authController: AuthController;
   profileController: ProfileController;
   deepPingController: DeepPingController;
+  tradeAreaController: TradeAreaController;
   authMiddleware: AuthMiddleware;
   securityMiddleware: SecurityMiddleware;
   corsMiddleware: CorsMiddleware;
@@ -66,6 +69,7 @@ function getCompiledRoutes(context: RouteContext): CompiledRoute[] {
     ...createHealthRoutes(context.deepPingController),
     ...createAuthRoutes(context.authController),
     ...createUserRoutes(context.userController, context.profileController),
+    ...createTradeAreaRoutes(context.tradeAreaController),
   ];
 
   // ルートをコンパイルしてキャッシュ
@@ -95,13 +99,19 @@ export async function handleRoutes(
     return;
   }
 
+  // CSRF トークン: GETリクエストでトークンをcookieに設定
+  const method = req.method ?? 'GET';
+  if (method === 'GET' || method === 'HEAD' || method === 'OPTIONS') {
+    const token = csrfMiddleware.generateToken();
+    csrfMiddleware.setTokenCookie(res, token);
+  }
+
   // CSRF 検証（GETリクエストと除外パスはスキップ）
   if (!csrfMiddleware.verify(req, res)) {
     return;
   }
 
   const url = new URL(req.url ?? '/', `http://localhost`);
-  const method = req.method ?? 'GET';
   const pathname = url.pathname;
 
   // コンパイル済みルートを取得

@@ -14,11 +14,13 @@ import {
   InMemoryAuthUserRepository,
   InMemoryRefreshTokenRepository,
   InMemoryPasswordResetTokenRepository,
+  InMemoryTradeAreaRepository,
   // Prisma repositories
   PrismaUserRepository,
   PrismaAuthUserRepository,
   PrismaRefreshTokenRepository,
   PrismaPasswordResetTokenRepository,
+  PrismaTradeAreaRepository,
   // Database
   prisma,
   // Services
@@ -26,6 +28,7 @@ import {
   JwtServiceImpl,
   CryptoTokenHashService,
   LoggerEmailService,
+  MockDemographicDataProvider,
   // Health checkers
   PrismaDatabaseHealthChecker,
   // Logger
@@ -45,6 +48,12 @@ import {
   DeepPingUseCase,
   ChangeNameUseCase,
   ChangePasswordUseCase,
+  CreateTradeAreaUseCase,
+  GetTradeAreaUseCase,
+  ListTradeAreasUseCase,
+  DeleteTradeAreaUseCase,
+  UpdateTradeAreaUseCase,
+  GetDemographicsUseCase,
 } from '../usecase/index.js';
 
 import {
@@ -52,6 +61,7 @@ import {
   AuthController,
   ProfileController,
   DeepPingController,
+  TradeAreaController,
   AuthMiddleware,
   SecurityMiddleware,
   CorsMiddleware,
@@ -128,6 +138,10 @@ export function createAppContext(): RouteContext {
     ? new PrismaPasswordResetTokenRepository(prisma)
     : new InMemoryPasswordResetTokenRepository();
 
+  const tradeAreaRepository = config.usePrisma
+    ? new PrismaTradeAreaRepository(prisma)
+    : new InMemoryTradeAreaRepository();
+
   // ============================================
   // Infrastructure - Services
   // ============================================
@@ -135,6 +149,7 @@ export function createAppContext(): RouteContext {
   const jwtService = new JwtServiceImpl(config.jwt);
   const tokenHashService = new CryptoTokenHashService();
   const emailService = new LoggerEmailService();
+  const demographicDataProvider = new MockDemographicDataProvider();
 
   // ============================================
   // UseCases - User
@@ -177,6 +192,19 @@ export function createAppContext(): RouteContext {
   const getCurrentUserUseCase = new GetCurrentUserUseCase(authUserRepository);
 
   // ============================================
+  // UseCases - Trade Area
+  // ============================================
+  const createTradeAreaUseCase = new CreateTradeAreaUseCase(tradeAreaRepository);
+  const getTradeAreaUseCase = new GetTradeAreaUseCase(tradeAreaRepository);
+  const listTradeAreasUseCase = new ListTradeAreasUseCase(tradeAreaRepository);
+  const deleteTradeAreaUseCase = new DeleteTradeAreaUseCase(tradeAreaRepository);
+  const updateTradeAreaUseCase = new UpdateTradeAreaUseCase(tradeAreaRepository);
+  const getDemographicsUseCase = new GetDemographicsUseCase(
+    tradeAreaRepository,
+    demographicDataProvider
+  );
+
+  // ============================================
   // UseCases - Profile
   // ============================================
   const changeNameUseCase = new ChangeNameUseCase(userRepository);
@@ -217,6 +245,15 @@ export function createAppContext(): RouteContext {
     changePasswordUseCase,
     validationMiddleware
   );
+  const tradeAreaController = new TradeAreaController(
+    createTradeAreaUseCase,
+    getTradeAreaUseCase,
+    listTradeAreasUseCase,
+    deleteTradeAreaUseCase,
+    updateTradeAreaUseCase,
+    getDemographicsUseCase,
+    validationMiddleware
+  );
 
   // ============================================
   // Middleware
@@ -235,6 +272,7 @@ export function createAppContext(): RouteContext {
     authController,
     profileController,
     deepPingController,
+    tradeAreaController,
     authMiddleware,
     securityMiddleware,
     corsMiddleware,

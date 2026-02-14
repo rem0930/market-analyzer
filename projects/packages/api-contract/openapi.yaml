@@ -330,6 +330,207 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
   # ============================================
+  # Trade Area Endpoints
+  # ============================================
+  /trade-areas:
+    post:
+      operationId: createTradeArea
+      summary: Create a new trade area
+      tags:
+        - TradeAreas
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTradeAreaRequest'
+      responses:
+        '201':
+          description: Trade area created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeAreaResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    get:
+      operationId: listTradeAreas
+      summary: List trade areas for current user
+      tags:
+        - TradeAreas
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of trade areas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeAreasResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /trade-areas/{tradeAreaId}:
+    get:
+      operationId: getTradeArea
+      summary: Get a trade area by ID
+      tags:
+        - TradeAreas
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: tradeAreaId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Trade area found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeAreaResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Trade area not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    patch:
+      operationId: updateTradeArea
+      summary: Update a trade area
+      tags:
+        - TradeAreas
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: tradeAreaId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTradeAreaRequest'
+      responses:
+        '200':
+          description: Trade area updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeAreaResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Trade area not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      operationId: deleteTradeArea
+      summary: Delete a trade area
+      tags:
+        - TradeAreas
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: tradeAreaId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Trade area deleted successfully
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Trade area not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /trade-areas/{tradeAreaId}/demographics:
+    get:
+      operationId: getTradeAreaDemographics
+      summary: Get demographic data for a trade area
+      tags:
+        - TradeAreas
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: tradeAreaId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Demographic data for the trade area
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DemographicDataResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Trade area not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ============================================
   # User Endpoints
   # ============================================
   /users/{userId}:
@@ -547,6 +748,172 @@ components:
       properties:
         message:
           type: string
+
+    # ============================================
+    # Trade Area Schemas
+    # ============================================
+    GeoPoint:
+      type: object
+      required:
+        - longitude
+        - latitude
+      properties:
+        longitude:
+          type: number
+          format: double
+          minimum: -180
+          maximum: 180
+        latitude:
+          type: number
+          format: double
+          minimum: -90
+          maximum: 90
+
+    CreateTradeAreaRequest:
+      type: object
+      required:
+        - name
+        - longitude
+        - latitude
+        - radiusKm
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        longitude:
+          type: number
+          format: double
+          minimum: -180
+          maximum: 180
+        latitude:
+          type: number
+          format: double
+          minimum: -90
+          maximum: 90
+        radiusKm:
+          type: number
+          format: double
+          minimum: 0.1
+          maximum: 50
+
+    UpdateTradeAreaRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        longitude:
+          type: number
+          format: double
+          minimum: -180
+          maximum: 180
+        latitude:
+          type: number
+          format: double
+          minimum: -90
+          maximum: 90
+        radiusKm:
+          type: number
+          format: double
+          minimum: 0.1
+          maximum: 50
+
+    TradeAreaResponse:
+      type: object
+      required:
+        - id
+        - userId
+        - name
+        - longitude
+        - latitude
+        - radiusKm
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        longitude:
+          type: number
+          format: double
+        latitude:
+          type: number
+          format: double
+        radiusKm:
+          type: number
+          format: double
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    TradeAreasResponse:
+      type: object
+      required:
+        - tradeAreas
+        - total
+      properties:
+        tradeAreas:
+          type: array
+          items:
+            $ref: '#/components/schemas/TradeAreaResponse'
+        total:
+          type: integer
+          minimum: 0
+
+    AgeDistribution:
+      type: object
+      required:
+        - range
+        - count
+        - percentage
+      properties:
+        range:
+          type: string
+          description: 'Age range label (e.g., "0-14", "15-24")'
+        count:
+          type: integer
+          minimum: 0
+        percentage:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+
+    DemographicDataResponse:
+      type: object
+      required:
+        - tradeAreaId
+        - population
+        - households
+        - averageIncome
+        - ageDistribution
+      properties:
+        tradeAreaId:
+          type: string
+          format: uuid
+        population:
+          type: integer
+          minimum: 0
+        households:
+          type: integer
+          minimum: 0
+        averageIncome:
+          type: integer
+          minimum: 0
+          description: Average annual income in JPY
+        ageDistribution:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgeDistribution'
 
     # ============================================
     # Profile Schemas

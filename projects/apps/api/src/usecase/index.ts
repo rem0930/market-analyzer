@@ -57,6 +57,34 @@ export {
   type DatabaseHealthChecker,
 } from './health/index.js';
 
+// Trade Area usecases
+export {
+  CreateTradeAreaUseCase,
+  type CreateTradeAreaInput,
+  type CreateTradeAreaOutput,
+  type CreateTradeAreaError,
+  GetTradeAreaUseCase,
+  type GetTradeAreaInput,
+  type GetTradeAreaOutput,
+  type GetTradeAreaError,
+  ListTradeAreasUseCase,
+  type ListTradeAreasInput,
+  type ListTradeAreasOutput,
+  type ListTradeAreasError,
+  type TradeAreaItem,
+  DeleteTradeAreaUseCase,
+  type DeleteTradeAreaInput,
+  type DeleteTradeAreaError,
+  UpdateTradeAreaUseCase,
+  type UpdateTradeAreaInput,
+  type UpdateTradeAreaOutput,
+  type UpdateTradeAreaError,
+  GetDemographicsUseCase,
+  type GetDemographicsInput,
+  type GetDemographicsOutput,
+  type GetDemographicsError,
+} from './trade-area/index.js';
+
 // Profile usecases
 export {
   ChangeNameUseCase,

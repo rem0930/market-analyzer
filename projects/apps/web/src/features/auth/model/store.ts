@@ -27,9 +27,10 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   isAuthenticated: false,
 
   setTokens: (accessToken, refreshToken) => {
-    // refreshToken は localStorage に保存（ページリロード対応）
     if (typeof window !== 'undefined') {
       localStorage.setItem('refreshToken', refreshToken);
+      // middleware (server-side) が認証判定に cookie を使うため cookie にも保存
+      document.cookie = `refreshToken=${refreshToken}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict`;
     }
     set({
       accessToken,
@@ -41,6 +42,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   clearTokens: () => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('refreshToken');
+      document.cookie = 'refreshToken=; path=/; max-age=0';
     }
     set({
       accessToken: null,

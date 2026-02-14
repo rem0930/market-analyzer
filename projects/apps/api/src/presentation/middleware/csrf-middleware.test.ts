@@ -53,10 +53,16 @@ describe('CsrfMiddleware', () => {
         'Set-Cookie',
         expect.stringContaining('SameSite=Strict')
       );
-      expect(mockRes.setHeader).toHaveBeenCalledWith(
-        'Set-Cookie',
-        expect.stringContaining('HttpOnly')
+    });
+
+    it('should not set HttpOnly flag (client JS needs to read CSRF cookie)', () => {
+      const token = 'test-token-123';
+      middleware.setTokenCookie(mockRes as ServerResponse, token);
+
+      const setCookieCall = (mockRes.setHeader as ReturnType<typeof vi.fn>).mock.calls.find(
+        (call: unknown[]) => call[0] === 'Set-Cookie'
       );
+      expect(setCookieCall?.[1]).not.toContain('HttpOnly');
     });
   });
 

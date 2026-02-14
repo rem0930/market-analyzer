@@ -44,3 +44,20 @@ export type {
   TokenPair,
   JwtServiceError,
 } from './auth/index.js';
+
+// Trade Area domain
+export {
+  CenterPoint,
+  Radius,
+  TradeAreaName,
+  DemographicData,
+  TradeAreaId,
+  TradeArea,
+  TradeAreaCreatedEvent,
+} from './trade-area/index.js';
+export type {
+  AgeDistributionEntry,
+  CreateTradeAreaParams,
+  TradeAreaRepository,
+  DemographicDataProvider,
+} from './trade-area/index.js';

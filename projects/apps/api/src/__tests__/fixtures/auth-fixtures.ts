@@ -4,12 +4,7 @@
  */
 
 import { Email } from '@monorepo/shared';
-import {
-  AuthUser,
-  AuthUserId,
-  PasswordHash,
-  type TokenPair,
-} from '../../domain/index.js';
+import { AuthUser, AuthUserId, PasswordHash, type TokenPair } from '../../domain/index.js';
 
 /**
  * テスト用 AuthUser を作成
@@ -38,9 +33,7 @@ export function createTestAuthUser(
 /**
  * テスト用 TokenPair を作成
  */
-export function createTestTokenPair(
-  overrides: Partial<TokenPair> = {}
-): TokenPair {
+export function createTestTokenPair(overrides: Partial<TokenPair> = {}): TokenPair {
   return {
     accessToken: overrides.accessToken ?? 'access-token-123',
     refreshToken: overrides.refreshToken ?? 'refresh-token-456',

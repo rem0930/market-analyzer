@@ -67,7 +67,6 @@ export class CsrfMiddleware {
       `Max-Age=${this.config.cookieMaxAge}`,
       'Path=/',
       'SameSite=Strict',
-      'HttpOnly',
     ];
 
     if (this.config.secure) {

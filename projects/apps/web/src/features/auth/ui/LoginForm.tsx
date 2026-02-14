@@ -5,15 +5,26 @@
  */
 'use client';
 
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '../model/useAuth';
 import { loginSchema, type LoginFormData } from '@/shared/lib/validation';
 import { Button, FormField } from '@/shared/ui';
 
 export function LoginForm() {
   const { isAuthenticated, login, logout, isLoading, error } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const from = searchParams.get('from') || '/dashboard';
+      router.replace(from);
+    }
+  }, [isAuthenticated, router, searchParams]);
 
   const {
     register,
