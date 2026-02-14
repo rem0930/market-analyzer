@@ -38,7 +38,7 @@ async function updateTradeAreaApi(params: {
   id: string;
   data: UpdateTradeAreaRequest;
 }): Promise<TradeArea> {
-  return apiClient<TradeArea>(`/trade-areas/${params.id}`, {
+  return apiClient<TradeArea>(`/trade-areas/${encodeURIComponent(params.id)}`, {
     method: 'PATCH',
     headers: getAuthHeaders(),
     body: JSON.stringify(params.data),
@@ -46,7 +46,7 @@ async function updateTradeAreaApi(params: {
 }
 
 async function deleteTradeAreaApi(id: string): Promise<void> {
-  return apiClient<void>(`/trade-areas/${id}`, {
+  return apiClient<void>(`/trade-areas/${encodeURIComponent(id)}`, {
     method: 'DELETE',
     headers: getAuthHeaders(),
   });
