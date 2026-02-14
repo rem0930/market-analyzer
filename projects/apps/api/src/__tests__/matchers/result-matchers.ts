@@ -3,8 +3,12 @@
  * @why expect(result).toBeSuccess() で簡潔にアサーションできるようにする
  */
 
-import type { ExpectationResult } from 'vitest';
-import { Result } from '@monorepo/shared';
+interface ExpectationResult {
+  pass: boolean;
+  message: () => string;
+  actual?: unknown;
+  expected?: unknown;
+}
 
 interface ResultLike {
   isSuccess(): boolean;
@@ -90,7 +94,8 @@ export const resultMatchers = {
 };
 
 declare module 'vitest' {
-  interface Assertion<T> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface Assertion<T = any> {
     toBeSuccess(): void;
     toBeFailure(): void;
     toBeFailureWithError(expectedError: unknown): void;
