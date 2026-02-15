@@ -36,3 +36,21 @@ export {
   type DeleteCompetitorInput,
   type DeleteCompetitorError,
 } from './delete-competitor.js';
+
+export {
+  SearchCompetitorsUseCase,
+  type SearchCompetitorsInput,
+  type SearchCompetitorsOutput,
+  type SearchCompetitorItemOutput,
+  type SearchCompetitorsError,
+} from './search-competitors.js';
+
+export {
+  BulkCreateCompetitorsUseCase,
+  type BulkCreateCompetitorsInput,
+  type BulkCreateCompetitorItemInput,
+  type BulkCreateCompetitorsOutput,
+  type BulkCreateCompetitorCreatedOutput,
+  type BulkCreateCompetitorSkippedOutput,
+  type BulkCreateCompetitorsError,
+} from './bulk-create-competitors.js';

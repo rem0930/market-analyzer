@@ -78,4 +78,6 @@ export type {
   CompetitorSourceType,
   CreateCompetitorParams,
   CompetitorRepository,
+  CompetitorSearchProvider,
 } from './competitor/index.js';
+export { CompetitorSearchResult } from './competitor/index.js';

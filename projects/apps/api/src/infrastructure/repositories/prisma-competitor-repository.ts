@@ -58,6 +58,24 @@ export class PrismaCompetitorRepository implements CompetitorRepository {
     }
   }
 
+  async findByGooglePlaceIds(
+    storeId: string,
+    placeIds: string[]
+  ): Promise<Result<Competitor[], RepositoryError>> {
+    try {
+      const records = await this.prisma.competitor.findMany({
+        where: {
+          storeId,
+          googlePlaceId: { in: placeIds },
+        },
+      });
+
+      return Result.ok(records.map((r) => this.toDomain(r)));
+    } catch {
+      return Result.fail('db_error');
+    }
+  }
+
   async save(aggregate: Competitor): Promise<Result<void, RepositoryError>> {
     try {
       await this.prisma.competitor.create({

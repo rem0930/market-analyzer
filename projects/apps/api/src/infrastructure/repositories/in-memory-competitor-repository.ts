@@ -31,6 +31,24 @@ export class InMemoryCompetitorRepository implements CompetitorRepository {
     return Result.ok(results);
   }
 
+  async findByGooglePlaceIds(
+    storeId: string,
+    placeIds: string[]
+  ): Promise<Result<Competitor[], RepositoryError>> {
+    const placeIdSet = new Set(placeIds);
+    const results: Competitor[] = [];
+    for (const competitor of this.competitors.values()) {
+      if (
+        competitor.storeId === storeId &&
+        competitor.googlePlaceId !== null &&
+        placeIdSet.has(competitor.googlePlaceId)
+      ) {
+        results.push(competitor);
+      }
+    }
+    return Result.ok(results);
+  }
+
   async save(aggregate: Competitor): Promise<Result<void, RepositoryError>> {
     if (this.competitors.has(aggregate.id.value)) {
       return Result.fail('conflict');

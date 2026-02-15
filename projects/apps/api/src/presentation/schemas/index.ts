@@ -40,3 +40,17 @@ export {
   type CreateStoreInput,
   type UpdateStoreInput,
 } from './store-schemas.js';
+
+export {
+  createCompetitorSchema,
+  updateCompetitorSchema,
+  type CreateCompetitorInput,
+  type UpdateCompetitorInput,
+} from './competitor-schemas.js';
+
+export {
+  searchCompetitorsSchema,
+  bulkCreateCompetitorsSchema,
+  type SearchCompetitorsInput,
+  type BulkCreateCompetitorsInput,
+} from './competitor-search-schemas.js';

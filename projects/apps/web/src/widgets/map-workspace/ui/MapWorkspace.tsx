@@ -25,6 +25,7 @@ import { TradeAreaCircle } from '@/entities/trade-area';
 import { StoreCreationMode, useStoreCreation } from '@/features/store-creation';
 import { StoreList, useStores, useStoreList, useCreateStore } from '@/features/store-management';
 import { StoreMarker } from '@/entities/store';
+import { CompetitorSearchDialog, useCompetitorSearch } from '@/features/competitor-search';
 
 export function MapWorkspace() {
   const tradeAreaCreation = useTradeAreaCreation();
@@ -40,6 +41,7 @@ export function MapWorkspace() {
   const { selectedStoreId, selectStore } = useStores();
   const { data: storesData } = useStoreList();
   const createStoreMutation = useCreateStore();
+  const competitorSearch = useCompetitorSearch();
 
   const handleMapClick = useCallback(
     (e: MapMouseEvent) => {
@@ -208,6 +210,23 @@ export function MapWorkspace() {
 
           {/* Store List */}
           <StoreList />
+
+          {/* Competitor Search */}
+          {selectedStoreId && (
+            <div className="space-y-2">
+              {!competitorSearch.isOpen ? (
+                <button
+                  onClick={competitorSearch.openDialog}
+                  disabled={storeCreation.isCreating || tradeAreaCreation.isCreating}
+                  className="w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                >
+                  Search Nearby Competitors
+                </button>
+              ) : (
+                <CompetitorSearchDialog storeId={selectedStoreId} />
+              )}
+            </div>
+          )}
 
           <hr className="border-gray-200" />
 

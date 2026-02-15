@@ -8,4 +8,8 @@ import type { Competitor, CompetitorId } from './competitor.js';
 
 export interface CompetitorRepository extends Repository<Competitor, CompetitorId> {
   findByStoreId(storeId: string): Promise<Result<Competitor[], RepositoryError>>;
+  findByGooglePlaceIds(
+    storeId: string,
+    placeIds: string[]
+  ): Promise<Result<Competitor[], RepositoryError>>;
 }
