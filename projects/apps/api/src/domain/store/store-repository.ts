@@ -1,0 +1,11 @@
+/**
+ * @what 店舗リポジトリのインターフェース
+ * @why ドメイン層がインフラ層に依存しないよう、インターフェースを定義
+ */
+
+import type { Repository, RepositoryError, Result } from '@monorepo/shared';
+import type { Store, StoreId } from './store.js';
+
+export interface StoreRepository extends Repository<Store, StoreId> {
+  findByUserId(userId: string): Promise<Result<Store[], RepositoryError>>;
+}

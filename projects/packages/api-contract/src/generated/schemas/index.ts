@@ -10,6 +10,7 @@ This is the single source of truth for API types.
 
 export * from './ageDistribution';
 export * from './authUser';
+export * from './createStoreRequest';
 export * from './createTradeAreaRequest';
 export * from './createUserRequest';
 export * from './demographicDataResponse';
@@ -25,12 +26,15 @@ export * from './messageResponse';
 export * from './refreshTokenRequest';
 export * from './registerRequest';
 export * from './resetPasswordRequest';
+export * from './storeResponse';
+export * from './storesResponse';
 export * from './tokenResponse';
 export * from './tokenResponseTokenType';
 export * from './tradeAreaResponse';
 export * from './tradeAreasResponse';
 export * from './updateNameRequest';
 export * from './updatePasswordRequest';
+export * from './updateStoreRequest';
 export * from './updateTradeAreaRequest';
 export * from './user';
 export * from './usersResponse';

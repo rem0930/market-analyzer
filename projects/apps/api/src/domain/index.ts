@@ -61,3 +61,7 @@ export type {
   TradeAreaRepository,
   DemographicDataProvider,
 } from './trade-area/index.js';
+
+// Store domain
+export { StoreName, StoreAddress, StoreId, Store, StoreCreatedEvent } from './store/index.js';
+export type { CreateStoreParams, StoreRepository } from './store/index.js';

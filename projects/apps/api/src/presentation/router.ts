@@ -13,6 +13,7 @@ import type { AuthController } from './controllers/auth-controller.js';
 import type { ProfileController } from './controllers/profile-controller.js';
 import type { DeepPingController } from './controllers/deep-ping-controller.js';
 import type { TradeAreaController } from './controllers/trade-area-controller.js';
+import type { StoreController } from './controllers/store-controller.js';
 import type { AuthMiddleware } from './middleware/auth-middleware.js';
 import type { SecurityMiddleware } from './middleware/security-middleware.js';
 import type { CorsMiddleware } from './middleware/cors-middleware.js';
@@ -31,6 +32,7 @@ import { createAuthRoutes } from './routes/auth.js';
 import { createUserRoutes } from './routes/users.js';
 import { createHealthRoutes } from './routes/health.js';
 import { createTradeAreaRoutes } from './routes/trade-areas.js';
+import { createStoreRoutes } from './routes/stores.js';
 
 export interface RouteContext {
   userController: UserController;
@@ -38,6 +40,7 @@ export interface RouteContext {
   profileController: ProfileController;
   deepPingController: DeepPingController;
   tradeAreaController: TradeAreaController;
+  storeController: StoreController;
   authMiddleware: AuthMiddleware;
   securityMiddleware: SecurityMiddleware;
   corsMiddleware: CorsMiddleware;
@@ -70,6 +73,7 @@ function getCompiledRoutes(context: RouteContext): CompiledRoute[] {
     ...createAuthRoutes(context.authController),
     ...createUserRoutes(context.userController, context.profileController),
     ...createTradeAreaRoutes(context.tradeAreaController),
+    ...createStoreRoutes(context.storeController),
   ];
 
   // ルートをコンパイルしてキャッシュ

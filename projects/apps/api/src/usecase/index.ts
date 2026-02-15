@@ -96,3 +96,27 @@ export {
   type ChangePasswordOutput,
   type ChangePasswordError,
 } from './profile/index.js';
+
+// Store usecases
+export {
+  CreateStoreUseCase,
+  type CreateStoreInput,
+  type CreateStoreOutput,
+  type CreateStoreError,
+  GetStoreUseCase,
+  type GetStoreInput,
+  type GetStoreOutput,
+  type GetStoreError,
+  ListStoresUseCase,
+  type ListStoresInput,
+  type ListStoresOutput,
+  type ListStoresError,
+  type StoreItem,
+  UpdateStoreUseCase,
+  type UpdateStoreInput,
+  type UpdateStoreOutput,
+  type UpdateStoreError,
+  DeleteStoreUseCase,
+  type DeleteStoreInput,
+  type DeleteStoreError,
+} from './store/index.js';

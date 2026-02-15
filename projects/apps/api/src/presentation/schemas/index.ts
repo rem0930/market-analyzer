@@ -33,3 +33,10 @@ export {
   type UpdateNameInput,
   type UpdatePasswordInput,
 } from './profile-schemas.js';
+
+export {
+  createStoreSchema,
+  updateStoreSchema,
+  type CreateStoreInput,
+  type UpdateStoreInput,
+} from './store-schemas.js';
