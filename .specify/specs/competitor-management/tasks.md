@@ -49,9 +49,9 @@
 
 | # | Task | FR/AC | Estimate | Status | PR |
 |---|------|-------|----------|--------|-----|
-| 4.1 | DocDD Spec 作成 | - | S | ✅ | - |
-| 4.2 | OpenAPI YAML ファイル作成 | FR-002 | S | ✅ | - |
-| 4.3 | Prisma migration 生成 | FR-004 | S | ✅ | - |
+| 4.1 | DocDD Spec 作成 | - | S | ✅ | #23 |
+| 4.2 | OpenAPI YAML ファイル作成 | FR-002 | S | ✅ | #23 |
+| 4.3 | Prisma migration 生成 | FR-004 | S | ✅ | #23 |
 
 ---
 
