@@ -1,0 +1,471 @@
+openapi: 3.0.3
+info:
+  title: Competitors API
+  description: |
+    自店舗に紐づく競合店舗を管理する Competitors API。
+    手動登録と Google Places API 自動検索の 2 経路を source フィールドで区別する。
+    アクセス制御は userId → storeId → competitorId の 2 段階で実施。
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3001
+    description: Local development server
+
+security:
+  - bearerAuth: []
+
+paths:
+  /stores/{storeId}/competitors:
+    parameters:
+      - name: storeId
+        in: path
+        required: true
+        description: 競合店舗を紐づける自店舗の ID
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: createCompetitor
+      summary: Create Competitor
+      description: |
+        指定した自店舗に競合店舗を新規登録する。
+        自店舗の所有権チェック（userId 一致）を行い、不一致の場合は 404 を返す。
+      tags:
+        - Competitors
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCompetitorRequest'
+            examples:
+              manual:
+                summary: 手動登録
+                value:
+                  name: "ライバル店A"
+                  longitude: 139.7671
+                  latitude: 35.6812
+                  source: "manual"
+                  category: "コンビニ"
+              googlePlaces:
+                summary: Google Places から登録
+                value:
+                  name: "ライバル店B"
+                  longitude: 139.7690
+                  latitude: 35.6820
+                  source: "google_places"
+                  googlePlaceId: "ChIJN1t_tDeuEmsRUsoyG83frY4"
+                  category: "スーパーマーケット"
+      responses:
+        '201':
+          description: 競合店舗の作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompetitorResponse'
+              examples:
+                success:
+                  summary: 作成成功
+                  value:
+                    id: "660e8400-e29b-41d4-a716-446655440001"
+                    storeId: "550e8400-e29b-41d4-a716-446655440000"
+                    name: "ライバル店A"
+                    longitude: 139.7671
+                    latitude: 35.6812
+                    source: "manual"
+                    googlePlaceId: null
+                    category: "コンビニ"
+                    createdAt: "2026-02-15T12:00:00.000Z"
+                    updatedAt: "2026-02-15T12:00:00.000Z"
+        '400':
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidName:
+                  summary: 名前が不正
+                  value:
+                    code: "VALIDATION_ERROR"
+                    message: "Name must be at least 1 character"
+                invalidSource:
+                  summary: source が不正
+                  value:
+                    code: "VALIDATION_ERROR"
+                    message: "Source must be \"manual\" or \"google_places\""
+        '401':
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                unauthorized:
+                  summary: 未認証
+                  value:
+                    code: "UNAUTHORIZED"
+                    message: "Authentication required"
+        '404':
+          description: 店舗が見つからない（所有権なしを含む）
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                notFound:
+                  summary: 店舗が見つからない
+                  value:
+                    code: "NOT_FOUND"
+                    message: "Store not found"
+    get:
+      operationId: listCompetitorsByStore
+      summary: List Competitors by Store
+      description: |
+        指定した自店舗に紐づく競合店舗の一覧を取得する。
+        自店舗の所有権チェックを行い、不一致の場合は 404 を返す。
+      tags:
+        - Competitors
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 競合店舗一覧の取得成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompetitorsResponse'
+              examples:
+                success:
+                  summary: 一覧取得成功
+                  value:
+                    competitors:
+                      - id: "660e8400-e29b-41d4-a716-446655440001"
+                        storeId: "550e8400-e29b-41d4-a716-446655440000"
+                        name: "ライバル店A"
+                        longitude: 139.7671
+                        latitude: 35.6812
+                        source: "manual"
+                        googlePlaceId: null
+                        category: "コンビニ"
+                        createdAt: "2026-02-15T12:00:00.000Z"
+                        updatedAt: "2026-02-15T12:00:00.000Z"
+                    total: 1
+        '401':
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 店舗が見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /competitors/{competitorId}:
+    parameters:
+      - name: competitorId
+        in: path
+        required: true
+        description: 競合店舗の ID
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: getCompetitor
+      summary: Get Competitor
+      description: |
+        競合店舗を個別取得する。
+        競合店舗の storeId を経由して所有権チェックを行い、不一致の場合は 404 を返す。
+      tags:
+        - Competitors
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 競合店舗の取得成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompetitorResponse'
+        '401':
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 競合店舗が見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    patch:
+      operationId: updateCompetitor
+      summary: Update Competitor
+      description: |
+        競合店舗を部分更新する。name, location (lng/lat), category の任意の組み合わせを更新可能。
+        座標は longitude と latitude をペアで指定する必要がある。
+        source と googlePlaceId は不変。
+      tags:
+        - Competitors
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCompetitorRequest'
+            examples:
+              nameOnly:
+                summary: 名前のみ更新
+                value:
+                  name: "ライバル店A（改名）"
+              locationAndCategory:
+                summary: 座標とカテゴリを更新
+                value:
+                  longitude: 139.7680
+                  latitude: 35.6815
+                  category: "ドラッグストア"
+      responses:
+        '200':
+          description: 競合店舗の更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompetitorResponse'
+        '400':
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missingLatitude:
+                  summary: 座標ペア不足
+                  value:
+                    code: "VALIDATION_ERROR"
+                    message: "Both longitude and latitude must be provided together"
+                emptyBody:
+                  summary: 更新フィールドなし
+                  value:
+                    code: "VALIDATION_ERROR"
+                    message: "At least one field must be provided"
+        '401':
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 競合店舗が見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      operationId: deleteCompetitor
+      summary: Delete Competitor
+      description: |
+        競合店舗を削除する。
+        競合店舗の storeId を経由して所有権チェックを行い、不一致の場合は 404 を返す。
+      tags:
+        - Competitors
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: 競合店舗の削除成功（レスポンスボディなし）
+        '401':
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 競合店舗が見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT アクセストークン
+
+  schemas:
+    CreateCompetitorRequest:
+      type: object
+      required:
+        - name
+        - longitude
+        - latitude
+        - source
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: 競合店舗名（1〜100文字）
+          example: "ライバル店A"
+        longitude:
+          type: number
+          minimum: -180
+          maximum: 180
+          description: 経度（-180〜180）
+          example: 139.7671
+        latitude:
+          type: number
+          minimum: -90
+          maximum: 90
+          description: 緯度（-90〜90）
+          example: 35.6812
+        source:
+          type: string
+          enum:
+            - manual
+            - google_places
+          description: 登録経路（手動登録 or Google Places）
+          example: "manual"
+        googlePlaceId:
+          type: string
+          maxLength: 200
+          description: Google Places API の Place ID（source が google_places の場合）
+          example: "ChIJN1t_tDeuEmsRUsoyG83frY4"
+        category:
+          type: string
+          maxLength: 100
+          description: 競合店舗のカテゴリ（任意）
+          example: "コンビニ"
+
+    UpdateCompetitorRequest:
+      type: object
+      description: |
+        少なくとも 1 つのフィールドが必要。
+        座標（longitude / latitude）はペアで指定する必要がある。
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: 競合店舗名（1〜100文字）
+        longitude:
+          type: number
+          minimum: -180
+          maximum: 180
+          description: 経度（latitude とペアで指定）
+        latitude:
+          type: number
+          minimum: -90
+          maximum: 90
+          description: 緯度（longitude とペアで指定）
+        category:
+          type: string
+          maxLength: 100
+          nullable: true
+          description: 競合店舗のカテゴリ（null で削除可能）
+
+    CompetitorResponse:
+      type: object
+      required:
+        - id
+        - storeId
+        - name
+        - longitude
+        - latitude
+        - source
+        - googlePlaceId
+        - category
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: 競合店舗 ID
+          example: "660e8400-e29b-41d4-a716-446655440001"
+        storeId:
+          type: string
+          format: uuid
+          description: 紐づく自店舗 ID
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        name:
+          type: string
+          description: 競合店舗名
+          example: "ライバル店A"
+        longitude:
+          type: number
+          description: 経度
+          example: 139.7671
+        latitude:
+          type: number
+          description: 緯度
+          example: 35.6812
+        source:
+          type: string
+          enum:
+            - manual
+            - google_places
+          description: 登録経路
+          example: "manual"
+        googlePlaceId:
+          type: string
+          nullable: true
+          description: Google Places API の Place ID
+          example: null
+        category:
+          type: string
+          nullable: true
+          description: 競合店舗のカテゴリ
+          example: "コンビニ"
+        createdAt:
+          type: string
+          format: date-time
+          description: 作成日時（ISO 8601 形式）
+          example: "2026-02-15T12:00:00.000Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: 更新日時（ISO 8601 形式）
+          example: "2026-02-15T12:00:00.000Z"
+
+    CompetitorsResponse:
+      type: object
+      required:
+        - competitors
+        - total
+      properties:
+        competitors:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompetitorResponse'
+          description: 競合店舗のリスト
+        total:
+          type: integer
+          minimum: 0
+          description: 競合店舗の総数
+          example: 5
+
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: エラーコード
+          example: "VALIDATION_ERROR"
+        message:
+          type: string
+          description: エラーメッセージ
+          example: "Name is required"
