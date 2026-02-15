@@ -12,7 +12,7 @@ import type {
   ErrorResponse,
   StoreResponse,
   StoresResponse,
-  UpdateStoreRequest,
+  UpdateStoreRequest
 } from '.././schemas';
 
 import { customFetch } from '../../http-client';
@@ -21,209 +21,237 @@ import { customFetch } from '../../http-client';
  * @summary Create a new store
  */
 export type createStoreResponse201 = {
-  data: StoreResponse;
-  status: 201;
-};
+  data: StoreResponse
+  status: 201
+}
 
 export type createStoreResponse400 = {
-  data: ErrorResponse;
-  status: 400;
-};
+  data: ErrorResponse
+  status: 400
+}
 
 export type createStoreResponse401 = {
-  data: ErrorResponse;
-  status: 401;
-};
-
-export type createStoreResponseSuccess = createStoreResponse201 & {
+  data: ErrorResponse
+  status: 401
+}
+    
+export type createStoreResponseSuccess = (createStoreResponse201) & {
   headers: Headers;
 };
 export type createStoreResponseError = (createStoreResponse400 | createStoreResponse401) & {
   headers: Headers;
 };
 
-export type createStoreResponse = createStoreResponseSuccess | createStoreResponseError;
+export type createStoreResponse = (createStoreResponseSuccess | createStoreResponseError)
 
 export const getCreateStoreUrl = () => {
-  return `/stores`;
-};
 
-export const createStore = async (
-  createStoreRequest: CreateStoreRequest,
-  options?: RequestInit
-): Promise<createStoreResponse> => {
-  return customFetch<createStoreResponse>(getCreateStoreUrl(), {
+
+  
+
+  return `/stores`
+}
+
+export const createStore = async (createStoreRequest: CreateStoreRequest, options?: RequestInit): Promise<createStoreResponse> => {
+  
+  return customFetch<createStoreResponse>(getCreateStoreUrl(),
+  {      
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(createStoreRequest),
-  });
-};
+    body: JSON.stringify(
+      createStoreRequest,)
+  }
+);}
+
 
 /**
  * @summary List stores for current user
  */
 export type listStoresResponse200 = {
-  data: StoresResponse;
-  status: 200;
-};
+  data: StoresResponse
+  status: 200
+}
 
 export type listStoresResponse401 = {
-  data: ErrorResponse;
-  status: 401;
-};
-
-export type listStoresResponseSuccess = listStoresResponse200 & {
+  data: ErrorResponse
+  status: 401
+}
+    
+export type listStoresResponseSuccess = (listStoresResponse200) & {
   headers: Headers;
 };
-export type listStoresResponseError = listStoresResponse401 & {
+export type listStoresResponseError = (listStoresResponse401) & {
   headers: Headers;
 };
 
-export type listStoresResponse = listStoresResponseSuccess | listStoresResponseError;
+export type listStoresResponse = (listStoresResponseSuccess | listStoresResponseError)
 
 export const getListStoresUrl = () => {
-  return `/stores`;
-};
 
-export const listStores = async (options?: RequestInit): Promise<listStoresResponse> => {
-  return customFetch<listStoresResponse>(getListStoresUrl(), {
+
+  
+
+  return `/stores`
+}
+
+export const listStores = async ( options?: RequestInit): Promise<listStoresResponse> => {
+  
+  return customFetch<listStoresResponse>(getListStoresUrl(),
+  {      
     ...options,
-    method: 'GET',
-  });
-};
+    method: 'GET'
+    
+    
+  }
+);}
+
 
 /**
  * @summary Get a store by ID
  */
 export type getStoreResponse200 = {
-  data: StoreResponse;
-  status: 200;
-};
+  data: StoreResponse
+  status: 200
+}
 
 export type getStoreResponse401 = {
-  data: ErrorResponse;
-  status: 401;
-};
+  data: ErrorResponse
+  status: 401
+}
 
 export type getStoreResponse404 = {
-  data: ErrorResponse;
-  status: 404;
-};
-
-export type getStoreResponseSuccess = getStoreResponse200 & {
+  data: ErrorResponse
+  status: 404
+}
+    
+export type getStoreResponseSuccess = (getStoreResponse200) & {
   headers: Headers;
 };
 export type getStoreResponseError = (getStoreResponse401 | getStoreResponse404) & {
   headers: Headers;
 };
 
-export type getStoreResponse = getStoreResponseSuccess | getStoreResponseError;
+export type getStoreResponse = (getStoreResponseSuccess | getStoreResponseError)
 
-export const getGetStoreUrl = (storeId: string) => {
-  return `/stores/${storeId}`;
-};
+export const getGetStoreUrl = (storeId: string,) => {
 
-export const getStore = async (
-  storeId: string,
-  options?: RequestInit
-): Promise<getStoreResponse> => {
-  return customFetch<getStoreResponse>(getGetStoreUrl(storeId), {
+
+  
+
+  return `/stores/${storeId}`
+}
+
+export const getStore = async (storeId: string, options?: RequestInit): Promise<getStoreResponse> => {
+  
+  return customFetch<getStoreResponse>(getGetStoreUrl(storeId),
+  {      
     ...options,
-    method: 'GET',
-  });
-};
+    method: 'GET'
+    
+    
+  }
+);}
+
 
 /**
  * @summary Update a store
  */
 export type updateStoreResponse200 = {
-  data: StoreResponse;
-  status: 200;
-};
+  data: StoreResponse
+  status: 200
+}
 
 export type updateStoreResponse400 = {
-  data: ErrorResponse;
-  status: 400;
-};
+  data: ErrorResponse
+  status: 400
+}
 
 export type updateStoreResponse401 = {
-  data: ErrorResponse;
-  status: 401;
-};
+  data: ErrorResponse
+  status: 401
+}
 
 export type updateStoreResponse404 = {
-  data: ErrorResponse;
-  status: 404;
-};
-
-export type updateStoreResponseSuccess = updateStoreResponse200 & {
+  data: ErrorResponse
+  status: 404
+}
+    
+export type updateStoreResponseSuccess = (updateStoreResponse200) & {
   headers: Headers;
 };
-export type updateStoreResponseError = (
-  | updateStoreResponse400
-  | updateStoreResponse401
-  | updateStoreResponse404
-) & {
+export type updateStoreResponseError = (updateStoreResponse400 | updateStoreResponse401 | updateStoreResponse404) & {
   headers: Headers;
 };
 
-export type updateStoreResponse = updateStoreResponseSuccess | updateStoreResponseError;
+export type updateStoreResponse = (updateStoreResponseSuccess | updateStoreResponseError)
 
-export const getUpdateStoreUrl = (storeId: string) => {
-  return `/stores/${storeId}`;
-};
+export const getUpdateStoreUrl = (storeId: string,) => {
 
-export const updateStore = async (
-  storeId: string,
-  updateStoreRequest: UpdateStoreRequest,
-  options?: RequestInit
-): Promise<updateStoreResponse> => {
-  return customFetch<updateStoreResponse>(getUpdateStoreUrl(storeId), {
+
+  
+
+  return `/stores/${storeId}`
+}
+
+export const updateStore = async (storeId: string,
+    updateStoreRequest: UpdateStoreRequest, options?: RequestInit): Promise<updateStoreResponse> => {
+  
+  return customFetch<updateStoreResponse>(getUpdateStoreUrl(storeId),
+  {      
     ...options,
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(updateStoreRequest),
-  });
-};
+    body: JSON.stringify(
+      updateStoreRequest,)
+  }
+);}
+
 
 /**
  * @summary Delete a store
  */
 export type deleteStoreResponse204 = {
-  data: void;
-  status: 204;
-};
+  data: void
+  status: 204
+}
 
 export type deleteStoreResponse401 = {
-  data: ErrorResponse;
-  status: 401;
-};
+  data: ErrorResponse
+  status: 401
+}
 
 export type deleteStoreResponse404 = {
-  data: ErrorResponse;
-  status: 404;
-};
-
-export type deleteStoreResponseSuccess = deleteStoreResponse204 & {
+  data: ErrorResponse
+  status: 404
+}
+    
+export type deleteStoreResponseSuccess = (deleteStoreResponse204) & {
   headers: Headers;
 };
 export type deleteStoreResponseError = (deleteStoreResponse401 | deleteStoreResponse404) & {
   headers: Headers;
 };
 
-export type deleteStoreResponse = deleteStoreResponseSuccess | deleteStoreResponseError;
+export type deleteStoreResponse = (deleteStoreResponseSuccess | deleteStoreResponseError)
 
-export const getDeleteStoreUrl = (storeId: string) => {
-  return `/stores/${storeId}`;
-};
+export const getDeleteStoreUrl = (storeId: string,) => {
 
-export const deleteStore = async (
-  storeId: string,
-  options?: RequestInit
-): Promise<deleteStoreResponse> => {
-  return customFetch<deleteStoreResponse>(getDeleteStoreUrl(storeId), {
+
+  
+
+  return `/stores/${storeId}`
+}
+
+export const deleteStore = async (storeId: string, options?: RequestInit): Promise<deleteStoreResponse> => {
+  
+  return customFetch<deleteStoreResponse>(getDeleteStoreUrl(storeId),
+  {      
     ...options,
-    method: 'DELETE',
-  });
-};
+    method: 'DELETE'
+    
+    
+  }
+);}
+
+
