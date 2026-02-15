@@ -15,8 +15,8 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts",
     "typecheck": "tsc --noEmit",
-    "openapi:generate": "orval",
-    "openapi:check": "orval && git diff --exit-code src/generated || (echo 'Error: Generated files are out of date. Run pnpm openapi:generate' && exit 1)"
+    "openapi:generate": "orval && prettier --write src/generated",
+    "openapi:check": "orval && prettier --write src/generated && git diff --exit-code src/generated || (echo 'Error: Generated files are out of date. Run pnpm openapi:generate' && exit 1)"
   },
   "devDependencies": {
     "orval": "^8.3.0",
