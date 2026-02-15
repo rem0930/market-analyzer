@@ -13,7 +13,7 @@ import type {
   ErrorResponse,
   TradeAreaResponse,
   TradeAreasResponse,
-  UpdateTradeAreaRequest
+  UpdateTradeAreaRequest,
 } from '.././schemas';
 
 import { customFetch } from '../../http-client';
@@ -22,284 +22,264 @@ import { customFetch } from '../../http-client';
  * @summary Create a new trade area
  */
 export type createTradeAreaResponse201 = {
-  data: TradeAreaResponse
-  status: 201
-}
+  data: TradeAreaResponse;
+  status: 201;
+};
 
 export type createTradeAreaResponse400 = {
-  data: ErrorResponse
-  status: 400
-}
+  data: ErrorResponse;
+  status: 400;
+};
 
 export type createTradeAreaResponse401 = {
-  data: ErrorResponse
-  status: 401
-}
-    
-export type createTradeAreaResponseSuccess = (createTradeAreaResponse201) & {
+  data: ErrorResponse;
+  status: 401;
+};
+
+export type createTradeAreaResponseSuccess = createTradeAreaResponse201 & {
   headers: Headers;
 };
-export type createTradeAreaResponseError = (createTradeAreaResponse400 | createTradeAreaResponse401) & {
+export type createTradeAreaResponseError = (
+  | createTradeAreaResponse400
+  | createTradeAreaResponse401
+) & {
   headers: Headers;
 };
 
-export type createTradeAreaResponse = (createTradeAreaResponseSuccess | createTradeAreaResponseError)
+export type createTradeAreaResponse = createTradeAreaResponseSuccess | createTradeAreaResponseError;
 
 export const getCreateTradeAreaUrl = () => {
+  return `/trade-areas`;
+};
 
-
-  
-
-  return `/trade-areas`
-}
-
-export const createTradeArea = async (createTradeAreaRequest: CreateTradeAreaRequest, options?: RequestInit): Promise<createTradeAreaResponse> => {
-  
-  return customFetch<createTradeAreaResponse>(getCreateTradeAreaUrl(),
-  {      
+export const createTradeArea = async (
+  createTradeAreaRequest: CreateTradeAreaRequest,
+  options?: RequestInit
+): Promise<createTradeAreaResponse> => {
+  return customFetch<createTradeAreaResponse>(getCreateTradeAreaUrl(), {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      createTradeAreaRequest,)
-  }
-);}
-
+    body: JSON.stringify(createTradeAreaRequest),
+  });
+};
 
 /**
  * @summary List trade areas for current user
  */
 export type listTradeAreasResponse200 = {
-  data: TradeAreasResponse
-  status: 200
-}
+  data: TradeAreasResponse;
+  status: 200;
+};
 
 export type listTradeAreasResponse401 = {
-  data: ErrorResponse
-  status: 401
-}
-    
-export type listTradeAreasResponseSuccess = (listTradeAreasResponse200) & {
+  data: ErrorResponse;
+  status: 401;
+};
+
+export type listTradeAreasResponseSuccess = listTradeAreasResponse200 & {
   headers: Headers;
 };
-export type listTradeAreasResponseError = (listTradeAreasResponse401) & {
+export type listTradeAreasResponseError = listTradeAreasResponse401 & {
   headers: Headers;
 };
 
-export type listTradeAreasResponse = (listTradeAreasResponseSuccess | listTradeAreasResponseError)
+export type listTradeAreasResponse = listTradeAreasResponseSuccess | listTradeAreasResponseError;
 
 export const getListTradeAreasUrl = () => {
+  return `/trade-areas`;
+};
 
-
-  
-
-  return `/trade-areas`
-}
-
-export const listTradeAreas = async ( options?: RequestInit): Promise<listTradeAreasResponse> => {
-  
-  return customFetch<listTradeAreasResponse>(getListTradeAreasUrl(),
-  {      
+export const listTradeAreas = async (options?: RequestInit): Promise<listTradeAreasResponse> => {
+  return customFetch<listTradeAreasResponse>(getListTradeAreasUrl(), {
     ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
+    method: 'GET',
+  });
+};
 
 /**
  * @summary Get a trade area by ID
  */
 export type getTradeAreaResponse200 = {
-  data: TradeAreaResponse
-  status: 200
-}
+  data: TradeAreaResponse;
+  status: 200;
+};
 
 export type getTradeAreaResponse401 = {
-  data: ErrorResponse
-  status: 401
-}
+  data: ErrorResponse;
+  status: 401;
+};
 
 export type getTradeAreaResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
-    
-export type getTradeAreaResponseSuccess = (getTradeAreaResponse200) & {
+  data: ErrorResponse;
+  status: 404;
+};
+
+export type getTradeAreaResponseSuccess = getTradeAreaResponse200 & {
   headers: Headers;
 };
 export type getTradeAreaResponseError = (getTradeAreaResponse401 | getTradeAreaResponse404) & {
   headers: Headers;
 };
 
-export type getTradeAreaResponse = (getTradeAreaResponseSuccess | getTradeAreaResponseError)
+export type getTradeAreaResponse = getTradeAreaResponseSuccess | getTradeAreaResponseError;
 
-export const getGetTradeAreaUrl = (tradeAreaId: string,) => {
+export const getGetTradeAreaUrl = (tradeAreaId: string) => {
+  return `/trade-areas/${tradeAreaId}`;
+};
 
-
-  
-
-  return `/trade-areas/${tradeAreaId}`
-}
-
-export const getTradeArea = async (tradeAreaId: string, options?: RequestInit): Promise<getTradeAreaResponse> => {
-  
-  return customFetch<getTradeAreaResponse>(getGetTradeAreaUrl(tradeAreaId),
-  {      
+export const getTradeArea = async (
+  tradeAreaId: string,
+  options?: RequestInit
+): Promise<getTradeAreaResponse> => {
+  return customFetch<getTradeAreaResponse>(getGetTradeAreaUrl(tradeAreaId), {
     ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
+    method: 'GET',
+  });
+};
 
 /**
  * @summary Update a trade area
  */
 export type updateTradeAreaResponse200 = {
-  data: TradeAreaResponse
-  status: 200
-}
+  data: TradeAreaResponse;
+  status: 200;
+};
 
 export type updateTradeAreaResponse400 = {
-  data: ErrorResponse
-  status: 400
-}
+  data: ErrorResponse;
+  status: 400;
+};
 
 export type updateTradeAreaResponse401 = {
-  data: ErrorResponse
-  status: 401
-}
+  data: ErrorResponse;
+  status: 401;
+};
 
 export type updateTradeAreaResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
-    
-export type updateTradeAreaResponseSuccess = (updateTradeAreaResponse200) & {
-  headers: Headers;
-};
-export type updateTradeAreaResponseError = (updateTradeAreaResponse400 | updateTradeAreaResponse401 | updateTradeAreaResponse404) & {
-  headers: Headers;
+  data: ErrorResponse;
+  status: 404;
 };
 
-export type updateTradeAreaResponse = (updateTradeAreaResponseSuccess | updateTradeAreaResponseError)
+export type updateTradeAreaResponseSuccess = updateTradeAreaResponse200 & {
+  headers: Headers;
+};
+export type updateTradeAreaResponseError = (
+  | updateTradeAreaResponse400
+  | updateTradeAreaResponse401
+  | updateTradeAreaResponse404
+) & {
+  headers: Headers;
+};
 
-export const getUpdateTradeAreaUrl = (tradeAreaId: string,) => {
+export type updateTradeAreaResponse = updateTradeAreaResponseSuccess | updateTradeAreaResponseError;
 
+export const getUpdateTradeAreaUrl = (tradeAreaId: string) => {
+  return `/trade-areas/${tradeAreaId}`;
+};
 
-  
-
-  return `/trade-areas/${tradeAreaId}`
-}
-
-export const updateTradeArea = async (tradeAreaId: string,
-    updateTradeAreaRequest: UpdateTradeAreaRequest, options?: RequestInit): Promise<updateTradeAreaResponse> => {
-  
-  return customFetch<updateTradeAreaResponse>(getUpdateTradeAreaUrl(tradeAreaId),
-  {      
+export const updateTradeArea = async (
+  tradeAreaId: string,
+  updateTradeAreaRequest: UpdateTradeAreaRequest,
+  options?: RequestInit
+): Promise<updateTradeAreaResponse> => {
+  return customFetch<updateTradeAreaResponse>(getUpdateTradeAreaUrl(tradeAreaId), {
     ...options,
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      updateTradeAreaRequest,)
-  }
-);}
-
+    body: JSON.stringify(updateTradeAreaRequest),
+  });
+};
 
 /**
  * @summary Delete a trade area
  */
 export type deleteTradeAreaResponse204 = {
-  data: void
-  status: 204
-}
+  data: void;
+  status: 204;
+};
 
 export type deleteTradeAreaResponse401 = {
-  data: ErrorResponse
-  status: 401
-}
+  data: ErrorResponse;
+  status: 401;
+};
 
 export type deleteTradeAreaResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
-    
-export type deleteTradeAreaResponseSuccess = (deleteTradeAreaResponse204) & {
-  headers: Headers;
-};
-export type deleteTradeAreaResponseError = (deleteTradeAreaResponse401 | deleteTradeAreaResponse404) & {
-  headers: Headers;
+  data: ErrorResponse;
+  status: 404;
 };
 
-export type deleteTradeAreaResponse = (deleteTradeAreaResponseSuccess | deleteTradeAreaResponseError)
+export type deleteTradeAreaResponseSuccess = deleteTradeAreaResponse204 & {
+  headers: Headers;
+};
+export type deleteTradeAreaResponseError = (
+  | deleteTradeAreaResponse401
+  | deleteTradeAreaResponse404
+) & {
+  headers: Headers;
+};
 
-export const getDeleteTradeAreaUrl = (tradeAreaId: string,) => {
+export type deleteTradeAreaResponse = deleteTradeAreaResponseSuccess | deleteTradeAreaResponseError;
 
+export const getDeleteTradeAreaUrl = (tradeAreaId: string) => {
+  return `/trade-areas/${tradeAreaId}`;
+};
 
-  
-
-  return `/trade-areas/${tradeAreaId}`
-}
-
-export const deleteTradeArea = async (tradeAreaId: string, options?: RequestInit): Promise<deleteTradeAreaResponse> => {
-  
-  return customFetch<deleteTradeAreaResponse>(getDeleteTradeAreaUrl(tradeAreaId),
-  {      
+export const deleteTradeArea = async (
+  tradeAreaId: string,
+  options?: RequestInit
+): Promise<deleteTradeAreaResponse> => {
+  return customFetch<deleteTradeAreaResponse>(getDeleteTradeAreaUrl(tradeAreaId), {
     ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
-
+    method: 'DELETE',
+  });
+};
 
 /**
  * @summary Get demographic data for a trade area
  */
 export type getTradeAreaDemographicsResponse200 = {
-  data: DemographicDataResponse
-  status: 200
-}
+  data: DemographicDataResponse;
+  status: 200;
+};
 
 export type getTradeAreaDemographicsResponse401 = {
-  data: ErrorResponse
-  status: 401
-}
+  data: ErrorResponse;
+  status: 401;
+};
 
 export type getTradeAreaDemographicsResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
-    
-export type getTradeAreaDemographicsResponseSuccess = (getTradeAreaDemographicsResponse200) & {
-  headers: Headers;
-};
-export type getTradeAreaDemographicsResponseError = (getTradeAreaDemographicsResponse401 | getTradeAreaDemographicsResponse404) & {
-  headers: Headers;
+  data: ErrorResponse;
+  status: 404;
 };
 
-export type getTradeAreaDemographicsResponse = (getTradeAreaDemographicsResponseSuccess | getTradeAreaDemographicsResponseError)
+export type getTradeAreaDemographicsResponseSuccess = getTradeAreaDemographicsResponse200 & {
+  headers: Headers;
+};
+export type getTradeAreaDemographicsResponseError = (
+  | getTradeAreaDemographicsResponse401
+  | getTradeAreaDemographicsResponse404
+) & {
+  headers: Headers;
+};
 
-export const getGetTradeAreaDemographicsUrl = (tradeAreaId: string,) => {
+export type getTradeAreaDemographicsResponse =
+  | getTradeAreaDemographicsResponseSuccess
+  | getTradeAreaDemographicsResponseError;
 
+export const getGetTradeAreaDemographicsUrl = (tradeAreaId: string) => {
+  return `/trade-areas/${tradeAreaId}/demographics`;
+};
 
-  
-
-  return `/trade-areas/${tradeAreaId}/demographics`
-}
-
-export const getTradeAreaDemographics = async (tradeAreaId: string, options?: RequestInit): Promise<getTradeAreaDemographicsResponse> => {
-  
-  return customFetch<getTradeAreaDemographicsResponse>(getGetTradeAreaDemographicsUrl(tradeAreaId),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
+export const getTradeAreaDemographics = async (
+  tradeAreaId: string,
+  options?: RequestInit
+): Promise<getTradeAreaDemographicsResponse> => {
+  return customFetch<getTradeAreaDemographicsResponse>(
+    getGetTradeAreaDemographicsUrl(tradeAreaId),
+    {
+      ...options,
+      method: 'GET',
+    }
+  );
+};

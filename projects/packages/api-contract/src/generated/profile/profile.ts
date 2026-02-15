@@ -12,7 +12,7 @@ import type {
   MessageResponse,
   UpdateNameRequest,
   UpdatePasswordRequest,
-  User
+  User,
 } from '.././schemas';
 
 import { customFetch } from '../../http-client';
@@ -21,95 +21,89 @@ import { customFetch } from '../../http-client';
  * @summary Update current user's name
  */
 export type updateMyNameResponse200 = {
-  data: User
-  status: 200
-}
+  data: User;
+  status: 200;
+};
 
 export type updateMyNameResponse400 = {
-  data: ErrorResponse
-  status: 400
-}
+  data: ErrorResponse;
+  status: 400;
+};
 
 export type updateMyNameResponse401 = {
-  data: ErrorResponse
-  status: 401
-}
-    
-export type updateMyNameResponseSuccess = (updateMyNameResponse200) & {
+  data: ErrorResponse;
+  status: 401;
+};
+
+export type updateMyNameResponseSuccess = updateMyNameResponse200 & {
   headers: Headers;
 };
 export type updateMyNameResponseError = (updateMyNameResponse400 | updateMyNameResponse401) & {
   headers: Headers;
 };
 
-export type updateMyNameResponse = (updateMyNameResponseSuccess | updateMyNameResponseError)
+export type updateMyNameResponse = updateMyNameResponseSuccess | updateMyNameResponseError;
 
 export const getUpdateMyNameUrl = () => {
+  return `/users/me/name`;
+};
 
-
-  
-
-  return `/users/me/name`
-}
-
-export const updateMyName = async (updateNameRequest: UpdateNameRequest, options?: RequestInit): Promise<updateMyNameResponse> => {
-  
-  return customFetch<updateMyNameResponse>(getUpdateMyNameUrl(),
-  {      
+export const updateMyName = async (
+  updateNameRequest: UpdateNameRequest,
+  options?: RequestInit
+): Promise<updateMyNameResponse> => {
+  return customFetch<updateMyNameResponse>(getUpdateMyNameUrl(), {
     ...options,
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      updateNameRequest,)
-  }
-);}
-
+    body: JSON.stringify(updateNameRequest),
+  });
+};
 
 /**
  * @summary Update current user's password
  */
 export type updateMyPasswordResponse200 = {
-  data: MessageResponse
-  status: 200
-}
+  data: MessageResponse;
+  status: 200;
+};
 
 export type updateMyPasswordResponse400 = {
-  data: ErrorResponse
-  status: 400
-}
+  data: ErrorResponse;
+  status: 400;
+};
 
 export type updateMyPasswordResponse401 = {
-  data: ErrorResponse
-  status: 401
-}
-    
-export type updateMyPasswordResponseSuccess = (updateMyPasswordResponse200) & {
+  data: ErrorResponse;
+  status: 401;
+};
+
+export type updateMyPasswordResponseSuccess = updateMyPasswordResponse200 & {
   headers: Headers;
 };
-export type updateMyPasswordResponseError = (updateMyPasswordResponse400 | updateMyPasswordResponse401) & {
+export type updateMyPasswordResponseError = (
+  | updateMyPasswordResponse400
+  | updateMyPasswordResponse401
+) & {
   headers: Headers;
 };
 
-export type updateMyPasswordResponse = (updateMyPasswordResponseSuccess | updateMyPasswordResponseError)
+export type updateMyPasswordResponse =
+  | updateMyPasswordResponseSuccess
+  | updateMyPasswordResponseError;
 
 export const getUpdateMyPasswordUrl = () => {
+  return `/users/me/password`;
+};
 
-
-  
-
-  return `/users/me/password`
-}
-
-export const updateMyPassword = async (updatePasswordRequest: UpdatePasswordRequest, options?: RequestInit): Promise<updateMyPasswordResponse> => {
-  
-  return customFetch<updateMyPasswordResponse>(getUpdateMyPasswordUrl(),
-  {      
+export const updateMyPassword = async (
+  updatePasswordRequest: UpdatePasswordRequest,
+  options?: RequestInit
+): Promise<updateMyPasswordResponse> => {
+  return customFetch<updateMyPasswordResponse>(getUpdateMyPasswordUrl(), {
     ...options,
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      updatePasswordRequest,)
-  }
-);}
-
-
+    body: JSON.stringify(updatePasswordRequest),
+  });
+};

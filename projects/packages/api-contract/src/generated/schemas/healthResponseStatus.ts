@@ -8,8 +8,7 @@ This is the single source of truth for API types.
  * OpenAPI spec version: 0.0.1
  */
 
-export type HealthResponseStatus = typeof HealthResponseStatus[keyof typeof HealthResponseStatus];
-
+export type HealthResponseStatus = (typeof HealthResponseStatus)[keyof typeof HealthResponseStatus];
 
 export const HealthResponseStatus = {
   ok: 'ok',

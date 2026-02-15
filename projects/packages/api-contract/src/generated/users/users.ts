@@ -12,7 +12,7 @@ import type {
   ErrorResponse,
   GetUsersParams,
   User,
-  UsersResponse
+  UsersResponse,
 } from '.././schemas';
 
 import { customFetch } from '../../http-client';
@@ -21,126 +21,109 @@ import { customFetch } from '../../http-client';
  * @summary Get all users
  */
 export type getUsersResponse200 = {
-  data: UsersResponse
-  status: 200
-}
-    
-export type getUsersResponseSuccess = (getUsersResponse200) & {
+  data: UsersResponse;
+  status: 200;
+};
+
+export type getUsersResponseSuccess = getUsersResponse200 & {
   headers: Headers;
 };
-;
+export type getUsersResponse = getUsersResponseSuccess;
 
-export type getUsersResponse = (getUsersResponseSuccess)
-
-export const getGetUsersUrl = (params?: GetUsersParams,) => {
+export const getGetUsersUrl = (params?: GetUsersParams) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    
     if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+      normalizedParams.append(key, value === null ? 'null' : value.toString());
     }
   });
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/users?${stringifiedParams}` : `/users`
-}
+  return stringifiedParams.length > 0 ? `/users?${stringifiedParams}` : `/users`;
+};
 
-export const getUsers = async (params?: GetUsersParams, options?: RequestInit): Promise<getUsersResponse> => {
-  
-  return customFetch<getUsersResponse>(getGetUsersUrl(params),
-  {      
+export const getUsers = async (
+  params?: GetUsersParams,
+  options?: RequestInit
+): Promise<getUsersResponse> => {
+  return customFetch<getUsersResponse>(getGetUsersUrl(params), {
     ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
+    method: 'GET',
+  });
+};
 
 /**
  * @summary Create a new user
  */
 export type createUserResponse201 = {
-  data: User
-  status: 201
-}
+  data: User;
+  status: 201;
+};
 
 export type createUserResponse400 = {
-  data: ErrorResponse
-  status: 400
-}
-    
-export type createUserResponseSuccess = (createUserResponse201) & {
+  data: ErrorResponse;
+  status: 400;
+};
+
+export type createUserResponseSuccess = createUserResponse201 & {
   headers: Headers;
 };
-export type createUserResponseError = (createUserResponse400) & {
+export type createUserResponseError = createUserResponse400 & {
   headers: Headers;
 };
 
-export type createUserResponse = (createUserResponseSuccess | createUserResponseError)
+export type createUserResponse = createUserResponseSuccess | createUserResponseError;
 
 export const getCreateUserUrl = () => {
+  return `/users`;
+};
 
-
-  
-
-  return `/users`
-}
-
-export const createUser = async (createUserRequest: CreateUserRequest, options?: RequestInit): Promise<createUserResponse> => {
-  
-  return customFetch<createUserResponse>(getCreateUserUrl(),
-  {      
+export const createUser = async (
+  createUserRequest: CreateUserRequest,
+  options?: RequestInit
+): Promise<createUserResponse> => {
+  return customFetch<createUserResponse>(getCreateUserUrl(), {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      createUserRequest,)
-  }
-);}
-
+    body: JSON.stringify(createUserRequest),
+  });
+};
 
 /**
  * @summary Get user by ID
  */
 export type getUserByIdResponse200 = {
-  data: User
-  status: 200
-}
+  data: User;
+  status: 200;
+};
 
 export type getUserByIdResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
-    
-export type getUserByIdResponseSuccess = (getUserByIdResponse200) & {
-  headers: Headers;
-};
-export type getUserByIdResponseError = (getUserByIdResponse404) & {
-  headers: Headers;
+  data: ErrorResponse;
+  status: 404;
 };
 
-export type getUserByIdResponse = (getUserByIdResponseSuccess | getUserByIdResponseError)
+export type getUserByIdResponseSuccess = getUserByIdResponse200 & {
+  headers: Headers;
+};
+export type getUserByIdResponseError = getUserByIdResponse404 & {
+  headers: Headers;
+};
 
-export const getGetUserByIdUrl = (userId: string,) => {
+export type getUserByIdResponse = getUserByIdResponseSuccess | getUserByIdResponseError;
 
+export const getGetUserByIdUrl = (userId: string) => {
+  return `/users/${userId}`;
+};
 
-  
-
-  return `/users/${userId}`
-}
-
-export const getUserById = async (userId: string, options?: RequestInit): Promise<getUserByIdResponse> => {
-  
-  return customFetch<getUserByIdResponse>(getGetUserByIdUrl(userId),
-  {      
+export const getUserById = async (
+  userId: string,
+  options?: RequestInit
+): Promise<getUserByIdResponse> => {
+  return customFetch<getUserByIdResponse>(getGetUserByIdUrl(userId), {
     ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
+    method: 'GET',
+  });
+};
