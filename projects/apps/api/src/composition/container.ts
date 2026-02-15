@@ -16,6 +16,7 @@ import {
   InMemoryPasswordResetTokenRepository,
   InMemoryTradeAreaRepository,
   InMemoryStoreRepository,
+  InMemoryCompetitorRepository,
   // Prisma repositories
   PrismaUserRepository,
   PrismaAuthUserRepository,
@@ -23,6 +24,7 @@ import {
   PrismaPasswordResetTokenRepository,
   PrismaTradeAreaRepository,
   PrismaStoreRepository,
+  PrismaCompetitorRepository,
   // Database
   prisma,
   // Services
@@ -61,6 +63,11 @@ import {
   ListStoresUseCase,
   DeleteStoreUseCase,
   UpdateStoreUseCase,
+  CreateCompetitorUseCase,
+  GetCompetitorUseCase,
+  ListCompetitorsByStoreUseCase,
+  DeleteCompetitorUseCase,
+  UpdateCompetitorUseCase,
 } from '../usecase/index.js';
 
 import {
@@ -70,6 +77,7 @@ import {
   DeepPingController,
   TradeAreaController,
   StoreController,
+  CompetitorController,
   AuthMiddleware,
   SecurityMiddleware,
   CorsMiddleware,
@@ -154,6 +162,10 @@ export function createAppContext(): RouteContext {
     ? new PrismaStoreRepository(prisma)
     : new InMemoryStoreRepository();
 
+  const competitorRepository = config.usePrisma
+    ? new PrismaCompetitorRepository(prisma)
+    : new InMemoryCompetitorRepository();
+
   // ============================================
   // Infrastructure - Services
   // ============================================
@@ -226,6 +238,27 @@ export function createAppContext(): RouteContext {
   const updateStoreUseCase = new UpdateStoreUseCase(storeRepository);
 
   // ============================================
+  // UseCases - Competitor
+  // ============================================
+  const createCompetitorUseCase = new CreateCompetitorUseCase(
+    competitorRepository,
+    storeRepository
+  );
+  const getCompetitorUseCase = new GetCompetitorUseCase(competitorRepository, storeRepository);
+  const listCompetitorsByStoreUseCase = new ListCompetitorsByStoreUseCase(
+    competitorRepository,
+    storeRepository
+  );
+  const deleteCompetitorUseCase = new DeleteCompetitorUseCase(
+    competitorRepository,
+    storeRepository
+  );
+  const updateCompetitorUseCase = new UpdateCompetitorUseCase(
+    competitorRepository,
+    storeRepository
+  );
+
+  // ============================================
   // UseCases - Profile
   // ============================================
   const changeNameUseCase = new ChangeNameUseCase(userRepository);
@@ -283,6 +316,14 @@ export function createAppContext(): RouteContext {
     updateStoreUseCase,
     validationMiddleware
   );
+  const competitorController = new CompetitorController(
+    createCompetitorUseCase,
+    getCompetitorUseCase,
+    listCompetitorsByStoreUseCase,
+    deleteCompetitorUseCase,
+    updateCompetitorUseCase,
+    validationMiddleware
+  );
 
   // ============================================
   // Middleware
@@ -303,6 +344,7 @@ export function createAppContext(): RouteContext {
     deepPingController,
     tradeAreaController,
     storeController,
+    competitorController,
     authMiddleware,
     securityMiddleware,
     corsMiddleware,

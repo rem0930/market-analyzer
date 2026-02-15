@@ -94,6 +94,27 @@ model Store {
 
   user AuthUser @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  competitors Competitor[]
+
   @@index([userId])
   @@map("stores")
+}
+
+model Competitor {
+  id            String   @id @default(uuid())
+  storeId       String   @map("store_id")
+  name          String
+  longitude     Float
+  latitude      Float
+  source        String   @default("manual")
+  googlePlaceId String?  @map("google_place_id")
+  category      String?
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  version       Int      @default(0)
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@index([storeId])
+  @@map("competitors")
 }

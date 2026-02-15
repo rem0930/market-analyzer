@@ -120,3 +120,27 @@ export {
   type DeleteStoreInput,
   type DeleteStoreError,
 } from './store/index.js';
+
+// Competitor usecases
+export {
+  CreateCompetitorUseCase,
+  type CreateCompetitorInput,
+  type CreateCompetitorOutput,
+  type CreateCompetitorError,
+  GetCompetitorUseCase,
+  type GetCompetitorInput,
+  type GetCompetitorOutput,
+  type GetCompetitorError,
+  ListCompetitorsByStoreUseCase,
+  type ListCompetitorsByStoreInput,
+  type ListCompetitorsByStoreOutput,
+  type ListCompetitorsByStoreError,
+  type CompetitorItem,
+  UpdateCompetitorUseCase,
+  type UpdateCompetitorInput,
+  type UpdateCompetitorOutput,
+  type UpdateCompetitorError,
+  DeleteCompetitorUseCase,
+  type DeleteCompetitorInput,
+  type DeleteCompetitorError,
+} from './competitor/index.js';
