@@ -43,6 +43,10 @@ export { MockDemographicDataProvider } from './services/mock-demographic-data-pr
 export { InMemoryStoreRepository } from './repositories/in-memory-store-repository.js';
 export { PrismaStoreRepository } from './repositories/prisma-store-repository.js';
 
+// Competitor repositories
+export { InMemoryCompetitorRepository } from './repositories/in-memory-competitor-repository.js';
+export { PrismaCompetitorRepository } from './repositories/prisma-competitor-repository.js';
+
 // Health checkers
 export { PrismaDatabaseHealthChecker } from './health/index.js';
 

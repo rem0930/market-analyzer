@@ -9,6 +9,7 @@ export { ProfileController } from './controllers/profile-controller.js';
 export { DeepPingController } from './controllers/deep-ping-controller.js';
 export { TradeAreaController } from './controllers/trade-area-controller.js';
 export { StoreController } from './controllers/store-controller.js';
+export { CompetitorController } from './controllers/competitor-controller.js';
 export {
   AuthMiddleware,
   type AuthenticatedRequest,
@@ -36,3 +37,4 @@ export { createUserRoutes } from './routes/users.js';
 export { createHealthRoutes } from './routes/health.js';
 export { createTradeAreaRoutes } from './routes/trade-areas.js';
 export { createStoreRoutes } from './routes/stores.js';
+export { createCompetitorRoutes } from './routes/competitors.js';
