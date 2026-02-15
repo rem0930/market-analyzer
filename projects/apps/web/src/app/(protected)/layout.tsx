@@ -7,24 +7,38 @@
  */
 
 import type { ReactNode } from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/features/auth';
+import { useAuthStore, initializeAuthStore } from '@/features/auth';
 import { Header } from '@/widgets/header';
 
 export default function ProtectedLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    // クライアントサイドでの追加チェック
-    if (!isAuthenticated) {
+    const init = async () => {
+      if (!isAuthenticated) {
+        await initializeAuthStore();
+      }
+      setIsInitialized(true);
+    };
+    init();
+  }, []);
+
+  useEffect(() => {
+    if (isInitialized && !isAuthenticated) {
       const refreshToken = localStorage.getItem('refreshToken');
       if (!refreshToken) {
         router.replace('/login');
       }
     }
-  }, [isAuthenticated, router]);
+  }, [isInitialized, isAuthenticated, router]);
+
+  if (!isInitialized) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen flex flex-col">

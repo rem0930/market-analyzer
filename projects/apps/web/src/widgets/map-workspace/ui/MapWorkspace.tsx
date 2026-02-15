@@ -25,6 +25,14 @@ import { TradeAreaCircle } from '@/entities/trade-area';
 import { StoreCreationMode, useStoreCreation } from '@/features/store-creation';
 import { StoreList, useStores, useStoreList, useCreateStore } from '@/features/store-management';
 import { StoreMarker } from '@/entities/store';
+import { CompetitorMarker } from '@/entities/competitor';
+import { CompetitorCreationMode, useCompetitorCreation } from '@/features/competitor-creation';
+import {
+  CompetitorList,
+  useCompetitorsByStore,
+  useCreateCompetitor,
+  useCompetitors,
+} from '@/features/competitor-management';
 
 export function MapWorkspace() {
   const tradeAreaCreation = useTradeAreaCreation();
@@ -41,15 +49,31 @@ export function MapWorkspace() {
   const { data: storesData } = useStoreList();
   const createStoreMutation = useCreateStore();
 
+  const competitorCreation = useCompetitorCreation();
+  const isCompetitorCreating = useCompetitorCreation((s) => s.isCreating);
+  const setCompetitorClickPoint = useCompetitorCreation((s) => s.setClickPoint);
+  const { selectedCompetitorId, selectCompetitor } = useCompetitors();
+  const { data: competitorsData } = useCompetitorsByStore(selectedStoreId);
+  const createCompetitorMutation = useCreateCompetitor();
+
   const handleMapClick = useCallback(
     (e: MapMouseEvent) => {
       if (isStoreCreating) {
         setStoreClickPoint(e.lngLat.lng, e.lngLat.lat);
+      } else if (isCompetitorCreating) {
+        setCompetitorClickPoint(e.lngLat.lng, e.lngLat.lat);
       } else if (isTradeAreaCreating) {
         setTradeAreaClickPoint(e.lngLat.lng, e.lngLat.lat);
       }
     },
-    [isStoreCreating, isTradeAreaCreating, setStoreClickPoint, setTradeAreaClickPoint]
+    [
+      isStoreCreating,
+      isCompetitorCreating,
+      isTradeAreaCreating,
+      setStoreClickPoint,
+      setCompetitorClickPoint,
+      setTradeAreaClickPoint,
+    ]
   );
 
   const handleCreateTradeArea = useCallback(() => {
@@ -99,6 +123,34 @@ export function MapWorkspace() {
     );
   }, [storeCreation, createStoreMutation]);
 
+  const handleCreateCompetitor = useCallback(() => {
+    if (
+      competitorCreation.longitude === null ||
+      competitorCreation.latitude === null ||
+      !competitorCreation.name.trim() ||
+      !selectedStoreId
+    ) {
+      return;
+    }
+    createCompetitorMutation.mutate(
+      {
+        storeId: selectedStoreId,
+        data: {
+          name: competitorCreation.name,
+          longitude: competitorCreation.longitude,
+          latitude: competitorCreation.latitude,
+          source: 'manual',
+          category: competitorCreation.category.trim() || undefined,
+        },
+      },
+      {
+        onSuccess: () => {
+          competitorCreation.reset();
+        },
+      }
+    );
+  }, [competitorCreation, createCompetitorMutation, selectedStoreId]);
+
   return (
     <div className="flex h-full">
       {/* Map Area */}
@@ -118,6 +170,21 @@ export function MapWorkspace() {
 
           {/* Preview marker during store creation */}
           <StoreCreationMode />
+
+          {/* Saved competitors (red pins) */}
+          {competitorsData?.competitors.map((comp) => (
+            <CompetitorMarker
+              key={comp.id}
+              id={comp.id}
+              longitude={comp.longitude}
+              latitude={comp.latitude}
+              isSelected={selectedCompetitorId === comp.id}
+              onClick={selectCompetitor}
+            />
+          ))}
+
+          {/* Preview marker during competitor creation */}
+          <CompetitorCreationMode />
 
           {/* Saved trade areas */}
           {tradeAreasData?.tradeAreas.map((ta) => (
@@ -148,7 +215,7 @@ export function MapWorkspace() {
             {!storeCreation.isCreating ? (
               <button
                 onClick={storeCreation.startCreation}
-                disabled={tradeAreaCreation.isCreating}
+                disabled={tradeAreaCreation.isCreating || competitorCreation.isCreating}
                 className="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
               >
                 + New Store
@@ -211,6 +278,79 @@ export function MapWorkspace() {
 
           <hr className="border-gray-200" />
 
+          {/* Competitor Creation Controls */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold text-gray-700">Competitors</h3>
+
+            {!competitorCreation.isCreating ? (
+              <button
+                onClick={competitorCreation.startCreation}
+                disabled={
+                  !selectedStoreId || storeCreation.isCreating || tradeAreaCreation.isCreating
+                }
+                className="w-full px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+              >
+                + New Competitor
+              </button>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-xs text-gray-500">
+                  {competitorCreation.longitude === null
+                    ? 'Click on the map to set the competitor location'
+                    : 'Enter competitor details and save'}
+                </p>
+
+                <input
+                  type="text"
+                  value={competitorCreation.name}
+                  onChange={(e) => competitorCreation.setName(e.target.value)}
+                  placeholder="Competitor name"
+                  aria-label="Competitor name"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                />
+
+                <input
+                  type="text"
+                  value={competitorCreation.category}
+                  onChange={(e) => competitorCreation.setCategory(e.target.value)}
+                  placeholder="Category (optional)"
+                  aria-label="Category"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                />
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleCreateCompetitor}
+                    disabled={
+                      competitorCreation.longitude === null ||
+                      !competitorCreation.name.trim() ||
+                      createCompetitorMutation.isPending
+                    }
+                    className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {createCompetitorMutation.isPending ? 'Saving...' : 'Save'}
+                  </button>
+                  <button
+                    onClick={competitorCreation.cancelCreation}
+                    className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+                {createCompetitorMutation.isError && (
+                  <p className="text-xs text-red-500">
+                    Failed to create competitor. Please try again.
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Competitor List */}
+          <CompetitorList storeId={selectedStoreId} />
+
+          <hr className="border-gray-200" />
+
           {/* Trade Area Creation Controls */}
           <div className="space-y-3">
             <h3 className="text-sm font-semibold text-gray-700">Trade Areas</h3>
@@ -218,7 +358,7 @@ export function MapWorkspace() {
             {!tradeAreaCreation.isCreating ? (
               <button
                 onClick={tradeAreaCreation.startCreation}
-                disabled={storeCreation.isCreating}
+                disabled={storeCreation.isCreating || competitorCreation.isCreating}
                 className="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
               >
                 + New Trade Area
