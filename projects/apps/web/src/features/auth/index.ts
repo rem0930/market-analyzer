@@ -7,7 +7,7 @@
  * 外部からは index.ts 経由でのみアクセスされる
  */
 export { useAuth } from './model/useAuth';
-export { useAuthStore } from './model/store';
+export { useAuthStore, initializeAuthStore } from './model/store';
 export { useLogin, useLogout, useRegister, useCurrentUser } from './api';
 export { LoginForm } from './ui/LoginForm';
 export { RegisterForm } from './ui/RegisterForm';
