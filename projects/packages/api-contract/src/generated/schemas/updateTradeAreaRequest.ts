@@ -8,6 +8,11 @@ This is the single source of truth for API types.
  * OpenAPI spec version: 0.0.1
  */
 
+/**
+ * All fields are optional. If updating coordinates, both longitude and
+latitude must be provided together; sending only one returns 400.
+
+ */
 export interface UpdateTradeAreaRequest {
   /**
    * @minLength 1
@@ -15,11 +20,13 @@ export interface UpdateTradeAreaRequest {
    */
   name?: string;
   /**
+   * Must be provided together with latitude
    * @minimum -180
    * @maximum 180
    */
   longitude?: number;
   /**
+   * Must be provided together with longitude
    * @minimum -90
    * @maximum 90
    */

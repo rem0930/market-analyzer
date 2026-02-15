@@ -6,5 +6,5 @@
  * shared は外部レイヤーに依存してはいけない（自己参照のみ）
  * HTTP通信は全てこのモジュール経由で行う
  */
-export { apiClient, type ApiClientConfig } from './http';
+export { apiClient, getCsrfToken, NormalizedApiError, type ApiClientConfig } from './http';
 export * from './generated';

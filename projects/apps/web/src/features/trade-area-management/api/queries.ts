@@ -7,11 +7,11 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { getConfig } from '@/shared/config';
+import { apiClient } from '@/shared/api';
 import { useAuthStore } from '@/features/auth/model/store';
 import type { TradeArea, TradeAreasResponse } from '@/entities/trade-area';
 
-function getAuthHeaders(): HeadersInit {
+function getAuthHeaders(): Record<string, string> {
   const accessToken = useAuthStore.getState().accessToken;
   if (!accessToken) {
     throw new Error('Not authenticated');
@@ -22,29 +22,15 @@ function getAuthHeaders(): HeadersInit {
 }
 
 async function listTradeAreasApi(): Promise<TradeAreasResponse> {
-  const config = getConfig();
-  const response = await fetch(`${config.apiBaseUrl}/trade-areas`, {
+  return apiClient<TradeAreasResponse>('/trade-areas', {
     headers: getAuthHeaders(),
   });
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch trade areas');
-  }
-
-  return response.json();
 }
 
 async function getTradeAreaApi(id: string): Promise<TradeArea> {
-  const config = getConfig();
-  const response = await fetch(`${config.apiBaseUrl}/trade-areas/${id}`, {
+  return apiClient<TradeArea>(`/trade-areas/${encodeURIComponent(id)}`, {
     headers: getAuthHeaders(),
   });
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch trade area');
-  }
-
-  return response.json();
 }
 
 export const tradeAreaKeys = {

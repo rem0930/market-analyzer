@@ -73,10 +73,15 @@ export class UpdateTradeAreaUseCase {
       ta.rename(newName);
     }
 
-    if (input.longitude !== undefined && input.latitude !== undefined) {
+    const hasLon = input.longitude !== undefined;
+    const hasLat = input.latitude !== undefined;
+    if (hasLon !== hasLat) {
+      return Result.fail('invalid_center');
+    }
+    if (hasLon && hasLat) {
       let newCenter: CenterPoint;
       try {
-        newCenter = CenterPoint.create(input.longitude, input.latitude);
+        newCenter = CenterPoint.create(input.longitude!, input.latitude!);
       } catch {
         return Result.fail('invalid_center');
       }

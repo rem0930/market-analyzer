@@ -22,7 +22,16 @@ export function LoginForm() {
   useEffect(() => {
     if (isAuthenticated) {
       const from = searchParams.get('from') || '/dashboard';
-      router.replace(from);
+      // Open redirect 防止: origin が一致するパスのみ許可
+      const safePath = (() => {
+        try {
+          const url = new URL(from, window.location.origin);
+          return url.origin === window.location.origin ? url.pathname + url.search : '/dashboard';
+        } catch {
+          return '/dashboard';
+        }
+      })();
+      router.replace(safePath);
     }
   }, [isAuthenticated, router, searchParams]);
 
