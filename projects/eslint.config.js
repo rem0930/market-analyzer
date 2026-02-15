@@ -112,12 +112,11 @@ export default [
   // Ignore patterns
   {
     ignores: [
-      'dist/',
-      'node_modules/',
-      '.next/',
+      '**/dist/**',
+      '**/node_modules/**',
+      '**/.next/**',
       '**/generated/**',
       '**/*.cjs',
-      'apps/web/.next/**',
       '**/pnpm-lock.yaml',
       '**/next-env.d.ts',
     ],
