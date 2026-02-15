@@ -53,7 +53,7 @@ export class StoreController {
           case 'invalid_address':
             throw AppError.validation([{ field: 'address', code: 'INVALID_FORMAT' }]);
           case 'invalid_location':
-            throw AppError.validation([{ field: 'longitude', code: 'INVALID_FORMAT' }]);
+            throw AppError.validation([{ field: 'location', code: 'INVALID_FORMAT' }]);
           default:
             throw AppError.fromUnknown(new Error(result.error));
         }
@@ -156,7 +156,7 @@ export class StoreController {
           case 'invalid_address':
             throw AppError.validation([{ field: 'address', code: 'INVALID_FORMAT' }]);
           case 'invalid_location':
-            throw AppError.validation([{ field: 'longitude', code: 'INVALID_FORMAT' }]);
+            throw AppError.validation([{ field: 'location', code: 'INVALID_FORMAT' }]);
           case 'not_found':
             throw AppError.notFound('RESOURCE_NOT_FOUND');
           default:

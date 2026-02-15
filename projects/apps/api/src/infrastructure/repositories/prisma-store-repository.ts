@@ -92,7 +92,7 @@ export class PrismaStoreRepository implements StoreRepository {
           address: aggregate.address.value,
           longitude: aggregate.location.longitude,
           latitude: aggregate.location.latitude,
-          updatedAt: new Date(),
+          updatedAt: aggregate.updatedAt,
           version: aggregate.version,
         },
       });

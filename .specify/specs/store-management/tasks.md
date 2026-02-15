@@ -4,7 +4,7 @@
 
 - **Spec**: `.specify/specs/store-management/spec.md`
 - **Plan**: `.specify/specs/store-management/plan.md`
-- **Status**: Not Started
+- **Status**: Completed
 - **Created**: 2026-02-14
 - **Updated**: 2026-02-14
 
@@ -16,34 +16,34 @@
 
 | # | Task | FR/AC | Estimate | Status | PR |
 |---|------|-------|----------|--------|-----|
-| 1.1 | OpenAPI spec に Store endpoints 追加 | FR-002 | S | ⬜ | - |
-| 1.2 | StoreName ValueObject + テスト | FR-001, AC-011 | S | ⬜ | - |
-| 1.3 | StoreAddress ValueObject + テスト | FR-001, AC-012 | S | ⬜ | - |
-| 1.4 | Store AggregateRoot + StoreId + Event + テスト | FR-001, AC-010 | M | ⬜ | - |
-| 1.5 | StoreRepository interface + domain/index.ts エクスポート | FR-001 | S | ⬜ | - |
+| 1.1 | OpenAPI spec に Store endpoints 追加 | FR-002 | S | ✅ | #20 |
+| 1.2 | StoreName ValueObject + テスト | FR-001, AC-011 | S | ✅ | #20 |
+| 1.3 | StoreAddress ValueObject + テスト | FR-001, AC-012 | S | ✅ | #20 |
+| 1.4 | Store AggregateRoot + StoreId + Event + テスト | FR-001, AC-010 | M | ✅ | #20 |
+| 1.5 | StoreRepository interface + domain/index.ts エクスポート | FR-001 | S | ✅ | #20 |
 
 ### Phase 2: Infrastructure + UseCase
 
 | # | Task | FR/AC | Estimate | Status | PR |
 |---|------|-------|----------|--------|-----|
-| 2.1 | Prisma Store model + migration | FR-004 | S | ⬜ | - |
-| 2.2 | InMemoryStoreRepository | FR-004 | S | ⬜ | - |
-| 2.3 | PrismaStoreRepository（userId defense-in-depth） | FR-004, FR-005 | M | ⬜ | - |
-| 2.4 | CreateStoreUseCase + テスト | FR-003, AC-001, AC-002 | M | ⬜ | - |
-| 2.5 | GetStoreUseCase + テスト | FR-003, AC-004, AC-005 | S | ⬜ | - |
-| 2.6 | ListStoresUseCase + テスト | FR-003, AC-003 | S | ⬜ | - |
-| 2.7 | UpdateStoreUseCase + テスト | FR-003, AC-006, AC-007 | M | ⬜ | - |
-| 2.8 | DeleteStoreUseCase + テスト | FR-003, AC-008 | S | ⬜ | - |
+| 2.1 | Prisma Store model + migration | FR-004 | S | ✅ | #20 |
+| 2.2 | InMemoryStoreRepository | FR-004 | S | ✅ | #20 |
+| 2.3 | PrismaStoreRepository（userId defense-in-depth） | FR-004, FR-005 | M | ✅ | #20 |
+| 2.4 | CreateStoreUseCase + テスト | FR-003, AC-001, AC-002 | M | ✅ | #20 |
+| 2.5 | GetStoreUseCase + テスト | FR-003, AC-004, AC-005 | S | ✅ | #20 |
+| 2.6 | ListStoresUseCase + テスト | FR-003, AC-003 | S | ✅ | #20 |
+| 2.7 | UpdateStoreUseCase + テスト | FR-003, AC-006, AC-007 | M | ✅ | #20 |
+| 2.8 | DeleteStoreUseCase + テスト | FR-003, AC-008 | S | ✅ | #20 |
 
 ### Phase 3: Presentation + Integration
 
 | # | Task | FR/AC | Estimate | Status | PR |
 |---|------|-------|----------|--------|-----|
-| 3.1 | Zod store-schemas.ts | FR-002 | S | ⬜ | - |
-| 3.2 | StoreController | FR-002, AC-009 | M | ⬜ | - |
-| 3.3 | Store routes（auth + rateLimit） | FR-002, FR-005, NFR-002 | S | ⬜ | - |
-| 3.4 | DI コンテナ配線 + ルーター登録 | FR-002 | S | ⬜ | - |
-| 3.5 | Quality Gates 全パス | NFR-003 | S | ⬜ | - |
+| 3.1 | Zod store-schemas.ts | FR-002 | S | ✅ | #20 |
+| 3.2 | StoreController | FR-002, AC-009 | M | ✅ | #20 |
+| 3.3 | Store routes（auth + rateLimit） | FR-002, FR-005, NFR-002 | S | ✅ | #20 |
+| 3.4 | DI コンテナ配線 + ルーター登録 | FR-002 | S | ✅ | #20 |
+| 3.5 | Quality Gates 全パス | NFR-003 | S | ✅ | #20 |
 
 ---
 

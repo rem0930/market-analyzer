@@ -294,8 +294,9 @@ userId によるオーナーシップベースのアクセス制御を実装す�
 - 全エンドポイントに BearerAuth 必須
 - userId は JWT から auth middleware で抽出
 - GET /stores は自分の店舗のみ返却
-- GET/PATCH/DELETE /stores/{id} は所有権チェック（他ユーザー → 404）
-- Repository レベルでも userId フィルタリング（defense-in-depth）
+- GET/PATCH/DELETE /stores/{id} は UseCase 層で所有権チェック（他ユーザー → 404）
+- GET /stores は Repository レベルで userId フィルタリング（findByUserId）
+- 単一店舗操作（GET/PATCH/DELETE by ID）は findById 後に UseCase 層で userId を検証
 
 ---
 
