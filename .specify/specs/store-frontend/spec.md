@@ -3,7 +3,7 @@
 ## Metadata
 
 - **ID**: store-frontend
-- **Status**: Draft
+- **Status**: In Review
 - **Created**: 2026-02-15
 - **Updated**: 2026-02-15
 

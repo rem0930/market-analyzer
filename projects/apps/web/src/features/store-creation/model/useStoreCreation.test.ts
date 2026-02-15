@@ -29,6 +29,24 @@ describe('useStoreCreation', () => {
       useStoreCreation.getState().startCreation();
       expect(useStoreCreation.getState().isCreating).toBe(true);
     });
+
+    it('should reset stale fields from a previous attempt', () => {
+      const store = useStoreCreation.getState();
+      store.startCreation();
+      store.setName('Old Store');
+      store.setAddress('Old Address');
+      store.setClickPoint(139.0, 35.0);
+
+      // Start a new creation without cancelling first
+      useStoreCreation.getState().startCreation();
+
+      const state = useStoreCreation.getState();
+      expect(state.isCreating).toBe(true);
+      expect(state.name).toBe('');
+      expect(state.address).toBe('');
+      expect(state.longitude).toBeNull();
+      expect(state.latitude).toBeNull();
+    });
   });
 
   describe('cancelCreation', () => {

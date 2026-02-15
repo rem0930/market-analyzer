@@ -52,7 +52,7 @@ export function useStore(id: string | null) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   return useQuery({
-    queryKey: storeKeys.detail(id ?? ''),
+    queryKey: storeKeys.detail(id!),
     queryFn: () => getStoreApi(id!),
     enabled: isAuthenticated && id !== null,
   });

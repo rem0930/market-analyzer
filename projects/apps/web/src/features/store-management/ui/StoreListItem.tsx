@@ -18,12 +18,21 @@ interface StoreListItemProps {
 export function StoreListItem({ store, isSelected, onSelect, onDelete }: StoreListItemProps) {
   return (
     <div
+      role="button"
+      tabIndex={0}
+      aria-pressed={isSelected}
       className={`p-3 rounded-lg border cursor-pointer transition-colors ${
         isSelected
           ? 'border-blue-500 bg-blue-50'
           : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
       }`}
       onClick={() => onSelect(store.id)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onSelect(store.id);
+        }
+      }}
     >
       <div className="flex items-center justify-between">
         <div className="min-w-0 flex-1">

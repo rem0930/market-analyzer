@@ -16,34 +16,34 @@
 
 | # | Task | FR/AC | Estimate | Status | PR |
 |---|------|-------|----------|--------|-----|
-| 1.1 | Store types (model/types.ts) | FR-001 | S | ⬜ | |
-| 1.2 | StoreMarker component (ui/StoreMarker.tsx) | FR-001 | S | ⬜ | |
-| 1.3 | Entity public API (index.ts) + entities/index.ts 更新 | FR-001 | S | ⬜ | |
+| 1.1 | Store types (model/types.ts) | FR-001 | S | ✅ | #21 |
+| 1.2 | StoreMarker component (ui/StoreMarker.tsx) | FR-001 | S | ✅ | #21 |
+| 1.3 | Entity public API (index.ts) + entities/index.ts 更新 | FR-001 | S | ✅ | #21 |
 
 ### Phase 2: Feature API + State
 
 | # | Task | FR/AC | Estimate | Status | PR |
 |---|------|-------|----------|--------|-----|
-| 2.1 | Store queries (React Query hooks) | FR-002, AC-001, AC-008 | S | ⬜ | |
-| 2.2 | Store mutations (create, update, delete) | FR-002, FR-003, FR-005, AC-003, AC-006, AC-007 | M | ⬜ | |
-| 2.3 | useStores (selection state) | FR-002, AC-002 | S | ⬜ | |
-| 2.4 | useStoreCreation (creation flow state) | FR-003, AC-004 | S | ⬜ | |
-| 2.5 | Feature public APIs (index.ts x2) | NFR-003 | S | ⬜ | |
+| 2.1 | Store queries (React Query hooks) | FR-002, AC-001, AC-008 | S | ✅ | #21 |
+| 2.2 | Store mutations (create, update, delete) | FR-002, FR-003, FR-005, AC-003, AC-006, AC-007 | M | ✅ | #21 |
+| 2.3 | useStores (selection state) | FR-002, AC-002 | S | ✅ | #21 |
+| 2.4 | useStoreCreation (creation flow state) | FR-003, AC-004 | S | ✅ | #21 |
+| 2.5 | Feature public APIs (index.ts x2) | NFR-003 | S | ✅ | #21 |
 
 ### Phase 3: Feature UI
 
 | # | Task | FR/AC | Estimate | Status | PR |
 |---|------|-------|----------|--------|-----|
-| 3.1 | StoreList + StoreListItem components | FR-002, AC-001, AC-002, AC-006, AC-009 | M | ⬜ | |
-| 3.2 | StoreCreationMode (preview marker) | FR-003 | S | ⬜ | |
+| 3.1 | StoreList + StoreListItem components | FR-002, AC-001, AC-002, AC-006, AC-009 | M | ✅ | #21 |
+| 3.2 | StoreCreationMode (preview marker) | FR-003 | S | ✅ | #21 |
 
 ### Phase 4: Widget Integration
 
 | # | Task | FR/AC | Estimate | Status | PR |
 |---|------|-------|----------|--------|-----|
-| 4.1 | MapWorkspace 拡張（Store imports + markers + sidebar） | FR-004, AC-001, AC-003 | M | ⬜ | |
-| 4.2 | Map click 分岐（Store vs TradeArea creation） | FR-004 | S | ⬜ | |
-| 4.3 | Quality Gates 全パス | AC-010, NFR-003 | S | ⬜ | |
+| 4.1 | MapWorkspace 拡張（Store imports + markers + sidebar） | FR-004, AC-001, AC-003 | M | ✅ | #21 |
+| 4.2 | Map click 分岐（Store vs TradeArea creation） | FR-004 | S | ✅ | #21 |
+| 4.3 | Quality Gates 全パス | AC-010, NFR-003 | S | ✅ | #21 |
 
 ---
 
@@ -72,7 +72,7 @@
 
 ### Task Dependencies
 
-```
+```text
 1.1 (Types) ──→ 1.2 (StoreMarker) ──→ 1.3 (Public API)
                                         │
                                         ├──→ 2.1 (Queries) ──→ 2.5 (Public APIs)

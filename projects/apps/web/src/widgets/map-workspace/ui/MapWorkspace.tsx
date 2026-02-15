@@ -33,19 +33,23 @@ export function MapWorkspace() {
   const createTradeAreaMutation = useCreateTradeArea();
 
   const storeCreation = useStoreCreation();
+  const isStoreCreating = useStoreCreation((s) => s.isCreating);
+  const setStoreClickPoint = useStoreCreation((s) => s.setClickPoint);
+  const isTradeAreaCreating = useTradeAreaCreation((s) => s.isCreating);
+  const setTradeAreaClickPoint = useTradeAreaCreation((s) => s.setClickPoint);
   const { selectedStoreId, selectStore } = useStores();
   const { data: storesData } = useStoreList();
   const createStoreMutation = useCreateStore();
 
   const handleMapClick = useCallback(
     (e: MapMouseEvent) => {
-      if (storeCreation.isCreating) {
-        storeCreation.setClickPoint(e.lngLat.lng, e.lngLat.lat);
-      } else if (tradeAreaCreation.isCreating) {
-        tradeAreaCreation.setClickPoint(e.lngLat.lng, e.lngLat.lat);
+      if (isStoreCreating) {
+        setStoreClickPoint(e.lngLat.lng, e.lngLat.lat);
+      } else if (isTradeAreaCreating) {
+        setTradeAreaClickPoint(e.lngLat.lng, e.lngLat.lat);
       }
     },
-    [storeCreation, tradeAreaCreation]
+    [isStoreCreating, isTradeAreaCreating, setStoreClickPoint, setTradeAreaClickPoint]
   );
 
   const handleCreateTradeArea = useCallback(() => {
@@ -162,6 +166,7 @@ export function MapWorkspace() {
                   value={storeCreation.name}
                   onChange={(e) => storeCreation.setName(e.target.value)}
                   placeholder="Store name"
+                  aria-label="Store name"
                   className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
 
@@ -170,6 +175,7 @@ export function MapWorkspace() {
                   value={storeCreation.address}
                   onChange={(e) => storeCreation.setAddress(e.target.value)}
                   placeholder="Address"
+                  aria-label="Address"
                   className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
 
@@ -193,6 +199,9 @@ export function MapWorkspace() {
                     Cancel
                   </button>
                 </div>
+                {createStoreMutation.isError && (
+                  <p className="text-xs text-red-500">Failed to create store. Please try again.</p>
+                )}
               </div>
             )}
           </div>

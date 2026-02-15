@@ -36,7 +36,7 @@ const initialState: StoreCreationState = {
 export const useStoreCreation = create<StoreCreationStore>((set) => ({
   ...initialState,
 
-  startCreation: () => set({ isCreating: true }),
+  startCreation: () => set({ ...initialState, isCreating: true }),
 
   cancelCreation: () => set(initialState),
 

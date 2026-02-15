@@ -37,6 +37,9 @@ export function StoreList() {
       <div className="flex items-center justify-between px-1">
         <h3 className="text-sm font-semibold text-gray-700">Stores ({data.stores.length})</h3>
       </div>
+      {deleteMutation.isError && (
+        <p className="text-xs text-red-500 px-1">Failed to delete store. Please try again.</p>
+      )}
       <div className="space-y-1.5">
         {data.stores.map((store) => (
           <StoreListItem
@@ -44,7 +47,11 @@ export function StoreList() {
             store={store}
             isSelected={selectedStoreId === store.id}
             onSelect={selectStore}
-            onDelete={(id) => deleteMutation.mutate(id)}
+            onDelete={(id) => {
+              if (window.confirm('Are you sure you want to delete this store?')) {
+                deleteMutation.mutate(id);
+              }
+            }}
           />
         ))}
       </div>

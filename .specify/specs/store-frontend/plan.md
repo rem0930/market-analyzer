@@ -3,7 +3,7 @@
 ## Metadata
 
 - **Spec**: `.specify/specs/store-frontend/spec.md`
-- **Status**: Draft
+- **Status**: Implemented
 - **Created**: 2026-02-15
 - **Updated**: 2026-02-15
 
@@ -39,7 +39,7 @@ TradeArea と同一パターンにより、コードベースの一貫性を維�
 
 ### Component Architecture
 
-```
+```text
 MapWorkspace (widget)
 ├── MapContainer (feature: map-view)
 │   ├── StoreMarker[] (entity: store) ← NEW
@@ -58,7 +58,7 @@ MapWorkspace (widget)
 
 ### Data Flow
 
-```
+```text
 User clicks map → MapWorkspace.handleMapClick()
   ├── if storeCreation.isCreating → storeCreation.setClickPoint(lng, lat)
   └── if tradeAreaCreation.isCreating → tradeAreaCreation.setClickPoint(lng, lat)
@@ -88,44 +88,44 @@ User clicks "Save" → useCreateStore.mutate()
 **目的**: Store の型定義とビジュアル表現を確立する
 
 **成果物**:
-- [ ] `entities/store/model/types.ts` — Store, StoresResponse, CreateStoreRequest, UpdateStoreRequest
-- [ ] `entities/store/ui/StoreMarker.tsx` — Mapbox Marker（青ピン）
-- [ ] `entities/store/index.ts` — Public API
+- [x] `entities/store/model/types.ts` — Store, StoresResponse, CreateStoreRequest, UpdateStoreRequest
+- [x] `entities/store/ui/StoreMarker.tsx` — Mapbox Marker（青ピン）
+- [x] `entities/store/index.ts` — Public API
 
 ### Phase 2: Feature API + State
 
 **目的**: API 通信と状態管理を実装する
 
 **成果物**:
-- [ ] `features/store-management/api/queries.ts` — useStoreList, useStore hooks
-- [ ] `features/store-management/api/mutations.ts` — useCreateStore, useUpdateStore, useDeleteStore
-- [ ] `features/store-management/model/useStores.ts` — selectedStoreId 管理
-- [ ] `features/store-creation/model/useStoreCreation.ts` — 作成フロー状態
-- [ ] `features/store-management/index.ts` — Public API
-- [ ] `features/store-creation/index.ts` — Public API
+- [x] `features/store-management/api/queries.ts` — useStoreList, useStore hooks
+- [x] `features/store-management/api/mutations.ts` — useCreateStore, useUpdateStore, useDeleteStore
+- [x] `features/store-management/model/useStores.ts` — selectedStoreId 管理
+- [x] `features/store-creation/model/useStoreCreation.ts` — 作成フロー状態
+- [x] `features/store-management/index.ts` — Public API
+- [x] `features/store-creation/index.ts` — Public API
 
 ### Phase 3: Feature UI
 
 **目的**: ユーザー向け UI コンポーネントを実装する
 
 **成果物**:
-- [ ] `features/store-management/ui/StoreList.tsx` — 店舗一覧
-- [ ] `features/store-management/ui/StoreListItem.tsx` — 個別店舗表示
-- [ ] `features/store-creation/ui/StoreCreationMode.tsx` — プレビューマーカー
+- [x] `features/store-management/ui/StoreList.tsx` — 店舗一覧
+- [x] `features/store-management/ui/StoreListItem.tsx` — 個別店舗表示
+- [x] `features/store-creation/ui/StoreCreationMode.tsx` — プレビューマーカー
 
 ### Phase 4: Widget Integration
 
 **目的**: MapWorkspace に Store 機能を統合する
 
 **成果物**:
-- [ ] `widgets/map-workspace/ui/MapWorkspace.tsx` の拡張
+- [x] `widgets/map-workspace/ui/MapWorkspace.tsx` の拡張
   - Store imports 追加
   - StoreMarker レンダリング
   - Store creation controls（サイドパネル）
   - StoreList（サイドパネル）
   - handleMapClick にストア作成モード分岐追加
-- [ ] `entities/index.ts` に Store エクスポート追加
-- [ ] 全 Quality Gates パス
+- [x] `entities/index.ts` に Store エクスポート追加
+- [x] 全 Quality Gates パス
 
 ---
 
