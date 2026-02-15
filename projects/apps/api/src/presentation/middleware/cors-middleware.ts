@@ -21,7 +21,7 @@ export interface CorsConfig {
 const DEFAULT_CONFIG: CorsConfig = {
   allowedOrigins: (process.env.CORS_ALLOWED_ORIGINS ?? 'http://localhost:3000').split(','),
   allowedMethods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'x-csrf-token'],
   allowCredentials: true,
   maxAge: 86400,
 };
