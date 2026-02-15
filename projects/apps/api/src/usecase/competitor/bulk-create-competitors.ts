@@ -115,9 +115,9 @@ export class BulkCreateCompetitorsUseCase {
       }
     }
 
-    // Process each competitor
-    const created: BulkCreateCompetitorCreatedOutput[] = [];
+    // Partition into to-create and pre-filtered skips
     const skipped: BulkCreateCompetitorSkippedOutput[] = [];
+    const toCreate: Competitor[] = [];
 
     for (const item of input.competitors) {
       if (registeredPlaceIds.has(item.googlePlaceId)) {
@@ -149,25 +149,36 @@ export class BulkCreateCompetitorsUseCase {
         return Result.fail('repository_error');
       }
 
-      const competitor = createResult.value;
-      const saveResult = await this.competitorRepository.save(competitor);
-      if (saveResult.isFailure()) {
-        return Result.fail('repository_error');
-      }
+      toCreate.push(createResult.value);
+    }
 
-      created.push({
-        id: competitor.id.value,
-        storeId: competitor.storeId,
-        name: competitor.name.value,
-        longitude: competitor.location.longitude,
-        latitude: competitor.location.latitude,
-        source: competitor.source.value,
-        googlePlaceId: competitor.googlePlaceId,
-        category: competitor.category,
-        createdAt: competitor.createdAt.toISOString(),
-        updatedAt: competitor.updatedAt.toISOString(),
+    if (toCreate.length === 0) {
+      return Result.ok({
+        created: [],
+        skipped,
+        total: { created: 0, skipped: skipped.length },
       });
     }
+
+    // Atomic bulk save (skipDuplicates handles race conditions at DB level)
+    const saveResult = await this.competitorRepository.saveMany(toCreate);
+    if (saveResult.isFailure()) {
+      return Result.fail('repository_error');
+    }
+
+    // Build created output from domain objects
+    const created: BulkCreateCompetitorCreatedOutput[] = toCreate.map((competitor) => ({
+      id: competitor.id.value,
+      storeId: competitor.storeId,
+      name: competitor.name.value,
+      longitude: competitor.location.longitude,
+      latitude: competitor.location.latitude,
+      source: competitor.source.value,
+      googlePlaceId: competitor.googlePlaceId,
+      category: competitor.category,
+      createdAt: competitor.createdAt.toISOString(),
+      updatedAt: competitor.updatedAt.toISOString(),
+    }));
 
     return Result.ok({
       created,

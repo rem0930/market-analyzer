@@ -67,6 +67,37 @@ export class InMemoryCompetitorRepository implements CompetitorRepository {
     return Result.ok(undefined);
   }
 
+  async saveMany(aggregates: Competitor[]): Promise<Result<number, RepositoryError>> {
+    // Simulate atomic operation: check all first, then save non-conflicting ones
+    const toSave: Competitor[] = [];
+
+    for (const aggregate of aggregates) {
+      if (this.competitors.has(aggregate.id.value)) {
+        continue; // ID conflict, skip
+      }
+
+      // Check googlePlaceId uniqueness per store
+      const hasPlaceIdConflict = [...this.competitors.values()].some(
+        (c) =>
+          c.storeId === aggregate.storeId &&
+          c.googlePlaceId !== null &&
+          c.googlePlaceId === aggregate.googlePlaceId
+      );
+      if (hasPlaceIdConflict) {
+        continue; // googlePlaceId conflict, skip (race condition)
+      }
+
+      toSave.push(aggregate);
+    }
+
+    for (const aggregate of toSave) {
+      this.competitors.set(aggregate.id.value, aggregate);
+      aggregate.clearDomainEvents();
+    }
+
+    return Result.ok(toSave.length);
+  }
+
   async delete(id: CompetitorId): Promise<Result<void, RepositoryError>> {
     if (!this.competitors.has(id.value)) {
       return Result.fail('not_found');

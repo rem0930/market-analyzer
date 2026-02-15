@@ -103,6 +103,37 @@ export class PrismaCompetitorRepository implements CompetitorRepository {
     }
   }
 
+  async saveMany(aggregates: Competitor[]): Promise<Result<number, RepositoryError>> {
+    if (aggregates.length === 0) return Result.ok(0);
+
+    try {
+      const result = await this.prisma.competitor.createMany({
+        data: aggregates.map((a) => ({
+          id: a.id.value,
+          storeId: a.storeId,
+          name: a.name.value,
+          longitude: a.location.longitude,
+          latitude: a.location.latitude,
+          source: a.source.value,
+          googlePlaceId: a.googlePlaceId,
+          category: a.category,
+          createdAt: a.createdAt,
+          updatedAt: a.updatedAt,
+          version: a.version,
+        })),
+        skipDuplicates: true,
+      });
+
+      for (const aggregate of aggregates) {
+        aggregate.clearDomainEvents();
+      }
+
+      return Result.ok(result.count);
+    } catch {
+      return Result.fail('db_error');
+    }
+  }
+
   async update(aggregate: Competitor): Promise<Result<void, RepositoryError>> {
     try {
       await this.prisma.competitor.update({

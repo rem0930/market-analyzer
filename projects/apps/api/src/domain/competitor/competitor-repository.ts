@@ -12,4 +12,10 @@ export interface CompetitorRepository extends Repository<Competitor, CompetitorI
     storeId: string,
     placeIds: string[]
   ): Promise<Result<Competitor[], RepositoryError>>;
+  /**
+   * 複数の競合を一括保存（アトミック操作）
+   * 重複する googlePlaceId は skipDuplicates で無視される
+   * @returns 実際に保存された件数
+   */
+  saveMany(aggregates: Competitor[]): Promise<Result<number, RepositoryError>>;
 }

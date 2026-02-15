@@ -170,6 +170,48 @@ describe('BulkCreateCompetitorsUseCase', () => {
     expect(result).toBeFailureWithError('store_not_found');
   });
 
+  // 全件が既に登録済み
+  it('全件が登録済みの場合は created=0, skipped=全件になる', async () => {
+    const store = await createStore();
+
+    // 先に2件登録
+    await createCompetitorUseCase.execute({
+      storeId: store.id,
+      userId,
+      name: '既存1',
+      longitude: 139.7,
+      latitude: 35.68,
+      source: 'google_places',
+      googlePlaceId: 'ChIJ_test_1',
+      requestId: 'req-pre-1',
+    });
+    await createCompetitorUseCase.execute({
+      storeId: store.id,
+      userId,
+      name: '既存2',
+      longitude: 139.701,
+      latitude: 35.681,
+      source: 'google_places',
+      googlePlaceId: 'ChIJ_test_2',
+      requestId: 'req-pre-2',
+    });
+
+    const competitors = makeCompetitors(2);
+    const result = await useCase.execute({
+      storeId: store.id,
+      userId,
+      competitors,
+      requestId: 'req-bulk-all-skipped',
+    });
+
+    expect(result).toBeSuccess();
+    const output = result.value;
+    expect(output.created.length).toBe(0);
+    expect(output.skipped.length).toBe(2);
+    expect(output.total.created).toBe(0);
+    expect(output.total.skipped).toBe(2);
+  });
+
   // 空のリスト
   it('空のリストは empty_competitors エラーになる', async () => {
     const store = await createStore();

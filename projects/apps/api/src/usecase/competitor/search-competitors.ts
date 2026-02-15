@@ -41,6 +41,8 @@ export interface SearchCompetitorsOutput {
 
 export type SearchCompetitorsError = 'store_not_found' | 'search_provider_error';
 
+const MAX_SEARCH_RESULTS = 60;
+
 export class SearchCompetitorsUseCase {
   constructor(
     private readonly competitorRepository: CompetitorRepository,
@@ -70,14 +72,15 @@ export class SearchCompetitorsUseCase {
 
     const store = storeResult.value;
 
-    // Search nearby competitors via provider
+    // Search nearby competitors via provider (cap results to prevent large IN queries)
+    const maxResults = Math.min(input.maxResults ?? MAX_SEARCH_RESULTS, MAX_SEARCH_RESULTS);
     let searchResults;
     try {
       searchResults = await this.searchProvider.searchNearby(
         store.location,
         input.radiusMeters,
         input.keyword,
-        input.maxResults
+        maxResults
       );
     } catch {
       return Result.fail('search_provider_error');
