@@ -57,7 +57,13 @@ export function CompetitorList({ storeId }: CompetitorListProps) {
             onSelect={selectCompetitor}
             onDelete={(id) => {
               if (window.confirm('Are you sure you want to delete this competitor?')) {
-                deleteMutation.mutate(id);
+                deleteMutation.mutate(id, {
+                  onSuccess: () => {
+                    if (selectedCompetitorId === id) {
+                      selectCompetitor(null);
+                    }
+                  },
+                });
               }
             }}
           />

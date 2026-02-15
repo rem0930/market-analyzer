@@ -8,7 +8,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/shared/api';
-import { useAuthStore } from '@/features/auth/model/store';
+import { useAuthStore } from '@/features/auth';
 import type { CompetitorsResponse } from '@/entities/competitor';
 
 function getAuthHeaders(): Record<string, string> {

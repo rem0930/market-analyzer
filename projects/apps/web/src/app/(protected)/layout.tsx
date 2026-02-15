@@ -25,7 +25,7 @@ export default function ProtectedLayout({ children }: { children: ReactNode }) {
       setIsInitialized(true);
     };
     init();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (isInitialized && !isAuthenticated) {
@@ -35,6 +35,10 @@ export default function ProtectedLayout({ children }: { children: ReactNode }) {
       }
     }
   }, [isInitialized, isAuthenticated, router]);
+
+  if (!isInitialized) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen flex flex-col">

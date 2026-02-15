@@ -76,6 +76,10 @@ export async function initializeAuthStore() {
     }
 
     const data = await response.json();
+    if (!data.accessToken || !data.refreshToken) {
+      useAuthStore.getState().clearTokens();
+      return;
+    }
     useAuthStore.getState().setTokens(data.accessToken, data.refreshToken);
   } catch {
     useAuthStore.getState().clearTokens();

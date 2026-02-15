@@ -8,7 +8,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/shared/api';
-import { useAuthStore } from '@/features/auth/model/store';
+import { useAuthStore } from '@/features/auth';
 import type {
   Competitor,
   CreateCompetitorRequest,
