@@ -6,7 +6,7 @@
 
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import type { MapMouseEvent } from 'react-map-gl';
 import { MapContainer } from '@/features/map-view';
 import {
@@ -33,6 +33,7 @@ import {
   useCreateCompetitor,
   useCompetitors,
 } from '@/features/competitor-management';
+import { CompetitorSearchDialog, useCompetitorSearch } from '@/features/competitor-search';
 
 export function MapWorkspace() {
   const tradeAreaCreation = useTradeAreaCreation();
@@ -48,6 +49,8 @@ export function MapWorkspace() {
   const { selectedStoreId, selectStore } = useStores();
   const { data: storesData } = useStoreList();
   const createStoreMutation = useCreateStore();
+  const competitorSearch = useCompetitorSearch();
+  const closeSearchDialog = useCompetitorSearch((s) => s.closeDialog);
 
   const competitorCreation = useCompetitorCreation();
   const isCompetitorCreating = useCompetitorCreation((s) => s.isCreating);
@@ -55,6 +58,11 @@ export function MapWorkspace() {
   const { selectedCompetitorId, selectCompetitor } = useCompetitors();
   const { data: competitorsData } = useCompetitorsByStore(selectedStoreId);
   const createCompetitorMutation = useCreateCompetitor();
+
+  // Reset competitor search dialog when selected store changes
+  useEffect(() => {
+    closeSearchDialog();
+  }, [selectedStoreId, closeSearchDialog]);
 
   const handleMapClick = useCallback(
     (e: MapMouseEvent) => {
@@ -275,6 +283,23 @@ export function MapWorkspace() {
 
           {/* Store List */}
           <StoreList />
+
+          {/* Competitor Search */}
+          {selectedStoreId && (
+            <div className="space-y-2">
+              {!competitorSearch.isOpen ? (
+                <button
+                  onClick={competitorSearch.openDialog}
+                  disabled={storeCreation.isCreating || tradeAreaCreation.isCreating}
+                  className="w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                >
+                  Search Nearby Competitors
+                </button>
+              ) : (
+                <CompetitorSearchDialog key={selectedStoreId} storeId={selectedStoreId} />
+              )}
+            </div>
+          )}
 
           <hr className="border-gray-200" />
 

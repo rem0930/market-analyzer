@@ -47,6 +47,9 @@ export { PrismaStoreRepository } from './repositories/prisma-store-repository.js
 export { InMemoryCompetitorRepository } from './repositories/in-memory-competitor-repository.js';
 export { PrismaCompetitorRepository } from './repositories/prisma-competitor-repository.js';
 
+// Competitor search services
+export { MockCompetitorSearchProvider } from './services/mock-competitor-search-provider.js';
+
 // Health checkers
 export { PrismaDatabaseHealthChecker } from './health/index.js';
 

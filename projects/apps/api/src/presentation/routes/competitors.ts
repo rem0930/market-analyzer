@@ -83,5 +83,37 @@ export function createCompetitorRoutes(
       },
       options: { auth: true },
     },
+    {
+      method: 'POST',
+      path: '/stores/:storeId/competitors/search',
+      handler: async (
+        req: IncomingMessage,
+        res: ServerResponse,
+        params: Record<string, string>,
+        user: AuthenticatedRequest
+      ) => {
+        await competitorController.search(req, res, params.storeId, user.userId, params._requestId);
+      },
+      options: { auth: true, rateLimit: true },
+    },
+    {
+      method: 'POST',
+      path: '/stores/:storeId/competitors/bulk',
+      handler: async (
+        req: IncomingMessage,
+        res: ServerResponse,
+        params: Record<string, string>,
+        user: AuthenticatedRequest
+      ) => {
+        await competitorController.bulkCreate(
+          req,
+          res,
+          params.storeId,
+          user.userId,
+          params._requestId
+        );
+      },
+      options: { auth: true, rateLimit: true },
+    },
   ];
 }

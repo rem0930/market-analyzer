@@ -33,6 +33,7 @@ import {
   CryptoTokenHashService,
   LoggerEmailService,
   MockDemographicDataProvider,
+  MockCompetitorSearchProvider,
   // Health checkers
   PrismaDatabaseHealthChecker,
   // Logger
@@ -68,6 +69,8 @@ import {
   ListCompetitorsByStoreUseCase,
   DeleteCompetitorUseCase,
   UpdateCompetitorUseCase,
+  SearchCompetitorsUseCase,
+  BulkCreateCompetitorsUseCase,
 } from '../usecase/index.js';
 
 import {
@@ -257,6 +260,16 @@ export function createAppContext(): RouteContext {
     competitorRepository,
     storeRepository
   );
+  const competitorSearchProvider = new MockCompetitorSearchProvider();
+  const searchCompetitorsUseCase = new SearchCompetitorsUseCase(
+    competitorRepository,
+    storeRepository,
+    competitorSearchProvider
+  );
+  const bulkCreateCompetitorsUseCase = new BulkCreateCompetitorsUseCase(
+    competitorRepository,
+    storeRepository
+  );
 
   // ============================================
   // UseCases - Profile
@@ -322,6 +335,8 @@ export function createAppContext(): RouteContext {
     listCompetitorsByStoreUseCase,
     deleteCompetitorUseCase,
     updateCompetitorUseCase,
+    searchCompetitorsUseCase,
+    bulkCreateCompetitorsUseCase,
     validationMiddleware
   );
 

@@ -10,9 +10,15 @@ import type {
   ListCompetitorsByStoreUseCase,
   DeleteCompetitorUseCase,
   UpdateCompetitorUseCase,
+  SearchCompetitorsUseCase,
+  BulkCreateCompetitorsUseCase,
 } from '../../usecase/index.js';
 import type { ValidationMiddleware } from '../middleware/validation-middleware.js';
 import { createCompetitorSchema, updateCompetitorSchema } from '../schemas/competitor-schemas.js';
+import {
+  searchCompetitorsSchema,
+  bulkCreateCompetitorsSchema,
+} from '../schemas/competitor-search-schemas.js';
 import { AppError } from '@monorepo/shared';
 import { withErrorHandler, sendJson, sendNoContent } from '../middleware/error-handler.js';
 
@@ -23,6 +29,8 @@ export class CompetitorController {
     private readonly listCompetitorsByStoreUseCase: ListCompetitorsByStoreUseCase,
     private readonly deleteCompetitorUseCase: DeleteCompetitorUseCase,
     private readonly updateCompetitorUseCase: UpdateCompetitorUseCase,
+    private readonly searchCompetitorsUseCase: SearchCompetitorsUseCase,
+    private readonly bulkCreateCompetitorsUseCase: BulkCreateCompetitorsUseCase,
     private readonly validationMiddleware: ValidationMiddleware
   ) {}
 
@@ -175,6 +183,85 @@ export class CompetitorController {
       }
 
       sendJson(res, 200, result.value, requestId);
+    });
+  }
+
+  async search(
+    req: IncomingMessage,
+    res: ServerResponse,
+    storeId: string,
+    userId: string,
+    requestId: string
+  ): Promise<void> {
+    await withErrorHandler(res, requestId, async () => {
+      const validation = await this.validationMiddleware.validate(
+        req,
+        res,
+        searchCompetitorsSchema
+      );
+      if (!validation.success) return;
+
+      const { radiusMeters, keyword, maxResults } = validation.data;
+      const result = await this.searchCompetitorsUseCase.execute({
+        storeId,
+        userId,
+        radiusMeters,
+        keyword,
+        maxResults,
+      });
+
+      if (result.isFailure()) {
+        switch (result.error) {
+          case 'store_not_found':
+            throw AppError.notFound('RESOURCE_NOT_FOUND');
+          case 'search_provider_error':
+            throw new AppError('EXTERNAL_SERVICE_ERROR');
+          default:
+            throw AppError.fromUnknown(new Error(result.error));
+        }
+      }
+
+      sendJson(res, 200, result.value, requestId);
+    });
+  }
+
+  async bulkCreate(
+    req: IncomingMessage,
+    res: ServerResponse,
+    storeId: string,
+    userId: string,
+    requestId: string
+  ): Promise<void> {
+    await withErrorHandler(res, requestId, async () => {
+      const validation = await this.validationMiddleware.validate(
+        req,
+        res,
+        bulkCreateCompetitorsSchema
+      );
+      if (!validation.success) return;
+
+      const { competitors } = validation.data;
+      const result = await this.bulkCreateCompetitorsUseCase.execute({
+        storeId,
+        userId,
+        competitors,
+        requestId,
+      });
+
+      if (result.isFailure()) {
+        switch (result.error) {
+          case 'store_not_found':
+            throw AppError.notFound('RESOURCE_NOT_FOUND');
+          case 'empty_competitors':
+            throw AppError.validation([{ field: 'competitors', code: 'EMPTY_ARRAY' }]);
+          case 'too_many_competitors':
+            throw AppError.validation([{ field: 'competitors', code: 'ARRAY_TOO_LARGE' }]);
+          default:
+            throw AppError.fromUnknown(new Error(result.error));
+        }
+      }
+
+      sendJson(res, 201, result.value, requestId);
     });
   }
 }

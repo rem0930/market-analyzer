@@ -11,3 +11,5 @@ export {
   type CreateCompetitorParams,
 } from './competitor.js';
 export type { CompetitorRepository } from './competitor-repository.js';
+export { CompetitorSearchResult } from './competitor-search-result.js';
+export type { CompetitorSearchProvider } from './competitor-search-provider.js';
