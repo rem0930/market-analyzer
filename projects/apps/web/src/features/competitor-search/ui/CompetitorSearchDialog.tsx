@@ -73,7 +73,6 @@ export function CompetitorSearchDialog({ storeId }: CompetitorSearchDialogProps)
       {
         onSuccess: () => {
           clearSelection();
-          closeDialog();
         },
       }
     );

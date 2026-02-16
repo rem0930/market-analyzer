@@ -55,15 +55,33 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   getAccessToken: () => get().accessToken,
 }));
 
-// localStorage から refreshToken を復元
-export function initializeAuthStore() {
-  if (typeof window !== 'undefined') {
-    const refreshToken = localStorage.getItem('refreshToken');
-    if (refreshToken) {
-      useAuthStore.setState({
-        refreshToken,
-        // accessToken は refresh API で取得する必要がある
-      });
+// localStorage から refreshToken を復元し、accessToken を再取得
+export async function initializeAuthStore() {
+  if (typeof window === 'undefined') return;
+
+  const refreshToken = localStorage.getItem('refreshToken');
+  if (!refreshToken) return;
+
+  try {
+    const response = await fetch('/api/auth/refresh', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken }),
+    });
+
+    if (!response.ok) {
+      // リフレッシュ失敗 → トークンをクリア
+      useAuthStore.getState().clearTokens();
+      return;
     }
+
+    const data = await response.json();
+    if (!data.accessToken || !data.refreshToken) {
+      useAuthStore.getState().clearTokens();
+      return;
+    }
+    useAuthStore.getState().setTokens(data.accessToken, data.refreshToken);
+  } catch {
+    useAuthStore.getState().clearTokens();
   }
 }

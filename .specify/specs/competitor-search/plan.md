@@ -11,7 +11,7 @@
 
 ## Overview
 
-Issue #17 の要件を、既存 DemographicDataProvider パターンを踏襲した Provider パターンで 5 Phase に分けて実装する。Backend（Phase 1-4）を先行し、Frontend（Phase 5）を後続で実装する。Mock Provider を先に用意し、Google Places API 実装は後から差し替える設計とする。
+Issue #17 の要件を、既存 DemographicDataProvider パターンを踏襲した Provider パターンで 6 Phase に分けて実装する。Backend（Phase 1-4）を先行し、Frontend（Phase 5）を後続で実装する。Mock Provider を先に用意し、Google Places API 実装は後から差し替える設計とする。
 
 ---
 

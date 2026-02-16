@@ -10,11 +10,32 @@ export interface Competitor {
   name: string;
   longitude: number;
   latitude: number;
-  source: string;
+  source: 'manual' | 'google_places';
   googlePlaceId: string | null;
   category: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface CompetitorsResponse {
+  competitors: Competitor[];
+  total: number;
+}
+
+export interface CreateCompetitorRequest {
+  name: string;
+  longitude: number;
+  latitude: number;
+  source: 'manual' | 'google_places';
+  googlePlaceId?: string;
+  category?: string;
+}
+
+export interface UpdateCompetitorRequest {
+  name?: string;
+  longitude?: number;
+  latitude?: number;
+  category?: string | null;
 }
 
 export interface SearchCompetitorItem {

@@ -6,6 +6,9 @@
 
 export type {
   Competitor,
+  CompetitorsResponse,
+  CreateCompetitorRequest,
+  UpdateCompetitorRequest,
   SearchCompetitorItem,
   SearchCompetitorsRequest,
   SearchCompetitorsResponse,
@@ -13,3 +16,4 @@ export type {
   BulkCreateCompetitorsRequest,
   BulkCreateCompetitorsResponse,
 } from './model/types';
+export { CompetitorMarker } from './ui/CompetitorMarker';
