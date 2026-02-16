@@ -50,6 +50,7 @@ export function MapWorkspace() {
   const { data: storesData } = useStoreList();
   const createStoreMutation = useCreateStore();
   const competitorSearch = useCompetitorSearch();
+  const closeSearchDialog = useCompetitorSearch((s) => s.closeDialog);
 
   const competitorCreation = useCompetitorCreation();
   const isCompetitorCreating = useCompetitorCreation((s) => s.isCreating);
@@ -60,9 +61,8 @@ export function MapWorkspace() {
 
   // Reset competitor search dialog when selected store changes
   useEffect(() => {
-    competitorSearch.closeDialog();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedStoreId]);
+    closeSearchDialog();
+  }, [selectedStoreId, closeSearchDialog]);
 
   const handleMapClick = useCallback(
     (e: MapMouseEvent) => {
