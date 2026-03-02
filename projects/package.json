@@ -21,19 +21,19 @@
     "openapi:check": "pnpm --filter @monorepo/api-contract openapi:check"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.0.0",
+    "@eslint/eslintrc": "^3.3.4",
     "@eslint/js": "^9.0.0",
     "@monorepo/eslint-config": "workspace:*",
-    "@types/node": "^25.0.0",
-    "@typescript-eslint/eslint-plugin": "^8.0.0",
-    "@typescript-eslint/parser": "^8.0.0",
+    "@types/node": "^25.3.3",
+    "@typescript-eslint/eslint-plugin": "^8.56.1",
+    "@typescript-eslint/parser": "^8.56.1",
     "eslint": "^9.0.0",
-    "eslint-plugin-boundaries": "^5.3.1",
+    "eslint-plugin-boundaries": "^5.4.0",
     "globals": "^16.0.0",
-    "lint-staged": "^16.0.0",
-    "prettier": "^3.2.0",
+    "lint-staged": "^16.3.1",
+    "prettier": "^3.8.1",
     "typescript": "^5.3.0",
-    "typescript-eslint": "^8.0.0"
+    "typescript-eslint": "^8.56.1"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
